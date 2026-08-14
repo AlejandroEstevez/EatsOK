@@ -1,0 +1,19 @@
+# Environment variables
+Back/.env
+
+# Python virtual environment
+Back/.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Django
+*.log
+
+# Frontend
+node_modules/
+dist/
+
+# IDE
+.idea/
