@@ -1,0 +1,21 @@
+.user-avatar {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+  background: var(--orange);
+}
+
+.user-avatar-icon {
+  width: 78%;
+  height: 78%;
+
+  object-fit: contain;
+
+  filter: brightness(0) invert(1);
+}
