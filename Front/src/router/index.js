@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     component: {
       template: '<div>Cuenta</div>',
     },
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
   },
 ]
 

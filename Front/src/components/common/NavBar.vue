@@ -1,6 +1,8 @@
 <script setup>
 import './NavBar.css'
 
+import { useAuthStore } from '../../stores/auth'
+
 import UserAvatar from './UserAvatar.vue'
 
 import logo from '../../assets/logo/eatsok-logo-text.png'
@@ -8,6 +10,9 @@ import profileIcon from '../../assets/icons/food-profile.svg'
 import establishmentsIcon from '../../assets/icons/establishments.svg'
 import recipesIcon from '../../assets/icons/recipes.svg'
 import accountIcon from '../../assets/icons/account.svg'
+
+
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -70,19 +75,30 @@ import accountIcon from '../../assets/icons/account.svg'
       </RouterLink>
     </nav>
 
-    <RouterLink
-      to="/account"
-      class="navbar-account"
-    >
-      <UserAvatar :size="58" />
+    <div class="navbar-user">
+      <RouterLink
+        v-if="authStore.isAuthenticated"
+        to="/account"
+        class="navbar-account"
+      >
+        <UserAvatar :size="58" />
 
-      <span>
-        Cuenta
-      </span>
+        <span>
+          Cuenta
+        </span>
 
-      <span class="account-arrow">
-        ▾
-      </span>
-    </RouterLink>
+        <span class="account-arrow">
+          ▾
+        </span>
+      </RouterLink>
+
+      <RouterLink
+        v-else
+        to="/login"
+        class="login-button"
+      >
+        Acceder
+      </RouterLink>
+    </div>
   </header>
 </template>
