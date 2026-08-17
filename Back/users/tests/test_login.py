@@ -16,7 +16,7 @@ class TestLogin:
         response = api_client.post(
             "/api/users/login/",
             {
-                "username": client_user.username,
+                "email": client_user.email,
                 "password": "Password123!",
             },
             format="json",
@@ -25,7 +25,6 @@ class TestLogin:
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
         assert "refresh" in response.data
-
 
     def test_login_with_invalid_password(
         self,
@@ -36,7 +35,7 @@ class TestLogin:
         response = api_client.post(
             "/api/users/login/",
             {
-                "username": client_user.username,
+                "email": client_user.email,
                 "password": "WrongPassword123!",
             },
             format="json",
@@ -45,7 +44,6 @@ class TestLogin:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert "access" not in response.data
         assert "refresh" not in response.data
-
 
     def test_refresh_token(
         self,

@@ -3,6 +3,8 @@ from django.db import models
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
+
     class Role(models.TextChoices):
         CLIENT = "CLIENT", "Client"
         OWNER = "OWNER", "Owner"

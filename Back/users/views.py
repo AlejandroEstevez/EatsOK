@@ -1,15 +1,21 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .permissions import IsAdminRole
 from .serializers import (
+    EmailTokenObtainPairSerializer,
     OwnerRegisterSerializer,
     RegisterSerializer,
     UserSerializer,
     LogoutSerializer,
     ChangePasswordSerializer
 )
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer
 
 
 class RegisterView(generics.CreateAPIView):

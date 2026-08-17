@@ -41,7 +41,6 @@ class TestLogout:
 
         assert refresh_response.status_code == status.HTTP_401_UNAUTHORIZED
 
-
     def test_logout_requires_authentication(
         self,
         api_client,
