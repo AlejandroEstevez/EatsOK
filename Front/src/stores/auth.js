@@ -76,6 +76,26 @@ export const useAuthStore = defineStore('auth', {
       this.user = response.data
     },
 
+    async logout() {
+        try {
+            if (this.refreshToken && this.accessToken) {
+            await api.post(
+                '/users/logout/',
+                {
+                refresh: this.refreshToken,
+                },
+                {
+                headers: {
+                    Authorization: `Bearer ${this.accessToken}`,
+                },
+                },
+            )
+            }
+        } finally {
+            this.clearSession()
+        }
+    },
+
     setTokens(access, refresh, rememberMe = false) {
       this.accessToken = access
       this.refreshToken = refresh

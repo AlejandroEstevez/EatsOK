@@ -1,4 +1,7 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import './NavBar.css'
 
 import { useAuthStore } from '../../stores/auth'
@@ -9,10 +12,23 @@ import logo from '../../assets/logo/eatsok-logo-text.png'
 import profileIcon from '../../assets/icons/food-profile.svg'
 import establishmentsIcon from '../../assets/icons/establishments.svg'
 import recipesIcon from '../../assets/icons/recipes.svg'
-import accountIcon from '../../assets/icons/account.svg'
 
 
 const authStore = useAuthStore()
+const router = useRouter()
+
+const showAccountMenu = ref(false)
+const showLogoutMessage = ref(false)
+
+
+const handleLogout = async () => {
+  await authStore.logout()
+
+  showAccountMenu.value = false
+  showLogoutMessage.value = true
+
+  router.push('/')
+}
 </script>
 
 <template>
@@ -76,21 +92,50 @@ const authStore = useAuthStore()
     </nav>
 
     <div class="navbar-user">
-      <RouterLink
+      <div
         v-if="authStore.isAuthenticated"
-        to="/account"
-        class="navbar-account"
+        class="account-menu-container"
       >
-        <UserAvatar :size="58" />
+        <button
+          type="button"
+          class="navbar-account"
+          @click="showAccountMenu = !showAccountMenu"
+        >
+          <UserAvatar :size="58" />
 
-        <span>
-          Cuenta
-        </span>
+          <span>
+            {{ authStore.user.username }}
+          </span>
 
-        <span class="account-arrow">
-          ▾
-        </span>
-      </RouterLink>
+          <span
+            class="account-arrow"
+            :class="{ open: showAccountMenu }"
+          >
+            ▾
+          </span>
+        </button>
+
+        <div
+          v-if="showAccountMenu"
+          class="account-dropdown"
+        >
+          <RouterLink
+            to="/account"
+            class="account-dropdown-item"
+            @click="showAccountMenu = false"
+          >
+            Editar datos
+          </RouterLink>
+
+          <button
+            type="button"
+            class="account-dropdown-item logout-item"
+            @click="handleLogout"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
 
       <RouterLink
         v-else
@@ -99,6 +144,25 @@ const authStore = useAuthStore()
       >
         Acceder
       </RouterLink>
+    </div>
+    <div
+      v-if="showLogoutMessage"
+      class="logout-message-overlay"
+    >
+      <div class="logout-message">
+        <h3>Sesión cerrada</h3>
+
+        <p>
+          Has cerrado sesión correctamente.
+        </p>
+
+        <button
+          type="button"
+          @click="showLogoutMessage = false"
+        >
+          Aceptar
+        </button>
+      </div>
     </div>
   </header>
 </template>
