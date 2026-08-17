@@ -1,0 +1,327 @@
+.register-page {
+  min-height: 100vh;
+
+  display: grid;
+  grid-template-columns: 50% 50%;
+
+  position: relative;
+  overflow: hidden;
+
+  background-color: var(--cream);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+
+/* REGISTER PANEL */
+
+.register-panel-wrapper {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px 60px;
+}
+
+.register-panel {
+  width: 100%;
+  max-width: 655px;
+
+  padding: 32px 55px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.18);
+
+  transform: translateX(-130px);
+}
+
+.register-header {
+  margin-bottom: 24px;
+
+  text-align: center;
+}
+
+.register-header h2 {
+  margin: 0;
+
+  color: var(--dark-green);
+
+  font-size: 36px;
+  font-weight: 900;
+}
+
+.register-header p {
+  margin: 14px 0 0;
+
+  color: #596b76;
+
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+
+/* FORM */
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group label {
+  color: #3f4d55;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.input-wrapper {
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 14px;
+
+  border: 2px solid #aeb7bb;
+  border-radius: 10px;
+
+  background: white;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--green);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(87, 179, 19, 0.12);
+}
+
+.input-icon {
+  width: 45px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.input-icon img {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+
+  opacity: 0.5;
+}
+
+.input-wrapper input {
+  min-width: 0;
+  flex: 1;
+
+  border: 0;
+  outline: 0;
+
+  color: #425762;
+
+  font: inherit;
+  font-size: 18px;
+}
+
+.input-wrapper input::placeholder {
+  color: #667985;
+}
+
+.password-toggle {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.password-toggle img {
+  width: 27px;
+  height: 27px;
+
+  object-fit: contain;
+
+  opacity: 0.7;
+}
+
+.password-toggle:hover img {
+  opacity: 1;
+}
+
+
+/* TERMS */
+
+.terms-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  color: #42515a;
+
+  font-size: 16px;
+  line-height: 1.4;
+
+  cursor: pointer;
+}
+
+.terms-option input {
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  accent-color: var(--green);
+
+  cursor: pointer;
+}
+
+.terms-option a {
+  color: #007c29;
+
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.terms-option a:hover {
+  text-decoration: underline;
+}
+
+
+/* ERROR */
+
+.register-error {
+  margin: -5px 0 0;
+
+  color: #b42318;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+/* SUBMIT */
+
+.submit-register {
+  width: 100%;
+  height: 72px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: #00852b;
+  color: white;
+
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.submit-register:hover:not(:disabled) {
+  background: var(--dark-green);
+}
+
+.submit-register:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.submit-register:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+}
+
+
+/* LOGIN LINK */
+
+.register-separator {
+  height: 2px;
+
+  margin: 22px 0;
+
+  background: #b3bbbe;
+}
+
+.login-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+
+  color: #42515a;
+
+  font-size: 17px;
+}
+
+.login-link a {
+  color: #007c29;
+
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+
+/* SLOGAN */
+
+.register-slogan {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  z-index: 5;
+
+  margin: 0;
+
+  transform: translateX(-50%);
+
+  white-space: nowrap;
+
+  color: var(--dark-green);
+
+  font-size: 22px;
+  font-style: italic;
+}

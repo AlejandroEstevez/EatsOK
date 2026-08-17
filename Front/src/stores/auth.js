@@ -56,6 +56,16 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async register(name, email, password) {
+        await api.post('/users/register/', {
+            username: name,
+            email,
+            password,
+        })
+
+        await this.login(email, password, true)
+    },
+
     async fetchUser() {
       const response = await api.get('/users/me/', {
         headers: {
