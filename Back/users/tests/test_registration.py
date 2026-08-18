@@ -3,6 +3,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from rest_framework import status
 
+from food_profiles.models import FoodProfile
+
 
 User = get_user_model()
 
@@ -75,3 +77,29 @@ class TestUserRegistration:
         user = User.objects.get(username="fake_owner")
 
         assert user.role == User.Role.CLIENT
+    
+    def test_registration_creates_food_profile(
+        self,
+        api_client,
+    ):
+        """Registering a client must create an empty food profile."""
+
+        response = api_client.post(
+            "/api/users/register/",
+            {
+                "username": "newclient",
+                "email": "newclient@example.com",
+                "password": "Password123!",
+            },
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+        user = User.objects.get(
+            email="newclient@example.com",
+        )
+
+        assert FoodProfile.objects.filter(
+            client=user,
+        ).exists()

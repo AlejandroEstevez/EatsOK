@@ -5,6 +5,8 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from food_profiles.models import FoodProfile
+
 
 User = get_user_model()
 
@@ -58,10 +60,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        return User.objects.create_user(
+        user = User.objects.create_user(
             **validated_data,
             role=User.Role.CLIENT,
         )
+
+        FoodProfile.objects.create(
+            client=user,
+        )
+
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
