@@ -1,0 +1,187 @@
+.restriction-card {
+  min-height: 76px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 18px;
+
+  border: 2px solid;
+  border-radius: 18px;
+
+  background: white;
+
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.restriction-card:hover {
+  transform: translateY(-1px);
+}
+
+
+/* ALLERGIES */
+
+.restriction-card--allergy {
+  border-color: #e7b682;
+
+  color: #b84f00;
+}
+
+.restriction-card--allergy .restriction-icon {
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(36%)
+    sepia(95%)
+    saturate(1516%)
+    hue-rotate(2deg)
+    brightness(94%)
+    contrast(101%);
+
+  opacity: 0.55;
+}
+
+.restriction-card--allergy.restriction-card--selected {
+  border-color: var(--orange);
+
+  background: rgba(255, 113, 0, 0.08);
+
+  color: #b84f00;
+}
+
+.restriction-card--allergy.restriction-card--selected .restriction-icon {
+  opacity: 1;
+}
+
+
+/* DIETS */
+
+.restriction-card--diet {
+  border-color: #bfd09e;
+
+  color: var(--dark-green);
+}
+
+.restriction-card--diet .restriction-icon {
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(43%)
+    sepia(72%)
+    saturate(585%)
+    hue-rotate(49deg)
+    brightness(91%)
+    contrast(91%);
+
+  opacity: 0.55;
+}
+
+.restriction-card--diet.restriction-card--selected {
+  border-color: var(--green);
+
+  background: rgba(87, 179, 19, 0.08);
+
+  color: var(--green);
+}
+
+.restriction-card--diet.restriction-card--selected .restriction-icon {
+  opacity: 1;
+}
+
+
+/* ICON */
+
+.restriction-icon {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
+}
+
+
+/* TEXT */
+
+.restriction-name {
+  flex: 1;
+}
+
+
+/* CHECK */
+
+.restriction-check {
+  width: 30px;
+  height: 30px;
+
+  position: absolute;
+  top: -11px;
+  right: -9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: white;
+}
+
+.restriction-check img {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+}
+
+.restriction-card--allergy .restriction-check img {
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(50%)
+    sepia(99%)
+    saturate(2925%)
+    hue-rotate(1deg)
+    brightness(101%)
+    contrast(103%);
+}
+
+.restriction-card--diet .restriction-check img {
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(51%)
+    sepia(63%)
+    saturate(876%)
+    hue-rotate(49deg)
+    brightness(96%)
+    contrast(93%);
+}
+
+
+/* SUMMARY */
+
+.restriction-card--summary {
+  cursor: default;
+}
+
+.restriction-card--summary:hover {
+  transform: none;
+}

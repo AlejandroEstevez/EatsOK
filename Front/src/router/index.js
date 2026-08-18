@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import AccountView from '../views/AccountView.vue'
+import FoodProfileView from '../views/FoodProfileView.vue'
 
 const routes = [
   {
@@ -13,10 +14,8 @@ const routes = [
   },
   {
     path: '/profile',
-    name: 'profile',
-    component: {
-      template: '<div>Perfil alimentario</div>',
-    },
+    name: 'food-profile',
+    component: FoodProfileView,
   },
   {
     path: '/establishments',
