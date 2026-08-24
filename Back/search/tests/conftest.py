@@ -10,6 +10,7 @@ from establishments.models import (
     Tag,
 )
 from food_profiles.models import FoodProfile, Restriction
+from recipes.models import Recipe
 from reviews.models import Review
 from users.models import User
 
@@ -160,4 +161,61 @@ def establishments_data(
         "pizza_dish": pizza_dish,
         "salad_dish": salad_dish,
         "bowl_dish": bowl_dish,
+    }
+
+
+@pytest.fixture
+def recipes_data(
+    db,
+    client_user,
+    restrictions,
+    establishments_data,
+):
+    recipe_1 = Recipe.objects.create(
+        author=client_user,
+        title="Tortitas sin gluten",
+        description="Desayuno sencillo y rápido",
+        ingredients="Harina sin gluten\nHuevos",
+        steps="Mezclar y cocinar.",
+        preparation_time=15,
+        visible=True,
+    )
+
+    recipe_1.restrictions.add(
+        restrictions[0],
+        restrictions[1],
+    )
+
+    recipe_2 = Recipe.objects.create(
+        author=client_user,
+        title="Pasta vegetal",
+        description="Receta de pasta con verduras",
+        ingredients="Pasta\nVerduras",
+        steps="Cocer y mezclar.",
+        preparation_time=30,
+        visible=True,
+        establishment=establishments_data["green"],
+    )
+
+    recipe_2.restrictions.add(
+        restrictions[1],
+    )
+
+    Review.objects.create(
+        author=client_user,
+        recipe=recipe_1,
+        rating=5,
+        visible=True,
+    )
+
+    Review.objects.create(
+        author=client_user,
+        recipe=recipe_2,
+        rating=3,
+        visible=True,
+    )
+
+    return {
+        "tortitas": recipe_1,
+        "pasta": recipe_2,
     }

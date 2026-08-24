@@ -18,3 +18,13 @@ class EstablishmentSearchSerializer(serializers.Serializer):
     compatible_dishes = serializers.IntegerField()
     total_dishes = serializers.IntegerField()
     compatible_percentage = serializers.FloatField()
+
+
+class RecipeSearchSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    description = serializers.CharField()
+    preparation_time = serializers.IntegerField(allow_null=True)
+    average_rating = serializers.FloatField(allow_null=True)
+    establishment_id = serializers.IntegerField(allow_null=True)
+    establishment_name = serializers.CharField(allow_null=True)

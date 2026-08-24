@@ -7,12 +7,17 @@ from rest_framework.response import Response
 
 from establishments.models import Establishment
 from food_profiles.models import Restriction
+from recipes.models import Recipe
 
-from .serializers import EstablishmentSearchSerializer
+from .serializers import (
+    EstablishmentSearchSerializer,
+    RecipeSearchSerializer,
+)
 from .services import (
     calculate_distance,
     get_active_restrictions,
     get_compatible_dishes,
+    is_recipe_compatible,
 )
 
 
@@ -247,6 +252,166 @@ class EstablishmentSearchView(generics.GenericAPIView):
             "distance": "distance",
             "compatible_dishes": "compatible_dishes",
             "compatible_percentage": "compatible_percentage",
+        }
+
+        result_field = field_map[field]
+
+        return sorted(
+            results,
+            key=lambda result: (
+                result[result_field] is None,
+                result[result_field],
+            ),
+            reverse=reverse,
+        )
+
+
+class RecipeSearchView(generics.GenericAPIView):
+    serializer_class = RecipeSearchSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        search = request.query_params.get("search", "").strip()
+        ordering = request.query_params.get("ordering", "")
+
+        use_profile = self._parse_bool(
+            request.query_params.get("use_profile", "true")
+        )
+
+        restriction_ids = self._parse_restriction_ids(
+            request.query_params.get("restrictions")
+        )
+
+        active_restrictions = get_active_restrictions(
+            request.user,
+            use_profile=use_profile,
+            additional_restriction_ids=restriction_ids,
+        )
+
+        recipes = Recipe.objects.filter(
+            visible=True
+        ).select_related(
+            "establishment"
+        ).prefetch_related(
+            "restrictions"
+        ).annotate(
+            average_rating=Avg(
+                "reviews__rating",
+                filter=Q(reviews__visible=True),
+            )
+        )
+
+        if search:
+            recipes = recipes.filter(
+                Q(title__icontains=search)
+                | Q(description__icontains=search)
+            ).distinct()
+
+        results = []
+
+        for recipe in recipes:
+            if not is_recipe_compatible(
+                recipe,
+                active_restrictions,
+            ):
+                continue
+
+            results.append({
+                "id": recipe.id,
+                "title": recipe.title,
+                "description": recipe.description,
+                "preparation_time": recipe.preparation_time,
+                "average_rating": recipe.average_rating,
+                "establishment_id": (
+                    recipe.establishment.id
+                    if recipe.establishment
+                    else None
+                ),
+                "establishment_name": (
+                    recipe.establishment.name
+                    if recipe.establishment
+                    else None
+                ),
+            })
+
+        results = self._order_results(
+            results,
+            ordering,
+        )
+
+        serializer = self.get_serializer(
+            results,
+            many=True,
+        )
+
+        return Response(serializer.data)
+
+    def _parse_bool(self, value):
+        value = str(value).lower()
+
+        if value in ["true", "1", "yes"]:
+            return True
+
+        if value in ["false", "0", "no"]:
+            return False
+
+        raise ValidationError(
+            {"use_profile": "Must be true or false."}
+        )
+
+    def _parse_restriction_ids(self, value):
+        if not value:
+            return []
+
+        try:
+            restriction_ids = [
+                int(restriction_id)
+                for restriction_id in value.split(",")
+                if restriction_id.strip()
+            ]
+        except ValueError:
+            raise ValidationError(
+                {
+                    "restrictions":
+                        "Restrictions must be provided as comma-separated IDs."
+                }
+            )
+
+        existing_ids = set(
+            Restriction.objects.filter(
+                id__in=restriction_ids
+            ).values_list("id", flat=True)
+        )
+
+        if existing_ids != set(restriction_ids):
+            raise ValidationError(
+                {"restrictions": "One or more restrictions do not exist."}
+            )
+
+        return restriction_ids
+
+    def _order_results(self, results, ordering):
+        valid_orderings = {
+            "rating",
+            "-rating",
+            "preparation_time",
+            "-preparation_time",
+        }
+
+        if not ordering:
+            return results
+
+        if ordering not in valid_orderings:
+            raise ValidationError(
+                "Invalid ordering option."
+            )
+
+        reverse = ordering.startswith("-")
+        field = ordering.lstrip("-")
+
+        field_map = {
+            "rating": "average_rating",
+            "preparation_time": "preparation_time",
         }
 
         result_field = field_map[field]
