@@ -8,12 +8,19 @@ class SearchLocationSerializer(serializers.Serializer):
     longitude = serializers.FloatField(allow_null=True)
 
 
+class SearchTagSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+
+
 class EstablishmentSearchSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     description = serializers.CharField()
     location = SearchLocationSerializer()
+    tags = SearchTagSerializer(many=True)
     average_rating = serializers.FloatField(allow_null=True)
+    review_count = serializers.IntegerField()
     distance = serializers.FloatField(allow_null=True)
     compatible_dishes = serializers.IntegerField()
     total_dishes = serializers.IntegerField()

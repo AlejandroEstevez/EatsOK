@@ -1,6 +1,7 @@
 
--- EatsOK demo seed: establishments, dishes, tags and recipes
--- Focused on central Madrid. All businesses/content are fictional.
+-- EatsOK full demo seed: users, establishments, dishes, tags, recipes and reviews
+-- Focused on central Madrid. Businesses/reviews are fictional demo content.
+-- Named demo users are placeholders only; they do not represent real activity.
 
 BEGIN;
 
@@ -20,14 +21,169 @@ BEGIN
             'No OWNER user found in users_user. Create one or adjust the role condition in the seed.';
     END IF;
 
-    -- Delete previous demo establishments. CASCADE relationships remove
-    -- locations, dishes, dish restrictions, M2M tag links and linked reviews.
+    -- ============================================================
+    -- CLEAN PREVIOUS DEMO DATA
+    -- ============================================================
+
+    -- Reviews created by demo users or attached to demo content.
+    DELETE FROM reviews_review
+    WHERE author_id IN (
+        SELECT id
+        FROM users_user
+        WHERE email LIKE '%@demo-user.eatsok.local'
+    )
+    OR establishment_id IN (
+        SELECT id
+        FROM establishments_establishment
+        WHERE email LIKE '%@demo.eatsok.local'
+    )
+    OR recipe_id IN (
+        SELECT id
+        FROM recipes_recipe
+        WHERE title LIKE '[DEMO]%'
+    );
+
+    -- Recipe restrictions from demo recipes.
+    DELETE FROM recipes_reciperestriction
+    WHERE recipe_id IN (
+        SELECT id
+        FROM recipes_recipe
+        WHERE title LIKE '[DEMO]%'
+        OR author_id IN (
+            SELECT id
+            FROM users_user
+            WHERE email LIKE '%@demo-user.eatsok.local'
+        )
+    );
+
+    -- Demo recipes.
+    DELETE FROM recipes_recipe
+    WHERE title LIKE '[DEMO]%'
+       OR author_id IN (
+            SELECT id
+            FROM users_user
+            WHERE email LIKE '%@demo-user.eatsok.local'
+       );
+
+    -- Dish restrictions.
+    DELETE FROM establishments_dishrestriction
+    WHERE dish_id IN (
+        SELECT d.id
+        FROM establishments_dish d
+        JOIN establishments_establishment e
+            ON e.id = d.establishment_id
+        WHERE e.email LIKE '%@demo.eatsok.local'
+    );
+
+    -- Dishes.
+    DELETE FROM establishments_dish
+    WHERE establishment_id IN (
+        SELECT id
+        FROM establishments_establishment
+        WHERE email LIKE '%@demo.eatsok.local'
+    );
+
+    -- Establishment tags.
+    DELETE FROM establishments_establishment_tags
+    WHERE establishment_id IN (
+        SELECT id
+        FROM establishments_establishment
+        WHERE email LIKE '%@demo.eatsok.local'
+    );
+
+    -- Locations.
+    DELETE FROM establishments_location
+    WHERE establishment_id IN (
+        SELECT id
+        FROM establishments_establishment
+        WHERE email LIKE '%@demo.eatsok.local'
+    );
+
+    -- Establishments.
     DELETE FROM establishments_establishment
     WHERE email LIKE '%@demo.eatsok.local';
 
-    -- Delete previous standalone demo recipes.
-    DELETE FROM recipes_recipe
-    WHERE title LIKE '[DEMO] %';
+    -- Demo client users are removed last, once their dependent content is gone.
+    DELETE FROM users_user
+    WHERE email LIKE '%@demo-user.eatsok.local';
+
+
+    -- ----------------------------
+    -- DEMO CLIENT USERS
+    -- ----------------------------
+    --
+    -- These are presentation/test accounts only. The password value "!" is
+    -- Django's unusable-password prefix, so these rows cannot be used to log in.
+    -- Names of public figures/game characters are only fictional demo data.
+
+    INSERT INTO users_user (
+        password,
+        last_login,
+        is_superuser,
+        username,
+        first_name,
+        last_name,
+        email,
+        is_staff,
+        is_active,
+        date_joined,
+        role
+    )
+    VALUES
+        ('!', NULL, FALSE, 'adela.moyano', 'Adela', 'Moyano',
+         'adela.moyano@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'carmen.boto', 'Carmen', 'Boto',
+         'carmen.boto@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'alvaro.estevez', 'Álvaro', 'Estévez',
+         'alvaro.estevez@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'francisco.estevez', 'Francisco', 'Estévez',
+         'francisco.estevez@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'blanca.estevez', 'Blanca', 'Estévez',
+         'blanca.estevez@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'antonio.moyano', 'Antonio', 'Moyano',
+         'antonio.moyano@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'irene.arnau', 'Irene', 'Arnau',
+         'irene.arnau@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'miriam.arnau', 'Miriam', 'Arnau',
+         'miriam.arnau@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'carlota.niemeyer', 'Carlota', 'Niemeyer',
+         'carlota.niemeyer@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'dani.moyano', 'Dani', 'Moyano',
+         'dani.moyano@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'nico.moyano', 'Nico', 'Moyano',
+         'nico.moyano@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'pau.cubarsi', 'Pau', 'Cubarsí',
+         'pau.cubarsi@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'ferran.torres', 'Ferran', 'Torres',
+         'ferran.torres@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'zara.larsson', 'Zara', 'Larsson',
+         'zara.larsson@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'soobin.choi', 'Soobin', 'Choi',
+         'soobin.choi@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'kiriko.kamori', 'Kiriko', 'Kamori',
+         'kiriko.kamori@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'hana.song', 'Hana', 'Song',
+         'hana.song@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT'),
+
+        ('!', NULL, FALSE, 'niran.pruksamanee', 'Niran', 'Pruksamanee',
+         'niran.pruksamanee@demo-user.eatsok.local', FALSE, TRUE, NOW(), 'CLIENT');
+
 
     -- ----------------------------
     -- TAGS
@@ -382,7 +538,15 @@ BEGIN
 
     -- ----------------------------
     -- DISHES
-    -- Four dishes per demo establishment
+    -- Five dishes per demo establishment.
+    --
+    -- The demo dataset is intentionally balanced for the profile used in
+    -- the presentation: Gluten + Lácteos + Vegetariano.
+    --
+    -- Target distribution with those three restrictions active:
+    --   12 establishments: HIGH compatibility (80-100%)
+    --    8 establishments: MEDIUM compatibility (40-60%)
+    --    5 establishments: LOW compatibility (0-20%)
     -- ----------------------------
 
     INSERT INTO establishments_dish
@@ -391,98 +555,170 @@ BEGIN
     FROM establishments_establishment e
     CROSS JOIN LATERAL (
         VALUES
-            ('Ensalada de temporada', 'Ensalada fresca con ingredientes de temporada.', 11.50::numeric),
-            ('Bowl de verduras', 'Bowl de verduras, cereal y aliño de la casa.', 12.90::numeric),
-            ('Plato especial de la casa', 'Preparación principal representativa del establecimiento.', 15.50::numeric),
-            ('Postre artesanal', 'Postre elaborado diariamente.', 6.50::numeric)
+            (
+                'Ensalada de temporada',
+                'Ensalada fresca con ingredientes de temporada.',
+                11.50::numeric
+            ),
+            (
+                'Bowl de verduras',
+                'Bowl de verduras, cereal y aliño de la casa.',
+                12.90::numeric
+            ),
+            (
+                'Plato principal de la casa',
+                'Preparación principal representativa del establecimiento.',
+                15.50::numeric
+            ),
+            (
+                'Postre artesanal',
+                'Postre elaborado diariamente.',
+                6.50::numeric
+            ),
+            (
+                CASE
+                    WHEN e.name = 'Ópera Italiana' THEN 'Pizza margarita'
+                    WHEN e.name = 'Huertas Mex' THEN 'Tacos vegetales'
+                    WHEN e.name IN ('Lavapiés Fusión', 'Santo Domingo Asia') THEN 'Curry vegetal'
+                    WHEN e.name IN ('Brunch Malasaña', 'Conde Duque Brunch') THEN 'Tostada de aguacate'
+                    WHEN e.name IN ('Chueca Verde', 'Embajadores Veggie', 'Delicias Verde') THEN 'Hamburguesa vegetal'
+                    WHEN e.name IN ('Atocha Bowl', 'Argüelles Sana', 'Retiro Natural') THEN 'Bowl especial'
+                    ELSE 'Especial de la casa'
+                END,
+                'Plato destacado del establecimiento.',
+                13.90::numeric
+            )
     ) AS d(name, description, price)
     WHERE e.email LIKE '%@demo.eatsok.local';
 
-    -- Add distinctive dishes to improve search testing.
-    INSERT INTO establishments_dish
-        (establishment_id, name, description, price, available)
-    SELECT id, 'Pizza margarita', 'Pizza clásica con tomate y queso.', 13.50, TRUE
-    FROM establishments_establishment WHERE name = 'Ópera Italiana';
-
-    INSERT INTO establishments_dish
-        (establishment_id, name, description, price, available)
-    SELECT id, 'Tacos vegetales', 'Tacos de verduras con salsa de la casa.', 12.00, TRUE
-    FROM establishments_establishment WHERE name = 'Huertas Mex';
-
-    INSERT INTO establishments_dish
-        (establishment_id, name, description, price, available)
-    SELECT id, 'Tostada de aguacate', 'Tostada con aguacate y semillas.', 8.50, TRUE
-    FROM establishments_establishment WHERE name IN ('Brunch Malasaña', 'Conde Duque Brunch');
-
-    INSERT INTO establishments_dish
-        (establishment_id, name, description, price, available)
-    SELECT id, 'Curry vegetal', 'Curry suave de verduras con arroz.', 13.90, TRUE
-    FROM establishments_establishment WHERE name IN ('Lavapiés Fusión', 'Santo Domingo Asia');
 
     -- ----------------------------
     -- DISH RESTRICTIONS
-    -- Uses restriction names already seeded by food_profiles.
-    -- Adds varied incompatibilities for realistic S-BF behaviour.
+    --
+    -- IMPORTANT FOR THE DEMO:
+    -- `get_compatible_dishes()` currently treats every DishRestriction whose
+    -- restriction is active as an incompatibility. The seed therefore also
+    -- uses the "Vegetariano" restriction as an incompatibility marker for
+    -- non-vegetarian demo dishes.
+    --
+    -- This makes Gluten, Lácteos and Vegetariano all influence the map
+    -- compatibility during the presentation.
     -- ----------------------------
 
-    -- Most demo "Postre artesanal" dishes contain eggs and dairy.
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
-    SELECT d.id, r.id, 'contains'
-    FROM establishments_dish d
-    JOIN establishments_establishment e ON e.id = d.establishment_id
-    JOIN food_profiles_restriction r ON r.name IN ('Huevos', 'Lácteos')
-    WHERE e.email LIKE '%@demo.eatsok.local'
-      AND d.name = 'Postre artesanal'
+    WITH compatibility_plan(email, incompatible_count, restriction_offset) AS (
+        VALUES
+            -- HIGH: 100% compatible (5/5)
+            ('chueca.verde@demo.eatsok.local', 0, 0),
+            ('retiro.natural@demo.eatsok.local', 0, 1),
+            ('atocha.bowl@demo.eatsok.local', 0, 2),
+            ('embajadores.veggie@demo.eatsok.local', 0, 0),
+            ('delicias.verde@demo.eatsok.local', 0, 1),
+            ('recoletos.fresh@demo.eatsok.local', 0, 2),
+
+            -- HIGH: 80% compatible (4/5)
+            ('verde.granvia@demo.eatsok.local', 1, 0),
+            ('naranja.sol@demo.eatsok.local', 1, 1),
+            ('letras.mediterraneo@demo.eatsok.local', 1, 2),
+            ('arguelles.sana@demo.eatsok.local', 1, 0),
+            ('antonmartin.cafe@demo.eatsok.local', 1, 1),
+            ('moncloa.med@demo.eatsok.local', 1, 2),
+
+            -- MEDIUM: 60% compatible (3/5)
+            ('brunch.malasana@demo.eatsok.local', 2, 0),
+            ('lavapies.fusion@demo.eatsok.local', 2, 1),
+            ('huertas.mex@demo.eatsok.local', 2, 2),
+            ('condeduque.brunch@demo.eatsok.local', 2, 0),
+
+            -- MEDIUM: 40% compatible (2/5)
+            ('latina.tapas@demo.eatsok.local', 3, 1),
+            ('cibeles.cocina@demo.eatsok.local', 3, 2),
+            ('palacio.cafe@demo.eatsok.local', 3, 0),
+            ('santodomingo.asia@demo.eatsok.local', 3, 1),
+
+            -- LOW: 20% compatible (1/5)
+            ('mesa.callao@demo.eatsok.local', 4, 0),
+            ('opera.italiana@demo.eatsok.local', 4, 1),
+            ('tribunal.street@demo.eatsok.local', 4, 2),
+
+            -- LOW: 0% compatible (0/5)
+            ('plazamayor.tradicion@demo.eatsok.local', 5, 0),
+            ('menendez.cafe@demo.eatsok.local', 5, 2)
+    ),
+    ranked_dishes AS (
+        SELECT
+            d.id AS dish_id,
+            e.email,
+            ROW_NUMBER() OVER (
+                PARTITION BY e.id
+                ORDER BY d.id
+            ) AS dish_number
+        FROM establishments_dish d
+        JOIN establishments_establishment e
+            ON e.id = d.establishment_id
+        WHERE e.email LIKE '%@demo.eatsok.local'
+    ),
+    planned_incompatibilities AS (
+        SELECT
+            rd.dish_id,
+            rd.dish_number,
+            cp.restriction_offset,
+            CASE
+                WHEN MOD(rd.dish_number - 1 + cp.restriction_offset, 3) = 0
+                    THEN 'Gluten'
+                WHEN MOD(rd.dish_number - 1 + cp.restriction_offset, 3) = 1
+                    THEN 'Lácteos'
+                ELSE 'Vegetariano'
+            END AS restriction_name
+        FROM ranked_dishes rd
+        JOIN compatibility_plan cp
+            ON cp.email = rd.email
+        WHERE rd.dish_number <= cp.incompatible_count
+    )
+    INSERT INTO establishments_dishrestriction
+        (dish_id, restriction_id, presence_type)
+    SELECT
+        pi.dish_id,
+        r.id,
+        CASE
+            WHEN pi.restriction_name = 'Vegetariano' THEN 'contains'
+            WHEN MOD(pi.dish_number, 3) = 0 THEN 'traces'
+            WHEN MOD(pi.dish_number, 2) = 0 THEN 'may_contain'
+            ELSE 'contains'
+        END
+    FROM planned_incompatibilities pi
+    JOIN food_profiles_restriction r
+        ON r.name = pi.restriction_name
     ON CONFLICT DO NOTHING;
 
-    -- House specials vary: gluten in every second establishment.
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
-    SELECT d.id, r.id,
-           CASE WHEN MOD(e.id, 3) = 0 THEN 'traces' ELSE 'contains' END
-    FROM establishments_dish d
-    JOIN establishments_establishment e ON e.id = d.establishment_id
-    JOIN food_profiles_restriction r ON r.name = 'Gluten'
-    WHERE e.email LIKE '%@demo.eatsok.local'
-      AND d.name = 'Plato especial de la casa'
-      AND MOD(e.id, 2) = 0
-    ON CONFLICT DO NOTHING;
 
-    -- Bowls may contain sesame/soy in selected locations.
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
-    SELECT d.id, r.id, 'may_contain'
-    FROM establishments_dish d
-    JOIN establishments_establishment e ON e.id = d.establishment_id
-    JOIN food_profiles_restriction r ON r.name IN ('Soja', 'Semillas de sésamo')
-    WHERE e.email LIKE '%@demo.eatsok.local'
-      AND d.name = 'Bowl de verduras'
-      AND MOD(e.id, 3) = 0
-    ON CONFLICT DO NOTHING;
-
-    -- Salad may have nuts.
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
+    -- Additional restrictions unrelated to the presentation profile.
+    -- These provide more realistic data when testing other filters.
+    INSERT INTO establishments_dishrestriction
+        (dish_id, restriction_id, presence_type)
     SELECT d.id, r.id, 'traces'
     FROM establishments_dish d
-    JOIN establishments_establishment e ON e.id = d.establishment_id
-    JOIN food_profiles_restriction r ON r.name = 'Frutos de cáscara'
+    JOIN establishments_establishment e
+        ON e.id = d.establishment_id
+    JOIN food_profiles_restriction r
+        ON r.name = 'Frutos de cáscara'
     WHERE e.email LIKE '%@demo.eatsok.local'
-      AND d.name = 'Ensalada de temporada'
+      AND d.name = 'Postre artesanal'
       AND MOD(e.id, 4) = 0
     ON CONFLICT DO NOTHING;
 
-    -- Specific dishes.
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
-    SELECT d.id, r.id, 'contains'
+    INSERT INTO establishments_dishrestriction
+        (dish_id, restriction_id, presence_type)
+    SELECT d.id, r.id, 'may_contain'
     FROM establishments_dish d
-    JOIN food_profiles_restriction r ON r.name IN ('Gluten', 'Lácteos')
-    WHERE d.name = 'Pizza margarita'
+    JOIN establishments_establishment e
+        ON e.id = d.establishment_id
+    JOIN food_profiles_restriction r
+        ON r.name IN ('Soja', 'Semillas de sésamo')
+    WHERE e.email LIKE '%@demo.eatsok.local'
+      AND d.name = 'Bowl de verduras'
+      AND MOD(e.id, 5) = 0
     ON CONFLICT DO NOTHING;
 
-    INSERT INTO establishments_dishrestriction (dish_id, restriction_id, presence_type)
-    SELECT d.id, r.id, 'traces'
-    FROM establishments_dish d
-    JOIN food_profiles_restriction r ON r.name IN ('Soja', 'Semillas de sésamo')
-    WHERE d.name = 'Curry vegetal'
-    ON CONFLICT DO NOTHING;
 
     -- ----------------------------
     -- RECIPES
@@ -673,6 +909,140 @@ BEGIN
          'Asar berenjena.\nExtraer pulpa.\nTriturar con el resto.',
          40, NOW(), TRUE);
 
+
+    -- ----------------------------
+    -- RECIPE AUTHORS
+    -- ----------------------------
+    -- Reassign the original demo recipes across the demo CLIENT accounts so
+    -- recipe cards/reviews show varied authors instead of a single owner.
+
+    WITH demo_users AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM users_user
+        WHERE email LIKE '%@demo-user.eatsok.local'
+    ),
+    user_count AS (
+        SELECT COUNT(*)::bigint AS count
+        FROM demo_users
+    ),
+    demo_recipes AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM recipes_recipe
+        WHERE title LIKE '[DEMO]%'
+    ),
+    assignments AS (
+        SELECT
+            dr.id AS recipe_id,
+            du.id AS user_id
+        FROM demo_recipes dr
+        CROSS JOIN user_count uc
+        JOIN demo_users du
+            ON du.rn = MOD(dr.rn - 1, uc.count) + 1
+    )
+    UPDATE recipes_recipe r
+    SET author_id = a.user_id
+    FROM assignments a
+    WHERE r.id = a.recipe_id;
+
+
+    -- ----------------------------
+    -- FEATURED RECIPES
+    -- ----------------------------
+
+    INSERT INTO recipes_recipe (
+        author_id,
+        establishment_id,
+        title,
+        description,
+        ingredients,
+        steps,
+        preparation_time,
+        publication_date,
+        visible
+    )
+    SELECT
+        u.id,
+        NULL,
+        data.title,
+        data.description,
+        data.ingredients,
+        data.steps,
+        data.preparation_time,
+        NOW() - data.days_ago * INTERVAL '1 day',
+        TRUE
+    FROM (
+        VALUES
+            (
+                'pau.cubarsi@demo-user.eatsok.local',
+                '[DEMO] Crema catalana',
+                'Postre tradicional catalán con crema suave y azúcar caramelizado.',
+                '500 ml de leche\n4 yemas de huevo\n80 g de azúcar\n20 g de maicena\nPiel de limón\nCanela',
+                'Infusionar la leche con limón y canela.\nMezclar yemas, azúcar y maicena.\nIncorporar la leche y cocinar hasta espesar.\nEnfriar y caramelizar azúcar antes de servir.',
+                35,
+                2
+            ),
+            (
+                'ferran.torres@demo-user.eatsok.local',
+                '[DEMO] Paella valenciana',
+                'Paella tradicional con arroz, verduras y carne.',
+                'Arroz\nPollo\nConejo\nJudía verde\nGarrofón\nTomate\nAzafrán\nCaldo',
+                'Dorar la carne.\nAñadir verduras y tomate.\nIncorporar caldo y azafrán.\nAñadir el arroz y cocinar sin remover hasta que esté en su punto.',
+                55,
+                4
+            ),
+            (
+                'zara.larsson@demo-user.eatsok.local',
+                '[DEMO] Kanelbullar sin lactosa',
+                'Rollos de canela de inspiración sueca preparados sin lactosa.',
+                'Harina\nBebida vegetal\nMargarina vegetal\nCanela\nAzúcar\nCardamomo',
+                'Preparar y dejar levar la masa.\nExtender y rellenar con canela.\nEnrollar, cortar y hornear hasta dorar.',
+                70,
+                6
+            ),
+            (
+                'soobin.choi@demo-user.eatsok.local',
+                '[DEMO] Tteokbokki vegetal',
+                'Pasteles de arroz coreanos con salsa picante y verduras.',
+                'Tteok\nGochujang\nCebolleta\nZanahoria\nCaldo vegetal\nSésamo',
+                'Preparar la salsa.\nAñadir los pasteles de arroz y las verduras.\nCocinar hasta que la salsa espese.',
+                25,
+                8
+            ),
+            (
+                'kiriko.kamori@demo-user.eatsok.local',
+                '[DEMO] Onigiri de verduras',
+                'Bolas de arroz japonesas con relleno vegetal.',
+                'Arroz japonés\nZanahoria\nEspinacas\nAlga nori\nSésamo',
+                'Cocer el arroz.\nPreparar el relleno.\nFormar los onigiri y envolver parcialmente con nori.',
+                30,
+                10
+            ),
+            (
+                'hana.song@demo-user.eatsok.local',
+                '[DEMO] Bibimbap vegetal',
+                'Bol de arroz coreano con verduras salteadas.',
+                'Arroz\nEspinacas\nZanahoria\nCalabacín\nSetas\nGochujang',
+                'Cocer el arroz.\nSaltear cada verdura por separado.\nMontar el bol y servir con salsa.',
+                35,
+                12
+            )
+    ) AS data(
+        author_email,
+        title,
+        description,
+        ingredients,
+        steps,
+        preparation_time,
+        days_ago
+    )
+    JOIN users_user u
+        ON u.email = data.author_email;
+
+
     -- Attach selected recipes to demo establishments owned by the same user.
     UPDATE recipes_recipe r
     SET establishment_id = e.id
@@ -784,6 +1154,202 @@ BEGIN
     )
     ON CONFLICT DO NOTHING;
 
+
+    -- ----------------------------
+    -- FEATURED RECIPE COMPATIBILITIES
+    -- ----------------------------
+
+    INSERT INTO recipes_reciperestriction (recipe_id, restriction_id)
+    SELECT rcp.id, rst.id
+    FROM recipes_recipe rcp
+    JOIN food_profiles_restriction rst
+      ON (
+            rcp.title = '[DEMO] Crema catalana'
+            AND rst.name IN ('Gluten', 'Vegetariano')
+         )
+         OR (
+            rcp.title = '[DEMO] Paella valenciana'
+            AND rst.name IN ('Gluten', 'Lácteos')
+         )
+         OR (
+            rcp.title = '[DEMO] Kanelbullar sin lactosa'
+            AND rst.name IN ('Lácteos', 'Vegetariano')
+         )
+         OR (
+            rcp.title = '[DEMO] Tteokbokki vegetal'
+            AND rst.name IN ('Lácteos', 'Vegetariano', 'Vegano')
+         )
+         OR (
+            rcp.title = '[DEMO] Onigiri de verduras'
+            AND rst.name IN ('Gluten', 'Lácteos', 'Vegetariano', 'Vegano')
+         )
+         OR (
+            rcp.title = '[DEMO] Bibimbap vegetal'
+            AND rst.name IN ('Lácteos', 'Vegetariano', 'Vegano')
+         )
+    WHERE rcp.title IN (
+        '[DEMO] Crema catalana',
+        '[DEMO] Paella valenciana',
+        '[DEMO] Kanelbullar sin lactosa',
+        '[DEMO] Tteokbokki vegetal',
+        '[DEMO] Onigiri de verduras',
+        '[DEMO] Bibimbap vegetal'
+    )
+    ON CONFLICT DO NOTHING;
+
+
+    -- ----------------------------
+    -- ESTABLISHMENT REVIEWS
+    -- Three short reviews per demo establishment.
+    -- ----------------------------
+
+    WITH demo_users AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM users_user
+        WHERE email LIKE '%@demo-user.eatsok.local'
+    ),
+    user_count AS (
+        SELECT COUNT(*)::bigint AS count
+        FROM demo_users
+    ),
+    demo_establishments AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM establishments_establishment
+        WHERE email LIKE '%@demo.eatsok.local'
+    ),
+    reviewer_slots AS (
+        SELECT
+            e.id AS establishment_id,
+            e.rn AS establishment_rn,
+            slot.offset_value,
+            MOD(e.rn + slot.offset_value - 2, uc.count) + 1 AS reviewer_rn
+        FROM demo_establishments e
+        CROSS JOIN user_count uc
+        CROSS JOIN (
+            VALUES (1), (6), (11)
+        ) AS slot(offset_value)
+    )
+    INSERT INTO reviews_review (
+        author_id,
+        establishment_id,
+        recipe_id,
+        rating,
+        comment,
+        publication_date,
+        visible
+    )
+    SELECT
+        u.id,
+        rs.establishment_id,
+        NULL,
+        CASE MOD(rs.establishment_rn + rs.offset_value, 8)
+            WHEN 0 THEN 5
+            WHEN 1 THEN 4
+            WHEN 2 THEN 5
+            WHEN 3 THEN 3
+            WHEN 4 THEN 4
+            WHEN 5 THEN 5
+            WHEN 6 THEN 4
+            ELSE 2
+        END,
+        CASE MOD(rs.establishment_rn + rs.offset_value, 8)
+            WHEN 0 THEN 'Muy buena atención con los alérgenos.'
+            WHEN 1 THEN 'Opciones variadas y bien señalizadas.'
+            WHEN 2 THEN 'Todo muy rico, volvería.'
+            WHEN 3 THEN 'Me explicaron bien los ingredientes.'
+            WHEN 4 THEN 'Buena experiencia en general.'
+            WHEN 5 THEN 'El personal fue muy atento.'
+            WHEN 6 THEN 'Servicio rápido y agradable.'
+            ELSE 'La carta podría indicar mejor las trazas.'
+        END,
+        NOW() - (
+            MOD(rs.establishment_rn * 3 + rs.offset_value, 35)
+            * INTERVAL '1 day'
+        ),
+        TRUE
+    FROM reviewer_slots rs
+    JOIN demo_users u
+        ON u.rn = rs.reviewer_rn;
+
+
+    -- ----------------------------
+    -- RECIPE REVIEWS
+    -- Two short reviews per demo recipe.
+    -- ----------------------------
+
+    WITH demo_users AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM users_user
+        WHERE email LIKE '%@demo-user.eatsok.local'
+    ),
+    user_count AS (
+        SELECT COUNT(*)::bigint AS count
+        FROM demo_users
+    ),
+    demo_recipes AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM recipes_recipe
+        WHERE title LIKE '[DEMO]%'
+    ),
+    reviewer_slots AS (
+        SELECT
+            r.id AS recipe_id,
+            r.rn AS recipe_rn,
+            slot.offset_value,
+            MOD(r.rn + slot.offset_value - 2, uc.count) + 1 AS reviewer_rn
+        FROM demo_recipes r
+        CROSS JOIN user_count uc
+        CROSS JOIN (
+            VALUES (3), (9)
+        ) AS slot(offset_value)
+    )
+    INSERT INTO reviews_review (
+        author_id,
+        establishment_id,
+        recipe_id,
+        rating,
+        comment,
+        publication_date,
+        visible
+    )
+    SELECT
+        u.id,
+        NULL,
+        rs.recipe_id,
+        CASE MOD(rs.recipe_rn + rs.offset_value, 6)
+            WHEN 0 THEN 5
+            WHEN 1 THEN 4
+            WHEN 2 THEN 5
+            WHEN 3 THEN 4
+            WHEN 4 THEN 3
+            ELSE 5
+        END,
+        CASE MOD(rs.recipe_rn + rs.offset_value, 6)
+            WHEN 0 THEN 'Fácil de seguir y quedó genial.'
+            WHEN 1 THEN 'La repetiré seguro.'
+            WHEN 2 THEN 'Muy clara y rápida.'
+            WHEN 3 THEN 'Buena receta para diario.'
+            WHEN 4 THEN 'Cambiaría un poco las cantidades.'
+            ELSE 'Me gustó mucho el resultado.'
+        END,
+        NOW() - (
+            MOD(rs.recipe_rn * 2 + rs.offset_value, 28)
+            * INTERVAL '1 day'
+        ),
+        TRUE
+    FROM reviewer_slots rs
+    JOIN demo_users u
+        ON u.rn = rs.reviewer_rn;
+
+
 END $$;
 
 COMMIT;
@@ -794,3 +1360,7 @@ COMMIT;
 -- JOIN establishments_establishment e ON e.id = d.establishment_id
 -- WHERE e.email LIKE '%@demo.eatsok.local';
 -- SELECT COUNT(*) FROM recipes_recipe WHERE title LIKE '[DEMO] %';
+-- SELECT COUNT(*) FROM users_user WHERE email LIKE '%@demo-user.eatsok.local';
+-- SELECT COUNT(*) FROM reviews_review WHERE author_id IN (
+--     SELECT id FROM users_user WHERE email LIKE '%@demo-user.eatsok.local'
+-- );

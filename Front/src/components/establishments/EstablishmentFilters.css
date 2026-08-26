@@ -1,0 +1,307 @@
+.establishment-filters {
+  height: 100%;
+  min-height: 0;
+
+  padding: 18px 17px 14px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+
+  background: white;
+}
+
+.filters-section h2 {
+  margin: 0 0 16px;
+
+  font-size: 27px;
+  font-weight: 900;
+
+  color: var(--dark-green);
+}
+
+.filters-section h3 {
+  margin: 0 0 10px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: var(--dark-green);
+}
+
+/* SEARCH */
+
+.establishment-search {
+  height: 50px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: 2px solid #c7c7c7;
+  border-radius: 10px;
+
+  background: white;
+}
+
+.establishment-search-icon {
+  flex-shrink: 0;
+
+  font-size: 29px;
+  line-height: 1;
+
+  color: #c0c0c0;
+}
+
+.establishment-search input {
+  width: 100%;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  color: var(--dark-green);
+}
+
+.establishment-search input::placeholder {
+  color: #bdbdbd;
+}
+
+/* LOCATION */
+
+.location-section {
+  margin-top: 28px;
+}
+
+.location-option {
+  min-height: 29px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  cursor: pointer;
+
+  font-size: 15px;
+  color: var(--dark-green);
+}
+
+.location-option input {
+  width: 19px;
+  height: 19px;
+
+  margin: 0;
+
+  accent-color: #00882c;
+
+  cursor: pointer;
+}
+
+.radius-header {
+  margin-top: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 14px;
+
+  color: var(--dark-green);
+}
+
+.radius-header strong {
+  font-weight: 900;
+}
+
+.radius-slider {
+  width: 100%;
+  margin-top: 12px;
+
+  accent-color: #008b2c;
+}
+
+.filters-divider {
+  height: 1px;
+  margin: 26px 0;
+
+  background: #c7c7c7;
+}
+
+/* FILTERS */
+
+.food-filters-section {
+  flex: 1;
+}
+
+.profile-filter-row {
+  margin-bottom: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 14px;
+  color: var(--dark-green);
+}
+
+.profile-toggle {
+  width: 42px;
+  height: 23px;
+  padding: 3px;
+
+  display: flex;
+  align-items: center;
+
+  border: 0;
+  border-radius: 20px;
+
+  background: #c7c7c7;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.profile-toggle span {
+  width: 17px;
+  height: 17px;
+
+  display: block;
+
+  border-radius: 50%;
+
+  background: white;
+
+  transition: transform 0.2s ease;
+}
+
+.profile-toggle--active {
+  background: #008b2c;
+}
+
+.profile-toggle--active span {
+  transform: translateX(19px);
+}
+
+/* RESTRICTIONS */
+
+.restriction-group {
+  margin-bottom: 23px;
+}
+
+.restriction-group-title {
+  display: block;
+  margin-bottom: 12px;
+
+  font-size: 14px;
+  color: var(--dark-green);
+}
+
+.filter-restrictions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.filter-restrictions .restriction-card {
+  width: auto;
+  min-height: 42px;
+
+  padding: 7px 11px;
+
+  gap: 7px;
+
+  border-radius: 12px;
+
+  font-size: 14px;
+}
+
+.filter-restrictions .restriction-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.filter-restrictions .restriction-check {
+  width: 20px;
+  height: 20px;
+
+  top: -7px;
+  right: -6px;
+}
+
+.filter-restrictions .restriction-check img {
+  width: 20px;
+  height: 20px;
+}
+
+.add-filter-button {
+  padding: 8px 11px;
+
+  border: 2px solid #c9c9c9;
+  border-radius: 12px;
+
+  background: white;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  color: var(--dark-green);
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.add-filter-button:hover {
+  border-color: var(--dark-green);
+  background: #fafafa;
+}
+
+/* CLEAR */
+
+.clear-filters-button {
+  min-height: 60px;
+  width: 100%;
+  margin-top: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 2px solid #c7c7c7;
+  border-radius: 17px;
+
+  background: white;
+
+  font-family: inherit;
+  font-size: 16px;
+
+  color: #111;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.clear-filters-button:hover {
+  border-color: var(--dark-green);
+  background: #fafafa;
+}
+
+.clear-filters-icon {
+  font-size: 30px;
+  line-height: 1;
+}

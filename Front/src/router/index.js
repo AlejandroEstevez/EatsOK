@@ -20,9 +20,7 @@ const routes = [
   {
     path: '/establishments',
     name: 'establishments',
-    component: {
-      template: '<div>Establecimientos</div>',
-    },
+    component: () => import('../views/EstablishmentsView.vue'),
   },
   {
     path: '/recipes',

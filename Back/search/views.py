@@ -1,4 +1,4 @@
-from django.db.models import Avg, Q
+from django.db.models import Avg, Count, Q
 
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
@@ -56,9 +56,14 @@ class EstablishmentSearchView(generics.GenericAPIView):
             "dishes__dish_restrictions__restriction",
         ).annotate(
             average_rating=Avg(
-                "reviews__rating",
+                'reviews__rating',
                 filter=Q(reviews__visible=True),
-            )
+            ),
+            review_count=Count(
+                'reviews',
+                filter=Q(reviews__visible=True),
+                distinct=True,
+            ),
         )
 
         if search:
@@ -125,7 +130,15 @@ class EstablishmentSearchView(generics.GenericAPIView):
                     "latitude": establishment.location.latitude,
                     "longitude": establishment.location.longitude,
                 },
+                "tags": [
+                    {
+                        "id": tag.id,
+                        "name": tag.name,
+                    }
+                    for tag in establishment.tags.all()
+                ],
                 "average_rating": establishment.average_rating,
+                "review_count": establishment.review_count,
                 "distance": round(distance, 2) if distance is not None else None,
                 "compatible_dishes": compatible_count,
                 "total_dishes": total_dishes,
