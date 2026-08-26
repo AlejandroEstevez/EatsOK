@@ -2,6 +2,8 @@ import pytest
 
 from rest_framework import status
 
+from recipes.models import Recipe
+
 
 @pytest.mark.django_db
 class TestRecipeSearch:
@@ -10,6 +12,7 @@ class TestRecipeSearch:
         self,
         api_client,
     ):
+        """Recipe search must require authentication."""
         response = api_client.get(
             "/api/search/recipes/",
         )
@@ -21,6 +24,7 @@ class TestRecipeSearch:
         authenticated_client,
         recipes_data,
     ):
+        """Recipes must be searchable by title."""
         response = authenticated_client.get(
             "/api/search/recipes/?search=tortitas"
         )
@@ -34,6 +38,7 @@ class TestRecipeSearch:
         authenticated_client,
         recipes_data,
     ):
+        """Recipes must be searchable by description."""
         response = authenticated_client.get(
             "/api/search/recipes/?search=verduras"
         )
@@ -41,3 +46,28 @@ class TestRecipeSearch:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
         assert response.data[0]["title"] == "Pasta vegetal"
+
+    def test_search_returns_image_url(
+        self,
+        authenticated_client,
+        client_user,
+    ):
+        """Recipe search results must include the image URL."""
+        Recipe.objects.create(
+            author=client_user,
+            title="Receta con imagen",
+            ingredients="Ingrediente",
+            steps="Preparar.",
+            image_url="https://example.com/recipe.jpg",
+        )
+
+        response = authenticated_client.get(
+            "/api/search/recipes/?search=Receta con imagen"
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+        assert (
+            response.data[0]["image_url"]
+            == "https://example.com/recipe.jpg"
+        )

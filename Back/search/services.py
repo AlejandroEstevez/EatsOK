@@ -1,6 +1,7 @@
 from math import asin, cos, radians, sin, sqrt
 
 from food_profiles.models import Restriction
+from recipes.models import RecipeRestrictionType
 
 
 def get_active_restrictions(user, use_profile=True, additional_restriction_ids=None):
@@ -60,15 +61,17 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return earth_radius_km * c
 
 def is_recipe_compatible(recipe, active_restrictions):
-    active_ids = set(
-        active_restrictions.values_list("id", flat=True)
+    active_restriction_ids = {
+        restriction.id
+        for restriction in active_restrictions
+    }
+
+    blocked_restriction_ids = {
+        relation.restriction_id
+        for relation in recipe.recipe_restrictions.all()
+        if relation.relation_type == RecipeRestrictionType.BLOCKS
+    }
+
+    return not bool(
+        active_restriction_ids & blocked_restriction_ids
     )
-
-    if not active_ids:
-        return True
-
-    compatible_ids = set(
-        recipe.restrictions.values_list("id", flat=True)
-    )
-
-    return active_ids.issubset(compatible_ids)

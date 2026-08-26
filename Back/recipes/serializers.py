@@ -2,8 +2,17 @@ from rest_framework import serializers
 
 from food_profiles.models import Restriction
 
-from .models import Recipe
+from .models import Recipe, RecipeRestriction
 
+
+class RecipeRestrictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeRestriction
+        fields = [
+            "id",
+            "restriction",
+            "relation_type",
+        ]
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = serializers.StringRelatedField(
@@ -30,6 +39,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "publication_date",
             "visible",
             "restrictions",
+            "image_url",
         ]
 
         read_only_fields = [

@@ -66,6 +66,10 @@ class Establishment(models.Model):
         related_name="establishments",
         blank=True,
     )
+    
+    image_url = models.URLField(
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -142,6 +146,10 @@ class Dish(models.Model):
         Restriction,
         through="DishRestriction",
         related_name="dishes",
+        blank=True,
+    )
+    
+    image_url = models.URLField(
         blank=True,
     )
 

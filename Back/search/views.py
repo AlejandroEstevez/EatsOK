@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from establishments.models import Establishment
 from food_profiles.models import Restriction
-from recipes.models import Recipe
+from recipes.models import Recipe, RecipeRestrictionType
 
 from .serializers import (
     EstablishmentSearchSerializer,
@@ -146,6 +146,7 @@ class EstablishmentSearchView(generics.GenericAPIView):
                     compatible_percentage,
                     2,
                 ),
+                "image_url": establishment.image_url,
             })
 
         results = self._order_results(
@@ -300,13 +301,18 @@ class RecipeSearchView(generics.GenericAPIView):
             use_profile=use_profile,
             additional_restriction_ids=restriction_ids,
         )
+        
+        active_restriction_ids = {
+            restriction.id
+            for restriction in active_restrictions
+        }
 
         recipes = Recipe.objects.filter(
             visible=True
         ).select_related(
             "establishment"
         ).prefetch_related(
-            "restrictions"
+            "recipe_restrictions__restriction"
         ).annotate(
             average_rating=Avg(
                 "reviews__rating",
@@ -328,12 +334,23 @@ class RecipeSearchView(generics.GenericAPIView):
                 active_restrictions,
             ):
                 continue
+            
+            adapted_count = sum(
+                1
+                for relation in recipe.recipe_restrictions.all()
+                if (
+                    relation.relation_type
+                    == RecipeRestrictionType.ADAPTED_FOR
+                    and relation.restriction_id in active_restriction_ids
+                )
+            )
 
             results.append({
                 "id": recipe.id,
                 "title": recipe.title,
                 "description": recipe.description,
                 "preparation_time": recipe.preparation_time,
+                "adapted_count": adapted_count,
                 "average_rating": recipe.average_rating,
                 "establishment_id": (
                     recipe.establishment.id
@@ -345,11 +362,18 @@ class RecipeSearchView(generics.GenericAPIView):
                     if recipe.establishment
                     else None
                 ),
+                "image_url": recipe.image_url,
             })
 
         results = self._order_results(
             results,
             ordering,
+        )
+
+        results = sorted(
+            results,
+            key=lambda result: result["adapted_count"],
+            reverse=True,
         )
 
         serializer = self.get_serializer(

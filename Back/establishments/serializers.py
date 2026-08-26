@@ -67,6 +67,7 @@ class DishSerializer(serializers.ModelSerializer):
             "price",
             "available",
             "dish_restrictions",
+            "image_url",
         ]
 
     def create(self, validated_data):
@@ -153,6 +154,7 @@ class EstablishmentSerializer(serializers.ModelSerializer):
             "location",
             "tags",
             "dishes",
+            "image_url",
         ]
 
     def create(self, validated_data):

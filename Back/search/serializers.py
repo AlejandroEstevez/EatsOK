@@ -25,6 +25,7 @@ class EstablishmentSearchSerializer(serializers.Serializer):
     compatible_dishes = serializers.IntegerField()
     total_dishes = serializers.IntegerField()
     compatible_percentage = serializers.FloatField()
+    image_url = serializers.URLField(allow_blank=True)
 
 
 class RecipeSearchSerializer(serializers.Serializer):
@@ -35,3 +36,4 @@ class RecipeSearchSerializer(serializers.Serializer):
     average_rating = serializers.FloatField(allow_null=True)
     establishment_id = serializers.IntegerField(allow_null=True)
     establishment_name = serializers.CharField(allow_null=True)
+    image_url = serializers.URLField(allow_blank=True)
