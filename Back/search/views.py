@@ -286,7 +286,10 @@ class RecipeSearchView(generics.GenericAPIView):
 
     def get(self, request):
         search = request.query_params.get("search", "").strip()
-        ordering = request.query_params.get("ordering", "")
+        ordering = request.query_params.get(
+            "ordering",
+            "-publication_date",
+        )
 
         use_profile = self._parse_bool(
             request.query_params.get("use_profile", "true")
@@ -352,6 +355,7 @@ class RecipeSearchView(generics.GenericAPIView):
                 "preparation_time": recipe.preparation_time,
                 "adapted_count": adapted_count,
                 "average_rating": recipe.average_rating,
+                "publication_date": recipe.publication_date,
                 "establishment_id": (
                     recipe.establishment.id
                     if recipe.establishment
@@ -433,10 +437,9 @@ class RecipeSearchView(generics.GenericAPIView):
             "-rating",
             "preparation_time",
             "-preparation_time",
+            "publication_date",
+            "-publication_date",
         }
-
-        if not ordering:
-            return results
 
         if ordering not in valid_orderings:
             raise ValidationError(
@@ -449,6 +452,7 @@ class RecipeSearchView(generics.GenericAPIView):
         field_map = {
             "rating": "average_rating",
             "preparation_time": "preparation_time",
+            "publication_date": "publication_date",
         }
 
         result_field = field_map[field]
