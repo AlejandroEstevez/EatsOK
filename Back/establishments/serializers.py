@@ -57,6 +57,9 @@ class DishSerializer(serializers.ModelSerializer):
         many=True,
         required=False,
     )
+    
+    is_compatible = serializers.SerializerMethodField()
+    conflicting_restrictions = serializers.SerializerMethodField()
 
     class Meta:
         model = Dish
@@ -68,6 +71,8 @@ class DishSerializer(serializers.ModelSerializer):
             "available",
             "dish_restrictions",
             "image_url",
+            "is_compatible",
+            "conflicting_restrictions",
         ]
 
     def create(self, validated_data):
@@ -118,6 +123,37 @@ class DishSerializer(serializers.ModelSerializer):
                 dish=dish,
                 **restriction_data,
             )
+    
+    def get_conflicting_restrictions(self, obj):
+        active_restrictions = self.context.get(
+            "active_restrictions",
+            [],
+        )
+
+        active_restriction_ids = {
+            restriction.id
+            for restriction in active_restrictions
+        }
+
+        conflicts = [
+            relation.restriction
+            for relation in obj.dish_restrictions.all()
+            if relation.restriction_id in active_restriction_ids
+        ]
+
+        return [
+            {
+                "id": restriction.id,
+                "name": restriction.name,
+            }
+            for restriction in conflicts
+        ]
+
+
+    def get_is_compatible(self, obj):
+        return not bool(
+            self.get_conflicting_restrictions(obj)
+        )
 
 
 class EstablishmentSerializer(serializers.ModelSerializer):
@@ -126,6 +162,12 @@ class EstablishmentSerializer(serializers.ModelSerializer):
         queryset=Tag.objects.all(),
         many=True,
         required=False,
+    )
+    
+    tag_details = TagSerializer(
+        source="tags",
+        many=True,
+        read_only=True,
     )
 
     owner = serializers.StringRelatedField(
@@ -136,6 +178,10 @@ class EstablishmentSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
+    
+    compatible_dishes = serializers.SerializerMethodField()
+    total_dishes = serializers.SerializerMethodField()
+    compatible_percentage = serializers.SerializerMethodField()
 
     class Meta:
         model = Establishment
@@ -153,7 +199,11 @@ class EstablishmentSerializer(serializers.ModelSerializer):
             "active",
             "location",
             "tags",
+            "tag_details",
             "dishes",
+            "compatible_dishes",
+            "total_dishes",
+            "compatible_percentage",
             "image_url",
         ]
 
@@ -212,3 +262,42 @@ class EstablishmentSerializer(serializers.ModelSerializer):
             instance.tags.set(tags)
 
         return instance
+
+    def get_total_dishes(self, obj):
+        return obj.dishes.filter(
+            available=True,
+        ).count()
+
+
+    def get_compatible_dishes(self, obj):
+        active_restrictions = self.context.get(
+            "active_restrictions",
+            [],
+        )
+
+        active_restriction_ids = {
+            restriction.id
+            for restriction in active_restrictions
+        }
+
+        return sum(
+            1
+            for dish in obj.dishes.filter(available=True)
+            if not any(
+                relation.restriction_id in active_restriction_ids
+                for relation in dish.dish_restrictions.all()
+            )
+        )
+
+
+    def get_compatible_percentage(self, obj):
+        total_dishes = self.get_total_dishes(obj)
+
+        if total_dishes == 0:
+            return 0
+
+        compatible_dishes = self.get_compatible_dishes(obj)
+
+        return round(
+            compatible_dishes / total_dishes * 100
+        )

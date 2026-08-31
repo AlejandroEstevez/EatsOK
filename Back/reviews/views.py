@@ -13,12 +13,34 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ]
 
     def get_queryset(self):
-        return Review.objects.filter(
+        queryset = Review.objects.filter(
             visible=True,
         ).select_related(
             "author",
             "establishment",
             "recipe",
+        )
+
+        establishment_id = self.request.query_params.get(
+            "establishment"
+        )
+
+        recipe_id = self.request.query_params.get(
+            "recipe"
+        )
+
+        if establishment_id:
+            queryset = queryset.filter(
+                establishment_id=establishment_id
+            )
+
+        if recipe_id:
+            queryset = queryset.filter(
+                recipe_id=recipe_id
+            )
+
+        return queryset.order_by(
+            "-publication_date"
         )
 
     def perform_create(self, serializer):

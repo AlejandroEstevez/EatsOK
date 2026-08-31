@@ -1,0 +1,434 @@
+.establishment-detail-page {
+  min-height: 100vh;
+
+  background: var(--cream);
+  color: var(--text);
+}
+
+.establishment-detail-content {
+  padding: 20px 24px 0;
+}
+
+.establishment-detail-header {
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: 34px;
+
+  padding: 18px;
+
+  background: var(--white);
+
+  border-radius: 20px;
+}
+
+.establishment-detail-image {
+  height: 315px;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #ddd;
+}
+
+.establishment-detail-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.establishment-detail-content-area {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.establishment-detail-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 40px;
+}
+
+.establishment-detail-main {
+  min-width: 0;
+}
+
+.establishment-detail-main h1 {
+  margin: 4px 0 12px;
+
+  font-size: 3rem;
+}
+
+.establishment-detail-tags {
+  margin: 0 0 14px;
+
+  font-size: 1rem;
+}
+
+.establishment-detail-tags span {
+  display: inline;
+}
+
+.tag-separator {
+  margin: 0 6px;
+}
+
+.establishment-detail-description,
+.establishment-detail-restrictions {
+  margin: 0 0 12px;
+
+  line-height: 1.5;
+}
+
+.establishment-detail-side {
+  min-width: 0;
+
+  padding-top: 4px;
+}
+
+.compatibility-badge {
+  width: fit-content;
+
+  margin-left: auto;
+
+  padding: 15px 22px;
+
+  border-radius: 14px;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.compatibility-high {
+  background: #cef2c5;
+}
+
+.compatibility-medium {
+  background: #ffe6a3;
+}
+
+.compatibility-low {
+  background: #ffc7a3;
+}
+
+.cross-contamination {
+  margin-top: 26px;
+}
+
+.cross-contamination-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: var(--orange);
+}
+
+.cross-contamination-title strong {
+  font-size: 1rem;
+
+  color: var(--orange);
+}
+
+.cross-contamination-icon {
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(52%)
+    sepia(95%)
+    saturate(2103%)
+    hue-rotate(2deg)
+    brightness(103%)
+    contrast(104%);
+}
+
+.cross-contamination p {
+  margin: 12px 0 0;
+
+  line-height: 1.45;
+}
+
+.establishment-detail-info {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 0;
+
+  margin-top: 24px;
+
+  padding-top: 32px;
+
+  border-top: 1px solid #bbb;
+}
+
+.detail-info-item {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  padding: 0 24px;
+}
+
+.detail-info-item:first-child {
+  padding-left: 0;
+}
+
+.detail-info-item:last-child {
+  padding-right: 0;
+}
+
+.detail-info-item + .detail-info-item {
+  border-left: 1px solid #bbb;
+}
+
+.detail-info-icon {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(18%)
+    sepia(24%)
+    saturate(1600%)
+    hue-rotate(100deg)
+    brightness(90%)
+    contrast(105%);
+}
+
+.detail-info-item p {
+  margin: 2px 0;
+}
+
+.detail-info-title {
+  font-weight: 700;
+}
+
+.establishment-detail-lower {
+  display: grid;
+  grid-template-columns: 2fr 1.15fr;
+  gap: 24px;
+
+  margin-top: 16px;
+
+  align-items: start;
+}
+
+.establishment-dishes {
+  padding: 22px;
+
+  background: var(--white);
+
+  border-radius: 20px;
+}
+
+.establishment-dishes h2 {
+  margin: 0;
+}
+
+.dishes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-bottom: 20px;
+}
+
+.dish-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dish-filter-button {
+  padding: 7px 16px;
+
+  border: 1px solid #a8a8a8;
+  border-radius: 9px;
+
+  background: var(--white);
+  color: var(--dark-green);
+
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.dish-filter-button--active {
+  border-color: var(--green);
+
+  background: var(--green);
+  color: var(--white);
+}
+
+.dish-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 16px;
+
+  align-items: stretch;
+}
+
+.dish-card {
+  min-width: 0;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid #bcbcbc;
+  border-radius: 18px;
+
+  background: var(--white);
+}
+
+.dish-card-image {
+  height: 120px;
+
+  overflow: hidden;
+
+  background: #ddd;
+}
+
+.dish-card-image img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.dish-card-content {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 13px 14px 14px;
+}
+
+.dish-card h3 {
+  margin: 0 0 10px;
+
+  font-size: 1rem;
+  font-weight: 800;
+
+  color: var(--dark-green);
+}
+
+.dish-description {
+  margin: 0 0 14px;
+
+  line-height: 1.4;
+}
+
+.dish-compatibility {
+  min-height: 30px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+
+  margin-top: auto;
+  margin-bottom: 12px;
+}
+
+.dish-compatible-badge,
+.dish-restriction-badge {
+  width: fit-content;
+
+  padding: 5px 9px;
+
+  border-radius: 7px;
+
+  font-size: 0.85rem;
+  line-height: 1.1;
+}
+
+.dish-compatible-badge {
+  background: #cef2c5;
+  color: var(--dark-green);
+}
+
+.dish-restriction-badge {
+  background: #ffc78f;
+  color: #7d3600;
+}
+
+.dish-card-footer {
+  min-height: 30px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dish-price {
+  font-size: 1.05rem;
+
+  color: var(--dark-green);
+}
+
+.dish-warning-icon {
+  width: 26px;
+  height: 26px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(52%)
+    sepia(95%)
+    saturate(2103%)
+    hue-rotate(2deg)
+    brightness(103%)
+    contrast(104%);
+}
+
+.dishes-empty {
+  margin: 30px 0;
+
+  text-align: center;
+
+  color: #777;
+}
+
+.establishment-detail-slogan {
+  margin: 6px 0 0;
+
+  text-align: center;
+
+  font-style: italic;
+}

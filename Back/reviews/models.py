@@ -29,7 +29,9 @@ class Review(models.Model):
         blank=True,
     )
 
-    rating = models.PositiveSmallIntegerField(
+    rating = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
         validators=[
             MinValueValidator(0),
             MaxValueValidator(5),

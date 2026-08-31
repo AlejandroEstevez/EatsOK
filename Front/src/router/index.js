@@ -5,6 +5,8 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import AccountView from '../views/AccountView.vue'
 import FoodProfileView from '../views/FoodProfileView.vue'
+import EstablishmentsView from '../views/EstablishmentsView.vue'
+import EstablishmentDetailView from '../views/EstablishmentDetailView.vue'
 
 const routes = [
   {
@@ -20,20 +22,18 @@ const routes = [
   {
     path: '/establishments',
     name: 'establishments',
-    component: () => import('../views/EstablishmentsView.vue'),
+    component: EstablishmentsView,
+  },
+  {
+    path: '/establishments/:id',
+    name: 'establishment-detail',
+    component: EstablishmentDetailView,
   },
   {
     path: '/recipes',
     name: 'recipes',
     component: {
       template: '<div>Recetas</div>',
-    },
-  },
-  {
-    path: '/account',
-    name: 'account',
-    component: {
-      template: '<div>Cuenta</div>',
     },
   },
   {

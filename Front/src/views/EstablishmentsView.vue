@@ -10,6 +10,8 @@ import EstablishmentResults from '../components/establishments/EstablishmentResu
 
 import api from '../services/api'
 
+import { useRouter } from 'vue-router'
+
 
 const filters = reactive({
   search: '',
@@ -32,6 +34,7 @@ const hoveredEstablishmentId = ref(null)
 const establishments = ref([])
 const loadingEstablishments = ref(false)
 
+const router = useRouter()
 
 /* FILTER PANEL */
 
@@ -158,10 +161,12 @@ function selectLocation(location) {
 
 
 function selectEstablishment(establishment) {
-  console.log(
-    'Establishment selected:',
-    establishment
-  )
+  router.push({
+    name: 'establishment-detail',
+    params: {
+      id: establishment.id,
+    },
+  })
 }
 
 

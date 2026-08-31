@@ -1,0 +1,28 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.star-rating-star {
+  display: inline-block;
+  line-height: 1;
+
+  color: transparent;
+
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent;
+}
+
+.star-rating--normal .star-rating-star {
+  font-size: 1.75rem;
+}
+
+.star-rating--small .star-rating-star {
+  font-size: 1.05rem;
+}
+
+.star-rating--large .star-rating-star {
+  font-size: 2.6rem;
+}

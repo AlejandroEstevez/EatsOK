@@ -43,6 +43,23 @@ class EstablishmentDetailView(generics.RetrieveUpdateDestroyAPIView):
         IsOwnerOrReadOnly,
     ]
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        active_restrictions = []
+
+        if (
+            self.request.user.role
+            == self.request.user.Role.CLIENT
+        ):
+            active_restrictions = (
+                self.request.user.food_profile.restrictions.all()
+            )
+
+        context["active_restrictions"] = active_restrictions
+
+        return context
+
 
 class DishListCreateView(generics.ListCreateAPIView):
     serializer_class = DishSerializer
