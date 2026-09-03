@@ -13,6 +13,12 @@ class SearchTagSerializer(serializers.Serializer):
     name = serializers.CharField()
 
 
+class SearchRestrictionSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    type = serializers.CharField()
+
+
 class EstablishmentSearchSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
@@ -33,7 +39,11 @@ class RecipeSearchSerializer(serializers.Serializer):
     title = serializers.CharField()
     description = serializers.CharField()
     preparation_time = serializers.IntegerField(allow_null=True)
+    author = serializers.CharField()
     average_rating = serializers.FloatField(allow_null=True)
+    review_count = serializers.IntegerField()
+    adapted_restrictions = SearchRestrictionSerializer(many=True)
+    publication_date = serializers.DateTimeField()
     establishment_id = serializers.IntegerField(allow_null=True)
     establishment_name = serializers.CharField(allow_null=True)
     image_url = serializers.URLField(allow_blank=True)

@@ -320,7 +320,12 @@ class RecipeSearchView(generics.GenericAPIView):
             average_rating=Avg(
                 "reviews__rating",
                 filter=Q(reviews__visible=True),
-            )
+            ),
+            review_count=Count(
+                "reviews",
+                filter=Q(reviews__visible=True),
+                distinct=True,
+            ),
         )
 
         if search:
@@ -338,14 +343,19 @@ class RecipeSearchView(generics.GenericAPIView):
             ):
                 continue
             
-            adapted_count = sum(
-                1
+            adapted_restrictions = [
+                relation.restriction
                 for relation in recipe.recipe_restrictions.all()
                 if (
                     relation.relation_type
                     == RecipeRestrictionType.ADAPTED_FOR
-                    and relation.restriction_id in active_restriction_ids
+                    and relation.restriction_id
+                    in active_restriction_ids
                 )
+            ]
+
+            adapted_count = len(
+                adapted_restrictions
             )
 
             results.append({
@@ -353,8 +363,20 @@ class RecipeSearchView(generics.GenericAPIView):
                 "title": recipe.title,
                 "description": recipe.description,
                 "preparation_time": recipe.preparation_time,
+                "author": str(recipe.author),
                 "adapted_count": adapted_count,
+                "adapted_restrictions": [
+                    {
+                        "id": restriction.id,
+                        "name": restriction.name,
+                        "type": self._get_restriction_type(
+                            restriction
+                        ),
+                    }
+                    for restriction in adapted_restrictions
+                ],
                 "average_rating": recipe.average_rating,
+                "review_count": recipe.review_count,
                 "publication_date": recipe.publication_date,
                 "establishment_id": (
                     recipe.establishment.id
@@ -386,6 +408,15 @@ class RecipeSearchView(generics.GenericAPIView):
         )
 
         return Response(serializer.data)
+
+    def _get_restriction_type(self, restriction):
+        if hasattr(restriction, "allergy"):
+            return "allergy"
+
+        if hasattr(restriction, "diet"):
+            return "diet"
+
+        return None
 
     def _parse_bool(self, value):
         value = str(value).lower()

@@ -7,6 +7,8 @@ import AccountView from '../views/AccountView.vue'
 import FoodProfileView from '../views/FoodProfileView.vue'
 import EstablishmentsView from '../views/EstablishmentsView.vue'
 import EstablishmentDetailView from '../views/EstablishmentDetailView.vue'
+import RecipeView from '../views/RecipesView.vue'
+
 
 const routes = [
   {
@@ -32,9 +34,7 @@ const routes = [
   {
     path: '/recipes',
     name: 'recipes',
-    component: {
-      template: '<div>Recetas</div>',
-    },
+    component: RecipeView,
   },
   {
     path: '/login',
