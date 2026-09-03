@@ -12,6 +12,7 @@ import './RecipesView.css'
 import NavBar from '../components/common/NavBar.vue'
 import RecipeFilters from '../components/recipes/RecipeFilters.vue'
 import RecipeCard from '../components/recipes/RecipeCard.vue'
+import RecipeDetailPanel from '../components/recipes/RecipeDetailPanel.vue'
 
 import api from '../services/api.js'
 
@@ -21,6 +22,10 @@ const profileRestrictionIds = ref([])
 
 const loading = ref(false)
 const error = ref('')
+
+const selectedRecipe = ref(null)
+const detailLoading = ref(false)
+const detailError = ref('')
 
 let searchTimeout = null
 
@@ -195,11 +200,63 @@ function clearFilters() {
   filters.ordering = '-publication_date'
 }
 
-function selectRecipe(recipe) {
-  console.log(
-    'Recipe detail pending:',
-    recipe.id
-  )
+async function selectRecipe(recipe) {
+  selectedRecipe.value = recipe
+  detailLoading.value = true
+  detailError.value = ''
+
+  try {
+    const response = await api.get(
+      `/recipes/${recipe.id}/`
+    )
+
+    if (
+      selectedRecipe.value?.id
+      !== recipe.id
+    ) {
+      return
+    }
+
+    selectedRecipe.value = {
+      ...recipe,
+      ...response.data,
+    }
+  } catch (err) {
+    console.error(
+      'Error loading recipe detail:',
+      err
+    )
+
+    if (
+      selectedRecipe.value?.id
+      === recipe.id
+    ) {
+      detailError.value =
+        'No se ha podido cargar el detalle de la receta.'
+    }
+  } finally {
+    if (
+      selectedRecipe.value?.id
+      === recipe.id
+    ) {
+      detailLoading.value = false
+    }
+  }
+}
+
+function closeRecipeDetail() {
+  selectedRecipe.value = null
+  detailLoading.value = false
+  detailError.value = ''
+}
+
+function handleKeydown(event) {
+  if (
+    event.key === 'Escape'
+    && selectedRecipe.value
+  ) {
+    closeRecipeDetail()
+  }
 }
 
 watch(
@@ -222,12 +279,22 @@ watch(
 )
 
 onMounted(async () => {
+  window.addEventListener(
+    'keydown',
+    handleKeydown
+  )
+
   await loadInitialData()
   await searchRecipes()
 })
 
 onBeforeUnmount(() => {
   clearTimeout(searchTimeout)
+
+  window.removeEventListener(
+    'keydown',
+    handleKeydown
+  )
 })
 </script>
 
@@ -235,110 +302,119 @@ onBeforeUnmount(() => {
   <div class="recipes-page">
     <NavBar />
 
-    <main class="recipes-layout">
-      <RecipeFilters
-        :search="filters.search"
-        :use-profile="filters.useProfile"
-        :restrictions="restrictions"
-        :selected-restrictions="
-          filters.selectedRestrictions
-        "
-        @update:search="
-          filters.search = $event
-        "
-        @update:use-profile="
-          updateUseProfile
-        "
-        @toggle-restriction="
-          toggleRestriction
-        "
-        @replace-restrictions="
-          replaceRestrictions
-        "
-        @clear="clearFilters"
-      />
+    <div class="recipes-body">
+      <main class="recipes-layout">
+        <RecipeFilters
+          :search="filters.search"
+          :use-profile="filters.useProfile"
+          :restrictions="restrictions"
+          :selected-restrictions="
+            filters.selectedRestrictions
+          "
+          @update:search="
+            filters.search = $event
+          "
+          @update:use-profile="
+            updateUseProfile
+          "
+          @toggle-restriction="
+            toggleRestriction
+          "
+          @replace-restrictions="
+            replaceRestrictions
+          "
+          @clear="clearFilters"
+        />
 
-      <section class="recipes-main">
-        <h1>
-          Recetas adaptadas
-        </h1>
+        <section class="recipes-main">
+          <h1>
+            Recetas adaptadas
+          </h1>
 
-        <p class="recipes-subtitle">
-          Encuentra recetas compatibles con tus restricciones alimentarias.
-        </p>
+          <p class="recipes-subtitle">
+            Encuentra recetas compatibles con tus restricciones alimentarias.
+          </p>
 
-        <div class="recipes-results">
-          <div class="recipes-results-header">
-            <strong>
-              {{ recipes.length }}
-              {{
-                recipes.length === 1
-                  ? 'receta encontrada'
-                  : 'recetas encontradas'
-              }}
-            </strong>
+          <div class="recipes-results">
+            <div class="recipes-results-header">
+              <strong>
+                {{ recipes.length }}
+                {{
+                  recipes.length === 1
+                    ? 'receta encontrada'
+                    : 'recetas encontradas'
+                }}
+              </strong>
 
-            <select
-              v-model="filters.ordering"
-              class="recipes-ordering"
+              <select
+                v-model="filters.ordering"
+                class="recipes-ordering"
+              >
+                <option value="-publication_date">
+                  Más reciente
+                </option>
+
+                <option value="-rating">
+                  Mejor valoradas
+                </option>
+
+                <option value="preparation_time">
+                  Menor tiempo
+                </option>
+
+                <option value="-preparation_time">
+                  Mayor tiempo
+                </option>
+              </select>
+            </div>
+
+            <p
+              v-if="loading"
+              class="recipes-state"
             >
-              <option value="-publication_date">
-                Más reciente
-              </option>
+              Cargando recetas...
+            </p>
 
-              <option value="-rating">
-                Mejor valoradas
-              </option>
+            <p
+              v-else-if="error"
+              class="recipes-state recipes-state--error"
+            >
+              {{ error }}
+            </p>
 
-              <option value="preparation_time">
-                Menor tiempo
-              </option>
+            <p
+              v-else-if="!recipes.length"
+              class="recipes-state"
+            >
+              No se han encontrado recetas
+              con estos filtros.
+            </p>
 
-              <option value="-preparation_time">
-                Mayor tiempo
-              </option>
-            </select>
+            <div
+              v-else
+              class="recipes-grid"
+            >
+              <RecipeCard
+                v-for="recipe in recipes"
+                :key="recipe.id"
+                :recipe="recipe"
+                @select="selectRecipe"
+              />
+            </div>
           </div>
 
-          <p
-            v-if="loading"
-            class="recipes-state"
-          >
-            Cargando recetas...
+          <p class="recipes-slogan">
+            Everyone can tag along
           </p>
+        </section>
+      </main>
 
-          <p
-            v-else-if="error"
-            class="recipes-state recipes-state--error"
-          >
-            {{ error }}
-          </p>
-
-          <p
-            v-else-if="!recipes.length"
-            class="recipes-state"
-          >
-            No se han encontrado recetas
-            con estos filtros.
-          </p>
-
-          <div
-            v-else
-            class="recipes-grid"
-          >
-            <RecipeCard
-              v-for="recipe in recipes"
-              :key="recipe.id"
-              :recipe="recipe"
-              @select="selectRecipe"
-            />
-          </div>
-        </div>
-
-        <p class="recipes-slogan">
-          Everyone can tag along
-        </p>
-      </section>
-    </main>
+      <RecipeDetailPanel
+        :recipe="selectedRecipe"
+        :loading="detailLoading"
+        :error="detailError"
+        @close="closeRecipeDetail"
+      />
+    </div>
   </div>
 </template>

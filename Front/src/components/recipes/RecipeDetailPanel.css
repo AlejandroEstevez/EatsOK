@@ -1,0 +1,297 @@
+.recipe-detail-overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: 50;
+
+  display: flex;
+  justify-content: flex-end;
+
+  background: rgba(0, 25, 11, 0.42);
+}
+
+.recipe-detail-panel {
+  width: min(720px, 60vw);
+  height: 100%;
+
+  overflow: hidden;
+
+  background: var(--white);
+
+  box-shadow:
+    -8px 0 24px
+    rgba(0, 0, 0, 0.15);
+}
+
+.recipe-detail-scroll {
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.recipe-detail-back {
+  margin: 14px 20px 10px;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  border: 0;
+
+  background: transparent;
+
+  color: var(--dark-green);
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.recipe-detail-back-arrow {
+  position: relative;
+  top: -1px;
+
+  font-size: 30px;
+  line-height: 18px;
+}
+
+.recipe-detail-loading,
+.recipe-detail-error {
+  padding: 60px 25px;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+.recipe-detail-loading {
+  color: #777;
+}
+
+.recipe-detail-error {
+  color: #b83232;
+}
+
+.recipe-detail-image {
+  height: 265px;
+
+  margin: 0 20px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: #d2d2d2;
+}
+
+.recipe-detail-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.recipe-detail-image span {
+  font-size: 65px;
+
+  filter: grayscale(1);
+}
+
+.recipe-detail-header {
+  padding: 17px 22px 18px;
+}
+
+.recipe-detail-header h2 {
+  margin: 0 0 11px;
+
+  color: var(--dark-green);
+
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.recipe-detail-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+
+  color: var(--dark-green);
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.recipe-detail-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.recipe-detail-meta-item img {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  object-fit: contain;
+
+  filter:
+    brightness(0)
+    saturate(100%)
+    invert(20%)
+    sepia(36%)
+    saturate(1450%)
+    hue-rotate(105deg)
+    brightness(86%)
+    contrast(105%);
+}
+
+.recipe-detail-establishment {
+  margin: 13px 0 0;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+.recipe-detail-establishment strong {
+  color: var(--dark-green);
+}
+
+.recipe-detail-description {
+  margin: 15px 0 0;
+
+  color: #555;
+
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.recipe-detail-adapted {
+  padding: 15px 22px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border-top: 1px solid #d0d0d0;
+  border-bottom: 1px solid #d0d0d0;
+
+  color: var(--dark-green);
+
+  font-size: 13px;
+}
+
+.recipe-detail-adapted > strong {
+  flex-shrink: 0;
+}
+
+.recipe-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.recipe-detail-badge {
+  padding: 5px 10px;
+
+  border-radius: 6px;
+
+  background: #cef2c5;
+
+  color: #288b25;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.recipe-detail-section {
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #d0d0d0;
+}
+
+.recipe-detail-section h3 {
+  margin: 0 0 15px;
+
+  color: var(--dark-green);
+
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.recipe-detail-list,
+.recipe-detail-steps {
+  margin: 0;
+  padding-left: 24px;
+
+  color: var(--dark-green);
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.recipe-detail-list li,
+.recipe-detail-steps li {
+  margin-bottom: 7px;
+  padding-left: 3px;
+}
+
+.recipe-detail-list li:last-child,
+.recipe-detail-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.recipe-detail-empty {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 14px;
+  font-style: italic;
+}
+
+.recipe-detail-reviews {
+  padding: 5px 22px 28px;
+}
+
+
+/* TRANSITION */
+
+.recipe-detail-enter-active,
+.recipe-detail-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.recipe-detail-enter-active
+.recipe-detail-panel,
+.recipe-detail-leave-active
+.recipe-detail-panel {
+  transition:
+    transform 0.3s ease;
+}
+
+.recipe-detail-enter-from,
+.recipe-detail-leave-to {
+  opacity: 0;
+}
+
+.recipe-detail-enter-from
+.recipe-detail-panel,
+.recipe-detail-leave-to
+.recipe-detail-panel {
+  transform: translateX(100%);
+}
