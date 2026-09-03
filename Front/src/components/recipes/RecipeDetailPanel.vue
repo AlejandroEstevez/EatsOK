@@ -21,10 +21,22 @@ defineProps({
     type: String,
     default: '',
   },
+
+  canManage: {
+    type: Boolean,
+    default: false,
+  },
+
+  deleting: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits([
   'close',
+  'edit',
+  'delete',
 ])
 
 function splitLines(value) {
@@ -97,9 +109,37 @@ function splitLines(value) {
             </div>
 
             <section class="recipe-detail-header">
-              <h2>
-                {{ recipe.title }}
-              </h2>
+              <div class="recipe-detail-title-row">
+                <h2>
+                  {{ recipe.title }}
+                </h2>
+
+                <div
+                  v-if="canManage"
+                  class="recipe-detail-actions"
+                >
+                  <button
+                    type="button"
+                    class="recipe-detail-edit-button"
+                    @click="emit('edit', recipe)"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="recipe-detail-delete-button"
+                    :disabled="deleting"
+                    @click="emit('delete', recipe)"
+                  >
+                    {{
+                      deleting
+                        ? 'Eliminando...'
+                        : 'Eliminar'
+                    }}
+                  </button>
+                </div>
+              </div>
 
               <div class="recipe-detail-meta">
                 <span

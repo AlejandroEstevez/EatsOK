@@ -1,5 +1,6 @@
 <script setup>
 import {
+  computed,
   onBeforeUnmount,
   onMounted,
   reactive,
@@ -13,8 +14,12 @@ import NavBar from '../components/common/NavBar.vue'
 import RecipeFilters from '../components/recipes/RecipeFilters.vue'
 import RecipeCard from '../components/recipes/RecipeCard.vue'
 import RecipeDetailPanel from '../components/recipes/RecipeDetailPanel.vue'
+import RecipeFormPanel from '../components/recipes/RecipeFormPanel.vue'
 
 import api from '../services/api.js'
+import { useAuthStore } from '../stores/auth.js'
+
+const authStore = useAuthStore()
 
 const recipes = ref([])
 const restrictions = ref([])
@@ -26,6 +31,13 @@ const error = ref('')
 const selectedRecipe = ref(null)
 const detailLoading = ref(false)
 const detailError = ref('')
+const deletingRecipe = ref(false)
+
+const recipeFormOpen = ref(false)
+const recipeFormMode = ref('create')
+const recipeFormRecipe = ref(null)
+const recipeFormSaving = ref(false)
+const recipeFormError = ref('')
 
 let searchTimeout = null
 
@@ -34,6 +46,20 @@ const filters = reactive({
   useProfile: true,
   selectedRestrictions: [],
   ordering: '-publication_date',
+})
+
+const canManageSelectedRecipe = computed(() => {
+  if (
+    !selectedRecipe.value
+    || !authStore.user
+  ) {
+    return false
+  }
+
+  return (
+    Number(selectedRecipe.value.author_id)
+    === Number(authStore.user.id)
+  )
 })
 
 async function loadInitialData() {
@@ -248,13 +274,159 @@ function closeRecipeDetail() {
   selectedRecipe.value = null
   detailLoading.value = false
   detailError.value = ''
+  deletingRecipe.value = false
+}
+
+function openCreateRecipe() {
+  closeRecipeDetail()
+
+  recipeFormMode.value = 'create'
+  recipeFormRecipe.value = null
+  recipeFormError.value = ''
+  recipeFormOpen.value = true
+}
+
+function openEditRecipe(recipe) {
+  const recipeToEdit = {
+    ...recipe,
+  }
+
+  closeRecipeDetail()
+
+  recipeFormMode.value = 'edit'
+  recipeFormRecipe.value =
+    recipeToEdit
+  recipeFormError.value = ''
+  recipeFormOpen.value = true
+}
+
+function closeRecipeForm() {
+  recipeFormOpen.value = false
+  recipeFormRecipe.value = null
+  recipeFormSaving.value = false
+  recipeFormError.value = ''
+}
+
+async function saveRecipe(payload) {
+  recipeFormSaving.value = true
+  recipeFormError.value = ''
+
+  try {
+    if (
+      recipeFormMode.value === 'edit'
+      && recipeFormRecipe.value
+    ) {
+      await api.patch(
+        `/recipes/${recipeFormRecipe.value.id}/`,
+        payload
+      )
+    } else {
+      await api.post(
+        '/recipes/',
+        payload
+      )
+    }
+
+    closeRecipeForm()
+
+    await searchRecipes()
+  } catch (err) {
+    console.error(
+      'Error saving recipe:',
+      err
+    )
+
+    recipeFormError.value =
+      getApiError(
+        err,
+        'No se ha podido guardar la receta.'
+      )
+  } finally {
+    recipeFormSaving.value = false
+  }
+}
+
+async function deleteRecipe(recipe) {
+  const confirmed = window.confirm(
+    `¿Seguro que quieres eliminar "${recipe.title}"?`
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  deletingRecipe.value = true
+
+  try {
+    await api.delete(
+      `/recipes/${recipe.id}/`
+    )
+
+    closeRecipeDetail()
+
+    await searchRecipes()
+  } catch (err) {
+    console.error(
+      'Error deleting recipe:',
+      err
+    )
+
+    detailError.value =
+      getApiError(
+        err,
+        'No se ha podido eliminar la receta.'
+      )
+  } finally {
+    deletingRecipe.value = false
+  }
+}
+
+function getApiError(
+  err,
+  fallback,
+) {
+  const data =
+    err.response?.data
+
+  if (!data) {
+    return fallback
+  }
+
+  if (typeof data === 'string') {
+    return data
+  }
+
+  if (data.detail) {
+    return data.detail
+  }
+
+  const firstValue =
+    Object.values(data)[0]
+
+  if (Array.isArray(firstValue)) {
+    return firstValue[0]
+  }
+
+  if (
+    typeof firstValue === 'string'
+  ) {
+    return firstValue
+  }
+
+  return fallback
 }
 
 function handleKeydown(event) {
-  if (
-    event.key === 'Escape'
-    && selectedRecipe.value
-  ) {
+  if (event.key !== 'Escape') {
+    return
+  }
+
+  if (recipeFormOpen.value) {
+    closeRecipeForm()
+    return
+  }
+
+  if (selectedRecipe.value) {
     closeRecipeDetail()
   }
 }
@@ -327,13 +499,30 @@ onBeforeUnmount(() => {
         />
 
         <section class="recipes-main">
-          <h1>
-            Recetas adaptadas
-          </h1>
+          <div class="recipes-heading">
+            <div>
+              <h1>
+                Recetas adaptadas
+              </h1>
 
-          <p class="recipes-subtitle">
-            Encuentra recetas compatibles con tus restricciones alimentarias.
-          </p>
+              <p class="recipes-subtitle">
+                Encuentra recetas compatibles
+                con tus restricciones alimentarias.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="recipes-create-button"
+              @click="openCreateRecipe"
+            >
+              <span>
+                +
+              </span>
+
+              Crear
+            </button>
+          </div>
 
           <div class="recipes-results">
             <div class="recipes-results-header">
@@ -413,7 +602,22 @@ onBeforeUnmount(() => {
         :recipe="selectedRecipe"
         :loading="detailLoading"
         :error="detailError"
+        :can-manage="canManageSelectedRecipe"
+        :deleting="deletingRecipe"
         @close="closeRecipeDetail"
+        @edit="openEditRecipe"
+        @delete="deleteRecipe"
+      />
+
+      <RecipeFormPanel
+        :open="recipeFormOpen"
+        :mode="recipeFormMode"
+        :recipe="recipeFormRecipe"
+        :restrictions="restrictions"
+        :saving="recipeFormSaving"
+        :error="recipeFormError"
+        @close="closeRecipeForm"
+        @submit="saveRecipe"
       />
     </div>
   </div>

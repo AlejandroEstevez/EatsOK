@@ -1,0 +1,160 @@
+.recipe-restriction-modal-overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: 30;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  background: rgba(0, 25, 11, 0.45);
+}
+
+.recipe-restriction-modal {
+  width: min(620px, 92%);
+  max-height: 85%;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 20px;
+
+  background: var(--white);
+
+  box-shadow:
+    0 12px 35px
+    rgba(0, 0, 0, 0.2);
+}
+
+.recipe-restriction-modal-header {
+  padding: 22px 24px 16px;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  border-bottom: 1px solid #ddd;
+}
+
+.recipe-restriction-modal-header h3 {
+  margin: 0 0 4px;
+
+  color: var(--dark-green);
+
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.recipe-restriction-modal-header p {
+  margin: 0;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+.recipe-restriction-modal-close {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: var(--dark-green);
+
+  font-size: 28px;
+
+  cursor: pointer;
+}
+
+.recipe-restriction-modal-content {
+  padding: 20px 24px;
+
+  overflow-y: auto;
+}
+
+.recipe-restriction-modal-content section {
+  margin-bottom: 28px;
+}
+
+.recipe-restriction-modal-content section:last-child {
+  margin-bottom: 0;
+}
+
+.recipe-restriction-modal-content h4 {
+  margin: 0 0 14px;
+
+  color: var(--dark-green);
+
+  font-size: 16px;
+}
+
+.recipe-restriction-modal-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+.recipe-restriction-modal-grid
+.restriction-card {
+  width: 100%;
+}
+
+.recipe-restriction-modal-actions {
+  padding: 16px 24px;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  border-top: 1px solid #ddd;
+}
+
+.recipe-restriction-cancel,
+.recipe-restriction-confirm {
+  padding: 9px 18px;
+
+  border-radius: 9px;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.recipe-restriction-cancel {
+  border: 2px solid #c7c7c7;
+
+  background: var(--white);
+
+  color: var(--dark-green);
+}
+
+.recipe-restriction-confirm {
+  border: 2px solid #07832b;
+
+  background: #07832b;
+
+  color: var(--white);
+}
+
+.recipe-restriction-modal-enter-active,
+.recipe-restriction-modal-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.recipe-restriction-modal-enter-from,
+.recipe-restriction-modal-leave-to {
+  opacity: 0;
+}
