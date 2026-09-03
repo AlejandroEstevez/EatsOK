@@ -1,25 +1,47 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import {
+  computed,
+  onMounted,
+  ref,
+} from 'vue'
+import {
+  useRoute,
+  useRouter,
+} from 'vue-router'
 
 import './EstablishmentDetailView.css'
 
 import NavBar from '../components/common/NavBar.vue'
 import ReviewSection from '../components/reviews/ReviewSection.vue'
 
+import { useAuthStore } from '../stores/auth'
 import api from '../services/api'
 
 import pinIcon from '../assets/icons/pin.svg'
 import clockIcon from '../assets/icons/clock.svg'
 import telephoneIcon from '../assets/icons/telephone.svg'
 import warningIcon from '../assets/icons/warning.svg'
+import editIcon from '../assets/icons/edit.svg'
+
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 
 const establishment = ref(null)
 const loading = ref(true)
 const error = ref('')
 const dishFilter = ref('all')
+
+
+const canEdit = computed(() => {
+  return (
+    authStore.user?.role === 'OWNER'
+    && establishment.value?.owner
+      === authStore.user?.username
+  )
+})
+
 
 function formatTime(time) {
   if (!time) {
@@ -28,6 +50,7 @@ function formatTime(time) {
 
   return time.slice(0, 5)
 }
+
 
 const availableDishes = computed(() => {
   if (!establishment.value) {
@@ -39,6 +62,7 @@ const availableDishes = computed(() => {
   )
 })
 
+
 const filteredDishes = computed(() => {
   if (dishFilter.value === 'compatible') {
     return availableDishes.value.filter(
@@ -48,6 +72,7 @@ const filteredDishes = computed(() => {
 
   return availableDishes.value
 })
+
 
 async function loadEstablishment() {
   loading.value = true
@@ -72,6 +97,17 @@ async function loadEstablishment() {
   }
 }
 
+
+function editEstablishment() {
+  router.push({
+    name: 'establishment-edit',
+    params: {
+      id: establishment.value.id,
+    },
+  })
+}
+
+
 function compatibilityLabel(percentage) {
   if (percentage >= 80) {
     return 'Alta'
@@ -84,6 +120,7 @@ function compatibilityLabel(percentage) {
   return 'Baja'
 }
 
+
 function compatibilityClass(percentage) {
   if (percentage >= 80) {
     return 'compatibility-high'
@@ -95,6 +132,7 @@ function compatibilityClass(percentage) {
 
   return 'compatibility-low'
 }
+
 
 onMounted(() => {
   loadEstablishment()
@@ -127,9 +165,25 @@ onMounted(() => {
           <div class="establishment-detail-content-area">
             <div class="establishment-detail-top">
               <div class="establishment-detail-main">
-                <h1>
-                  {{ establishment.name }}
-                </h1>
+                <div class="establishment-title-row">
+                  <h1>
+                    {{ establishment.name }}
+                  </h1>
+
+                  <button
+                    v-if="canEdit"
+                    type="button"
+                    class="establishment-edit-button"
+                    @click="editEstablishment"
+                  >
+                    <img
+                      :src="editIcon"
+                      alt=""
+                    >
+
+                    Editar
+                  </button>
+                </div>
 
                 <p
                   v-if="establishment.tag_details?.length"

@@ -9,6 +9,8 @@ import EstablishmentsView from '../views/EstablishmentsView.vue'
 import EstablishmentDetailView from '../views/EstablishmentDetailView.vue'
 import RecipeView from '../views/RecipesView.vue'
 import OwnerRegisterView from '../views/OwnerRegisterView.vue'
+import OwnerEstablishmentsView from '../views/OwnerEstablishmentsView.vue'
+import EstablishmentFormView from '../views/EstablishmentFormView.vue'
 
 
 const routes = [
@@ -56,6 +58,21 @@ const routes = [
     path: '/admin/owners/register',
     name: 'owner-register',
     component: OwnerRegisterView,
+  },
+  {
+    path: '/owner/establishments',
+    name: 'owner-establishments',
+    component: OwnerEstablishmentsView,
+  },
+  {
+    path: '/owner/establishments/new',
+    name: 'establishment-create',
+    component: EstablishmentFormView,
+  },
+  {
+    path: '/owner/establishments/:id/edit',
+    name: 'establishment-edit',
+    component: EstablishmentFormView,
   },
 ]
 

@@ -22,12 +22,24 @@ from .serializers import (
 
 
 class EstablishmentListCreateView(generics.ListCreateAPIView):
-    queryset = Establishment.objects.all()
     serializer_class = EstablishmentSerializer
     permission_classes = [
         IsAuthenticated,
         IsOwnerOrReadOnly,
     ]
+
+    def get_queryset(self):
+        queryset = Establishment.objects.all()
+
+        if (
+            self.request.query_params.get("mine")
+            == "true"
+        ):
+            queryset = queryset.filter(
+                owner=self.request.user
+            )
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(
