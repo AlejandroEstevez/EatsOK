@@ -8,6 +8,7 @@ import FoodProfileView from '../views/FoodProfileView.vue'
 import EstablishmentsView from '../views/EstablishmentsView.vue'
 import EstablishmentDetailView from '../views/EstablishmentDetailView.vue'
 import RecipeView from '../views/RecipesView.vue'
+import OwnerRegisterView from '../views/OwnerRegisterView.vue'
 
 
 const routes = [
@@ -50,6 +51,11 @@ const routes = [
     path: '/account',
     name: 'account',
     component: AccountView,
+  },
+  {
+    path: '/admin/owners/register',
+    name: 'owner-register',
+    component: OwnerRegisterView,
   },
 ]
 

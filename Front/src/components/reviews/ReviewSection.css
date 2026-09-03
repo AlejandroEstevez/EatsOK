@@ -116,7 +116,11 @@
 
 .review-header {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns:
+    auto
+    auto
+    1fr
+    auto;
   align-items: center;
   gap: 12px;
 }
@@ -133,6 +137,32 @@
   font-size: 0.8rem;
 
   white-space: nowrap;
+}
+
+.hide-review-button {
+  padding: 6px 10px;
+
+  border: 1px solid #c84444;
+  border-radius: 7px;
+
+  background: white;
+  color: #c84444;
+
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.hide-review-button:hover:not(:disabled) {
+  background: #fff2f2;
+}
+
+.hide-review-button:disabled {
+  opacity: 0.6;
+
+  cursor: default;
 }
 
 .review-comment {

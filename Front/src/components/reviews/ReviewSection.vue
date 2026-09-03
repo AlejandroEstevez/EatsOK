@@ -1,10 +1,19 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
 
 import api from '../../services/api'
+import { useAuthStore } from '../../stores/auth'
 
 import ReviewModal from './ReviewModal.vue'
 import StarRating from './StarRating.vue'
+
+
+const authStore = useAuthStore()
 
 const props = defineProps({
   targetType: {
@@ -31,6 +40,12 @@ const loading = ref(false)
 const modalOpen = ref(false)
 const submitting = ref(false)
 const submitError = ref('')
+
+const hidingReviewId = ref(null)
+
+const isAdmin = computed(() => {
+  return authStore.user?.role === 'ADMIN'
+})
 
 const averageRating = computed(() => {
   if (!reviews.value.length) {
@@ -130,6 +145,38 @@ async function submitReview({
     )
   } finally {
     submitting.value = false
+  }
+}
+
+async function hideReview(review) {
+  const confirmed = window.confirm(
+    '¿Seguro que quieres ocultar esta reseña?'
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  hidingReviewId.value = review.id
+
+  try {
+    await api.patch(
+      `/reviews/${review.id}/moderation/`,
+      {
+        visible: false,
+      }
+    )
+
+    reviews.value = reviews.value.filter(
+      item => item.id !== review.id
+    )
+  } catch (error) {
+    console.error(
+      'Error hiding review:',
+      error
+    )
+  } finally {
+    hidingReviewId.value = null
   }
 }
 
@@ -302,6 +349,7 @@ onMounted(() => {
       </div>
 
       <button
+        v-if="authStore.user?.role === 'CLIENT'"
         type="button"
         class="write-review-button"
         @click="openModal"
@@ -359,6 +407,22 @@ onMounted(() => {
                 review.publication_date
               ) }}
             </span>
+
+            <button
+              v-if="isAdmin"
+              type="button"
+              class="hide-review-button"
+              :disabled="
+                hidingReviewId === review.id
+              "
+              @click="hideReview(review)"
+            >
+              {{
+                hidingReviewId === review.id
+                  ? 'Ocultando...'
+                  : 'Ocultar'
+              }}
+            </button>
           </div>
 
           <p

@@ -127,6 +127,24 @@ const handleLogout = async () => {
             Editar datos
           </RouterLink>
 
+          <RouterLink
+            v-if="authStore.user.role === 'ADMIN'"
+            to="/admin/owners/register"
+            class="account-dropdown-item"
+            @click="showAccountMenu = false"
+          >
+            Registrar propietario
+          </RouterLink>
+
+          <RouterLink
+            v-if="authStore.user.role === 'OWNER'"
+            to="/owner/establishments"
+            class="account-dropdown-item"
+            @click="showAccountMenu = false"
+          >
+            Gestionar establecimientos
+          </RouterLink>
+
           <button
             type="button"
             class="account-dropdown-item logout-item"
@@ -145,12 +163,15 @@ const handleLogout = async () => {
         Acceder
       </RouterLink>
     </div>
+
     <div
       v-if="showLogoutMessage"
       class="logout-message-overlay"
     >
       <div class="logout-message">
-        <h3>Sesión cerrada</h3>
+        <h3>
+          Sesión cerrada
+        </h3>
 
         <p>
           Has cerrado sesión correctamente.
