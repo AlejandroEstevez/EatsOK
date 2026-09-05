@@ -102,7 +102,7 @@ import './HomeView.css'
               </strong>
 
               <p>
-                Regístrate y gestiona tu negocio en EatsOK para llegar a más personas.
+                Consulta cómo gestionar tu negocio en EatsOK para llegar a más personas.
               </p>
             </div>
           </div>

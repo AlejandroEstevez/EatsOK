@@ -239,7 +239,9 @@ onMounted(() => {
   renderSelectedLocation()
 
   setTimeout(() => {
-    map.invalidateSize()
+    if (map) {
+      map.invalidateSize()
+    }
   }, 0)
 })
 
