@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework.test import APIClient
 
 from food_profiles.models import FoodProfile

@@ -15,9 +15,7 @@ class FoodProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         if self.request.user.role != self.request.user.Role.CLIENT:
-            raise PermissionDenied(
-                "Only clients have a food profile."
-            )
+            raise PermissionDenied("Only clients have a food profile.")
 
         return self.request.user.food_profile
 

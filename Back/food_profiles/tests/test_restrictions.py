@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from food_profiles.models import Restriction
@@ -7,7 +6,6 @@ from food_profiles.models import Restriction
 
 @pytest.mark.django_db
 class TestRestrictions:
-
     def test_restrictions_requires_authentication(
         self,
         api_client,
@@ -33,9 +31,7 @@ class TestRestrictions:
         assert len(response.data) == 19
 
         assert all(
-            "id" in restriction
-            and "name" in restriction
-            and "type" in restriction
+            "id" in restriction and "name" in restriction and "type" in restriction
             for restriction in response.data
         )
 
@@ -48,10 +44,7 @@ class TestRestrictions:
             "/api/food-profiles/restrictions/",
         )
 
-        types = {
-            restriction["type"]
-            for restriction in response.data
-        }
+        types = {restriction["type"] for restriction in response.data}
 
         assert "allergy" in types
         assert "diet" in types

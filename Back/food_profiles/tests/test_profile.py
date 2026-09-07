@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from food_profiles.models import Restriction
@@ -7,7 +6,6 @@ from food_profiles.models import Restriction
 
 @pytest.mark.django_db
 class TestFoodProfile:
-
     def test_food_profile_requires_authentication(
         self,
         api_client,
@@ -39,17 +37,12 @@ class TestFoodProfile:
         client_user,
     ):
         """A client must be able to assign multiple restrictions."""
-        restrictions = list(
-            Restriction.objects.order_by("id")[:3]
-        )
+        restrictions = list(Restriction.objects.order_by("id")[:3])
 
         response = authenticated_client.patch(
             "/api/food-profiles/",
             {
-                "restriction_ids": [
-                    restriction.id
-                    for restriction in restrictions
-                ],
+                "restriction_ids": [restriction.id for restriction in restrictions],
             },
             format="json",
         )
@@ -63,10 +56,7 @@ class TestFoodProfile:
                 "id",
                 flat=True,
             )
-        ) == {
-            restriction.id
-            for restriction in restrictions
-        }
+        ) == {restriction.id for restriction in restrictions}
 
     def test_update_food_profile_replaces_existing_restrictions(
         self,
@@ -74,13 +64,9 @@ class TestFoodProfile:
         client_user,
     ):
         """Updating restrictions must replace the previous selection."""
-        restrictions = list(
-            Restriction.objects.order_by("id")[:3]
-        )
+        restrictions = list(Restriction.objects.order_by("id")[:3])
 
-        client_user.food_profile.restrictions.set(
-            restrictions[:2]
-        )
+        client_user.food_profile.restrictions.set(restrictions[:2])
 
         response = authenticated_client.patch(
             "/api/food-profiles/",
@@ -113,9 +99,7 @@ class TestFoodProfile:
         """A client must be able to remove all restrictions."""
         restrictions = Restriction.objects.order_by("id")[:2]
 
-        client_user.food_profile.restrictions.set(
-            restrictions
-        )
+        client_user.food_profile.restrictions.set(restrictions)
 
         response = authenticated_client.patch(
             "/api/food-profiles/",

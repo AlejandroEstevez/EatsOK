@@ -1,17 +1,14 @@
 import pytest
-
 from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from food_profiles.models import FoodProfile
-
 
 User = get_user_model()
 
 
 @pytest.mark.django_db
 class TestUserRegistration:
-
     def test_register_client(self, api_client):
         """A public registration must create a client user."""
         data = {
@@ -34,7 +31,6 @@ class TestUserRegistration:
         assert user.role == User.Role.CLIENT
         assert user.check_password("Password123!")
 
-
     def test_register_cannot_choose_admin_role(self, api_client):
         """A user must not gain administrator privileges during registration."""
         data = {
@@ -56,7 +52,6 @@ class TestUserRegistration:
 
         assert user.role == User.Role.CLIENT
 
-
     def test_register_cannot_choose_owner_role(self, api_client):
         """A user must not be able to register as an owner."""
         data = {
@@ -77,7 +72,7 @@ class TestUserRegistration:
         user = User.objects.get(username="fake_owner")
 
         assert user.role == User.Role.CLIENT
-    
+
     def test_registration_creates_food_profile(
         self,
         api_client,

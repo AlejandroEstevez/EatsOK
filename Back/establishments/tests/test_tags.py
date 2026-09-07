@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from establishments.models import Tag
@@ -7,7 +6,6 @@ from establishments.models import Tag
 
 @pytest.mark.django_db
 class TestTags:
-
     def test_authenticated_user_can_list_tags(
         self,
         authenticated_client,

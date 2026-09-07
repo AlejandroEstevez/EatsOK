@@ -3,7 +3,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Review
-from .serializers import ReviewSerializer, ReviewModerationSerializer
+from .serializers import ReviewModerationSerializer, ReviewSerializer
 
 
 class ReviewListCreateView(generics.ListCreateAPIView):
@@ -21,35 +21,23 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             "recipe",
         )
 
-        establishment_id = self.request.query_params.get(
-            "establishment"
-        )
+        establishment_id = self.request.query_params.get("establishment")
 
-        recipe_id = self.request.query_params.get(
-            "recipe"
-        )
+        recipe_id = self.request.query_params.get("recipe")
 
         if establishment_id:
-            queryset = queryset.filter(
-                establishment_id=establishment_id
-            )
+            queryset = queryset.filter(establishment_id=establishment_id)
 
         if recipe_id:
-            queryset = queryset.filter(
-                recipe_id=recipe_id
-            )
+            queryset = queryset.filter(recipe_id=recipe_id)
 
-        return queryset.order_by(
-            "-publication_date"
-        )
+        return queryset.order_by("-publication_date")
 
     def perform_create(self, serializer):
         user = self.request.user
 
         if user.role != user.Role.CLIENT:
-            raise PermissionDenied(
-                "Only clients can publish reviews."
-            )
+            raise PermissionDenied("Only clients can publish reviews.")
 
         serializer.save(
             author=user,
@@ -68,22 +56,15 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
 
         if review.author != user:
-            raise PermissionDenied(
-                "You can only modify your own reviews."
-            )
+            raise PermissionDenied("You can only modify your own reviews.")
 
         serializer.save()
 
     def perform_destroy(self, instance):
         user = self.request.user
 
-        if (
-            instance.author != user
-            and user.role != user.Role.ADMIN
-        ):
-            raise PermissionDenied(
-                "You can only delete your own reviews."
-            )
+        if instance.author != user and user.role != user.Role.ADMIN:
+            raise PermissionDenied("You can only delete your own reviews.")
 
         instance.delete()
 
@@ -99,8 +80,6 @@ class ReviewModerationView(generics.UpdateAPIView):
         user = self.request.user
 
         if user.role != user.Role.ADMIN:
-            raise PermissionDenied(
-                "Only administrators can moderate reviews."
-            )
+            raise PermissionDenied("Only administrators can moderate reviews.")
 
         serializer.save()

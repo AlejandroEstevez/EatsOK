@@ -24,9 +24,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
             user.Role.CLIENT,
             user.Role.OWNER,
         ]:
-            raise PermissionDenied(
-                "Only clients and owners can publish recipes."
-            )
+            raise PermissionDenied("Only clients and owners can publish recipes.")
 
         serializer.save(
             author=user,
@@ -42,16 +40,12 @@ class RecipeDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         if self.get_object().author != self.request.user:
-            raise PermissionDenied(
-                "You can only modify your own recipes."
-            )
+            raise PermissionDenied("You can only modify your own recipes.")
 
         serializer.save()
 
     def perform_destroy(self, instance):
         if instance.author != self.request.user:
-            raise PermissionDenied(
-                "You can only delete your own recipes."
-            )
+            raise PermissionDenied("You can only delete your own recipes.")
 
         instance.delete()

@@ -1,12 +1,10 @@
 import pytest
-
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @pytest.mark.django_db
 class TestLogout:
-
     def test_logout_blacklists_refresh_token(
         self,
         api_client,
@@ -15,9 +13,7 @@ class TestLogout:
         """Logging out must prevent the refresh token from being reused."""
         refresh = RefreshToken.for_user(client_user)
 
-        api_client.credentials(
-            HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}"
-        )
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
 
         response = api_client.post(
             "/api/users/logout/",

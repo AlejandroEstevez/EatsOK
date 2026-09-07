@@ -1,11 +1,9 @@
 import pytest
-
 from rest_framework import status
 
 
 @pytest.mark.django_db
 class TestChangePassword:
-
     def test_change_password(
         self,
         authenticated_client,
@@ -29,7 +27,6 @@ class TestChangePassword:
         assert client_user.check_password("NewPassword456!")
         assert not client_user.check_password("Password123!")
 
-
     def test_change_password_with_wrong_current_password(
         self,
         authenticated_client,
@@ -51,7 +48,6 @@ class TestChangePassword:
         client_user.refresh_from_db()
 
         assert client_user.check_password("Password123!")
-
 
     def test_change_password_requires_matching_confirmation(
         self,

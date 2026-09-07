@@ -1,5 +1,4 @@
 from django.db.models import Avg, Count, Q
-
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -28,13 +27,9 @@ class EstablishmentSearchView(generics.GenericAPIView):
     def get(self, request):
         search = request.query_params.get("search", "").strip()
 
-        use_profile = self._parse_bool(
-            request.query_params.get("use_profile", "true")
-        )
+        use_profile = self._parse_bool(request.query_params.get("use_profile", "true"))
 
-        restriction_ids = self._parse_restriction_ids(
-            request.query_params.get("restrictions")
-        )
+        restriction_ids = self._parse_restriction_ids(request.query_params.get("restrictions"))
 
         latitude = request.query_params.get("latitude")
         longitude = request.query_params.get("longitude")
@@ -47,23 +42,24 @@ class EstablishmentSearchView(generics.GenericAPIView):
             additional_restriction_ids=restriction_ids,
         )
 
-        establishments = Establishment.objects.filter(
-            active=True
-        ).select_related(
-            "location"
-        ).prefetch_related(
-            "tags",
-            "dishes__dish_restrictions__restriction",
-        ).annotate(
-            average_rating=Avg(
-                'reviews__rating',
-                filter=Q(reviews__visible=True),
-            ),
-            review_count=Count(
-                'reviews',
-                filter=Q(reviews__visible=True),
-                distinct=True,
-            ),
+        establishments = (
+            Establishment.objects.filter(active=True)
+            .select_related("location")
+            .prefetch_related(
+                "tags",
+                "dishes__dish_restrictions__restriction",
+            )
+            .annotate(
+                average_rating=Avg(
+                    "reviews__rating",
+                    filter=Q(reviews__visible=True),
+                ),
+                review_count=Count(
+                    "reviews",
+                    filter=Q(reviews__visible=True),
+                    distinct=True,
+                ),
+            )
         )
 
         if search:
@@ -87,27 +83,18 @@ class EstablishmentSearchView(generics.GenericAPIView):
                 active_restrictions,
             )
 
-            total_dishes = establishment.dishes.filter(
-                available=True
-            ).count()
+            total_dishes = establishment.dishes.filter(available=True).count()
 
             compatible_count = compatible_dishes.count()
 
-            compatible_percentage = (
-                compatible_count / total_dishes * 100
-                if total_dishes > 0
-                else 0
-            )
+            compatible_percentage = compatible_count / total_dishes * 100 if total_dishes > 0 else 0
 
             distance = None
 
             if coordinates is not None:
                 location = establishment.location
 
-                if (
-                    location.latitude is None
-                    or location.longitude is None
-                ):
+                if location.latitude is None or location.longitude is None:
                     continue
 
                 distance = calculate_distance(
@@ -120,34 +107,36 @@ class EstablishmentSearchView(generics.GenericAPIView):
                 if distance > coordinates["radius"]:
                     continue
 
-            results.append({
-                "id": establishment.id,
-                "name": establishment.name,
-                "description": establishment.description,
-                "location": {
-                    "address": establishment.location.address,
-                    "city": establishment.location.city,
-                    "latitude": establishment.location.latitude,
-                    "longitude": establishment.location.longitude,
-                },
-                "tags": [
-                    {
-                        "id": tag.id,
-                        "name": tag.name,
-                    }
-                    for tag in establishment.tags.all()
-                ],
-                "average_rating": establishment.average_rating,
-                "review_count": establishment.review_count,
-                "distance": round(distance, 2) if distance is not None else None,
-                "compatible_dishes": compatible_count,
-                "total_dishes": total_dishes,
-                "compatible_percentage": round(
-                    compatible_percentage,
-                    2,
-                ),
-                "image_url": establishment.image_url,
-            })
+            results.append(
+                {
+                    "id": establishment.id,
+                    "name": establishment.name,
+                    "description": establishment.description,
+                    "location": {
+                        "address": establishment.location.address,
+                        "city": establishment.location.city,
+                        "latitude": establishment.location.latitude,
+                        "longitude": establishment.location.longitude,
+                    },
+                    "tags": [
+                        {
+                            "id": tag.id,
+                            "name": tag.name,
+                        }
+                        for tag in establishment.tags.all()
+                    ],
+                    "average_rating": establishment.average_rating,
+                    "review_count": establishment.review_count,
+                    "distance": round(distance, 2) if distance is not None else None,
+                    "compatible_dishes": compatible_count,
+                    "total_dishes": total_dishes,
+                    "compatible_percentage": round(
+                        compatible_percentage,
+                        2,
+                    ),
+                    "image_url": establishment.image_url,
+                }
+            )
 
         results = self._order_results(
             results,
@@ -170,9 +159,7 @@ class EstablishmentSearchView(generics.GenericAPIView):
         if value in ["false", "0", "no"]:
             return False
 
-        raise ValidationError(
-            {"use_profile": "Must be true or false."}
-        )
+        raise ValidationError({"use_profile": "Must be true or false."})
 
     def _parse_restriction_ids(self, value):
         if not value:
@@ -180,39 +167,29 @@ class EstablishmentSearchView(generics.GenericAPIView):
 
         try:
             restriction_ids = [
-                int(restriction_id)
-                for restriction_id in value.split(",")
-                if restriction_id
+                int(restriction_id) for restriction_id in value.split(",") if restriction_id
             ]
         except ValueError:
-            raise ValidationError(
-                "Restrictions must be provided as comma-separated IDs."
-            )
+            raise ValidationError("Restrictions must be provided as comma-separated IDs.")
 
         existing_ids = set(
-            Restriction.objects.filter(
-                id__in=restriction_ids
-            ).values_list(
+            Restriction.objects.filter(id__in=restriction_ids).values_list(
                 "id",
                 flat=True,
             )
         )
 
         if existing_ids != set(restriction_ids):
-            raise ValidationError(
-                "One or more restrictions do not exist."
-            )
+            raise ValidationError("One or more restrictions do not exist.")
 
         return restriction_ids
-    
+
     def _parse_coordinates(self, latitude, longitude, radius):
         has_latitude = latitude is not None
         has_longitude = longitude is not None
 
         if has_latitude != has_longitude:
-            raise ValidationError(
-                "Latitude and longitude must be provided together."
-            )
+            raise ValidationError("Latitude and longitude must be provided together.")
 
         if not has_latitude:
             return None
@@ -222,21 +199,16 @@ class EstablishmentSearchView(generics.GenericAPIView):
             longitude = float(longitude)
             radius = float(radius)
         except ValueError:
-            raise ValidationError(
-                "Latitude, longitude and radius must be valid numbers."
-            )
+            raise ValidationError("Latitude, longitude and radius must be valid numbers.")
 
         if radius <= 0:
-            raise ValidationError(
-                "Radius must be greater than zero."
-            )
+            raise ValidationError("Radius must be greater than zero.")
 
         return {
             "latitude": latitude,
             "longitude": longitude,
             "radius": radius,
         }
-
 
     def _order_results(self, results, ordering):
         valid_orderings = {
@@ -254,9 +226,7 @@ class EstablishmentSearchView(generics.GenericAPIView):
             return results
 
         if ordering not in valid_orderings:
-            raise ValidationError(
-                "Invalid ordering option."
-            )
+            raise ValidationError("Invalid ordering option.")
 
         reverse = ordering.startswith("-")
         field = ordering.lstrip("-")
@@ -291,47 +261,38 @@ class RecipeSearchView(generics.GenericAPIView):
             "-publication_date",
         )
 
-        use_profile = self._parse_bool(
-            request.query_params.get("use_profile", "true")
-        )
+        use_profile = self._parse_bool(request.query_params.get("use_profile", "true"))
 
-        restriction_ids = self._parse_restriction_ids(
-            request.query_params.get("restrictions")
-        )
+        restriction_ids = self._parse_restriction_ids(request.query_params.get("restrictions"))
 
         active_restrictions = get_active_restrictions(
             request.user,
             use_profile=use_profile,
             additional_restriction_ids=restriction_ids,
         )
-        
-        active_restriction_ids = {
-            restriction.id
-            for restriction in active_restrictions
-        }
 
-        recipes = Recipe.objects.filter(
-            visible=True
-        ).select_related(
-            "establishment"
-        ).prefetch_related(
-            "recipe_restrictions__restriction"
-        ).annotate(
-            average_rating=Avg(
-                "reviews__rating",
-                filter=Q(reviews__visible=True),
-            ),
-            review_count=Count(
-                "reviews",
-                filter=Q(reviews__visible=True),
-                distinct=True,
-            ),
+        active_restriction_ids = {restriction.id for restriction in active_restrictions}
+
+        recipes = (
+            Recipe.objects.filter(visible=True)
+            .select_related("establishment")
+            .prefetch_related("recipe_restrictions__restriction")
+            .annotate(
+                average_rating=Avg(
+                    "reviews__rating",
+                    filter=Q(reviews__visible=True),
+                ),
+                review_count=Count(
+                    "reviews",
+                    filter=Q(reviews__visible=True),
+                    distinct=True,
+                ),
+            )
         )
 
         if search:
             recipes = recipes.filter(
-                Q(title__icontains=search)
-                | Q(description__icontains=search)
+                Q(title__icontains=search) | Q(description__icontains=search)
             ).distinct()
 
         results = []
@@ -342,54 +303,44 @@ class RecipeSearchView(generics.GenericAPIView):
                 active_restrictions,
             ):
                 continue
-            
+
             adapted_restrictions = [
                 relation.restriction
                 for relation in recipe.recipe_restrictions.all()
                 if (
-                    relation.relation_type
-                    == RecipeRestrictionType.ADAPTED_FOR
-                    and relation.restriction_id
-                    in active_restriction_ids
+                    relation.relation_type == RecipeRestrictionType.ADAPTED_FOR
+                    and relation.restriction_id in active_restriction_ids
                 )
             ]
 
-            adapted_count = len(
-                adapted_restrictions
-            )
+            adapted_count = len(adapted_restrictions)
 
-            results.append({
-                "id": recipe.id,
-                "title": recipe.title,
-                "description": recipe.description,
-                "preparation_time": recipe.preparation_time,
-                "author": str(recipe.author),
-                "adapted_count": adapted_count,
-                "adapted_restrictions": [
-                    {
-                        "id": restriction.id,
-                        "name": restriction.name,
-                        "type": self._get_restriction_type(
-                            restriction
-                        ),
-                    }
-                    for restriction in adapted_restrictions
-                ],
-                "average_rating": recipe.average_rating,
-                "review_count": recipe.review_count,
-                "publication_date": recipe.publication_date,
-                "establishment_id": (
-                    recipe.establishment.id
-                    if recipe.establishment
-                    else None
-                ),
-                "establishment_name": (
-                    recipe.establishment.name
-                    if recipe.establishment
-                    else None
-                ),
-                "image_url": recipe.image_url,
-            })
+            results.append(
+                {
+                    "id": recipe.id,
+                    "title": recipe.title,
+                    "description": recipe.description,
+                    "preparation_time": recipe.preparation_time,
+                    "author": str(recipe.author),
+                    "adapted_count": adapted_count,
+                    "adapted_restrictions": [
+                        {
+                            "id": restriction.id,
+                            "name": restriction.name,
+                            "type": self._get_restriction_type(restriction),
+                        }
+                        for restriction in adapted_restrictions
+                    ],
+                    "average_rating": recipe.average_rating,
+                    "review_count": recipe.review_count,
+                    "publication_date": recipe.publication_date,
+                    "establishment_id": (recipe.establishment.id if recipe.establishment else None),
+                    "establishment_name": (
+                        recipe.establishment.name if recipe.establishment else None
+                    ),
+                    "image_url": recipe.image_url,
+                }
+            )
 
         results = self._order_results(
             results,
@@ -427,9 +378,7 @@ class RecipeSearchView(generics.GenericAPIView):
         if value in ["false", "0", "no"]:
             return False
 
-        raise ValidationError(
-            {"use_profile": "Must be true or false."}
-        )
+        raise ValidationError({"use_profile": "Must be true or false."})
 
     def _parse_restriction_ids(self, value):
         if not value:
@@ -437,28 +386,19 @@ class RecipeSearchView(generics.GenericAPIView):
 
         try:
             restriction_ids = [
-                int(restriction_id)
-                for restriction_id in value.split(",")
-                if restriction_id.strip()
+                int(restriction_id) for restriction_id in value.split(",") if restriction_id.strip()
             ]
         except ValueError:
             raise ValidationError(
-                {
-                    "restrictions":
-                        "Restrictions must be provided as comma-separated IDs."
-                }
+                {"restrictions": "Restrictions must be provided as comma-separated IDs."}
             )
 
         existing_ids = set(
-            Restriction.objects.filter(
-                id__in=restriction_ids
-            ).values_list("id", flat=True)
+            Restriction.objects.filter(id__in=restriction_ids).values_list("id", flat=True)
         )
 
         if existing_ids != set(restriction_ids):
-            raise ValidationError(
-                {"restrictions": "One or more restrictions do not exist."}
-            )
+            raise ValidationError({"restrictions": "One or more restrictions do not exist."})
 
         return restriction_ids
 
@@ -473,9 +413,7 @@ class RecipeSearchView(generics.GenericAPIView):
         }
 
         if ordering not in valid_orderings:
-            raise ValidationError(
-                "Invalid ordering option."
-            )
+            raise ValidationError("Invalid ordering option.")
 
         reverse = ordering.startswith("-")
         field = ordering.lstrip("-")

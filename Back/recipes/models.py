@@ -51,7 +51,7 @@ class Recipe(models.Model):
         related_name="recipes",
         blank=True,
     )
-    
+
     image_url = models.URLField(
         blank=True,
     )
@@ -77,11 +77,9 @@ class RecipeRestriction(models.Model):
         on_delete=models.CASCADE,
         related_name="recipe_restrictions",
     )
-    
+
     relation_type = models.CharField(
-        max_length=20,
-        choices=RecipeRestrictionType.choices,
-        default="blocks"
+        max_length=20, choices=RecipeRestrictionType.choices, default="blocks"
     )
 
     class Meta:

@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from reviews.models import Review
@@ -7,7 +6,6 @@ from reviews.models import Review
 
 @pytest.mark.django_db
 class TestReviews:
-
     def test_reviews_require_authentication(
         self,
         api_client,

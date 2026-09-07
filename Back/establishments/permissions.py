@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class IsOwnerOrReadOnly(BasePermission):
@@ -6,10 +6,7 @@ class IsOwnerOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
 
-        return (
-            request.user.is_authenticated
-            and request.user.role == request.user.Role.OWNER
-        )
+        return request.user.is_authenticated and request.user.role == request.user.Role.OWNER
 
     def has_object_permission(
         self,
@@ -28,10 +25,7 @@ class IsAdminOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
 
-        return (
-            request.user.is_authenticated
-            and request.user.role == request.user.Role.ADMIN
-        )
+        return request.user.is_authenticated and request.user.role == request.user.Role.ADMIN
 
 
 class IsEstablishmentOwnerOrReadOnly(BasePermission):
@@ -39,10 +33,7 @@ class IsEstablishmentOwnerOrReadOnly(BasePermission):
         if request.method in SAFE_METHODS:
             return request.user.is_authenticated
 
-        return (
-            request.user.is_authenticated
-            and request.user.role == request.user.Role.OWNER
-        )
+        return request.user.is_authenticated and request.user.role == request.user.Role.OWNER
 
     def has_object_permission(
         self,

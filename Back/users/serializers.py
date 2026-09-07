@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from food_profiles.models import FoodProfile
 
-
 User = get_user_model()
 
 
@@ -21,9 +20,7 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise AuthenticationFailed(
-                "Invalid email or password."
-            )
+            raise AuthenticationFailed("Invalid email or password.")
 
         user = authenticate(
             request=self.context.get("request"),
@@ -32,9 +29,7 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
         )
 
         if user is None:
-            raise AuthenticationFailed(
-                "Invalid email or password."
-            )
+            raise AuthenticationFailed("Invalid email or password.")
 
         refresh = self.get_token(user)
 
@@ -102,17 +97,13 @@ class ChangePasswordSerializer(serializers.Serializer):
         user = self.context["request"].user
 
         if not user.check_password(value):
-            raise serializers.ValidationError(
-                "Current password is incorrect."
-            )
+            raise serializers.ValidationError("Current password is incorrect.")
 
         return value
 
     def validate(self, attrs):
         if attrs["new_password"] != attrs["new_password_confirm"]:
-            raise serializers.ValidationError(
-                {"new_password_confirm": "Passwords do not match."}
-            )
+            raise serializers.ValidationError({"new_password_confirm": "Passwords do not match."})
 
         return attrs
 

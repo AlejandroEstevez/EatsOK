@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from establishments.models import Establishment
@@ -7,7 +6,6 @@ from establishments.models import Establishment
 
 @pytest.mark.django_db
 class TestEstablishments:
-
     def test_establishment_list_requires_authentication(
         self,
         api_client,

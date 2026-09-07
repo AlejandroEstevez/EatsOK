@@ -5,12 +5,12 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .permissions import IsAdminRole
 from .serializers import (
+    ChangePasswordSerializer,
     EmailTokenObtainPairSerializer,
+    LogoutSerializer,
     OwnerRegisterSerializer,
     RegisterSerializer,
     UserSerializer,
-    LogoutSerializer,
-    ChangePasswordSerializer
 )
 
 

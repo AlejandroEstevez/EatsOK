@@ -5,7 +5,6 @@ from .views import (
     RestrictionListView,
 )
 
-
 urlpatterns = [
     path(
         "",

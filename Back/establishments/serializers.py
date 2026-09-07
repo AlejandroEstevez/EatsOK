@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from food_profiles.models import Restriction
-
 from .models import (
     Dish,
     DishRestriction,
@@ -57,7 +55,7 @@ class DishSerializer(serializers.ModelSerializer):
         many=True,
         required=False,
     )
-    
+
     is_compatible = serializers.SerializerMethodField()
     conflicting_restrictions = serializers.SerializerMethodField()
 
@@ -123,17 +121,14 @@ class DishSerializer(serializers.ModelSerializer):
                 dish=dish,
                 **restriction_data,
             )
-    
+
     def get_conflicting_restrictions(self, obj):
         active_restrictions = self.context.get(
             "active_restrictions",
             [],
         )
 
-        active_restriction_ids = {
-            restriction.id
-            for restriction in active_restrictions
-        }
+        active_restriction_ids = {restriction.id for restriction in active_restrictions}
 
         conflicts = [
             relation.restriction
@@ -149,11 +144,8 @@ class DishSerializer(serializers.ModelSerializer):
             for restriction in conflicts
         ]
 
-
     def get_is_compatible(self, obj):
-        return not bool(
-            self.get_conflicting_restrictions(obj)
-        )
+        return not bool(self.get_conflicting_restrictions(obj))
 
 
 class EstablishmentSerializer(serializers.ModelSerializer):
@@ -163,7 +155,7 @@ class EstablishmentSerializer(serializers.ModelSerializer):
         many=True,
         required=False,
     )
-    
+
     tag_details = TagSerializer(
         source="tags",
         many=True,
@@ -178,7 +170,7 @@ class EstablishmentSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
-    
+
     compatible_dishes = serializers.SerializerMethodField()
     total_dishes = serializers.SerializerMethodField()
     compatible_percentage = serializers.SerializerMethodField()
@@ -268,17 +260,13 @@ class EstablishmentSerializer(serializers.ModelSerializer):
             available=True,
         ).count()
 
-
     def get_compatible_dishes(self, obj):
         active_restrictions = self.context.get(
             "active_restrictions",
             [],
         )
 
-        active_restriction_ids = {
-            restriction.id
-            for restriction in active_restrictions
-        }
+        active_restriction_ids = {restriction.id for restriction in active_restrictions}
 
         return sum(
             1
@@ -289,7 +277,6 @@ class EstablishmentSerializer(serializers.ModelSerializer):
             )
         )
 
-
     def get_compatible_percentage(self, obj):
         total_dishes = self.get_total_dishes(obj)
 
@@ -298,6 +285,4 @@ class EstablishmentSerializer(serializers.ModelSerializer):
 
         compatible_dishes = self.get_compatible_dishes(obj)
 
-        return round(
-            compatible_dishes / total_dishes * 100
-        )
+        return round(compatible_dishes / total_dishes * 100)

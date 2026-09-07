@@ -63,18 +63,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         ]
 
     def validate_recipe_restrictions(self, value):
-        restriction_ids = [
-            item["restriction"].id
-            for item in value
-        ]
+        restriction_ids = [item["restriction"].id for item in value]
 
-        if len(restriction_ids) != len(
-            set(restriction_ids)
-        ):
-            raise serializers.ValidationError(
-                "A restriction cannot be both "
-                "blocking and adapted."
-            )
+        if len(restriction_ids) != len(set(restriction_ids)):
+            raise serializers.ValidationError("A restriction cannot be both blocking and adapted.")
 
         return value
 
@@ -107,14 +99,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        restrictions_provided = (
-            "restrictions" in validated_data
-        )
+        restrictions_provided = "restrictions" in validated_data
 
-        recipe_restrictions_provided = (
-            "recipe_restrictions"
-            in validated_data
-        )
+        recipe_restrictions_provided = "recipe_restrictions" in validated_data
 
         restrictions = validated_data.pop(
             "restrictions",
@@ -169,9 +156,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             RecipeRestriction.objects.create(
                 recipe=recipe,
                 restriction=restriction,
-                relation_type=(
-                    RecipeRestrictionType.BLOCKS
-                ),
+                relation_type=(RecipeRestrictionType.BLOCKS),
             )
 
     def validate_establishment(self, establishment):

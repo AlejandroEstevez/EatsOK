@@ -6,7 +6,6 @@ from .views import (
     ReviewModerationView,
 )
 
-
 urlpatterns = [
     path(
         "",

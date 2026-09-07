@@ -66,7 +66,7 @@ class Establishment(models.Model):
         related_name="establishments",
         blank=True,
     )
-    
+
     image_url = models.URLField(
         blank=True,
     )
@@ -148,7 +148,7 @@ class Dish(models.Model):
         related_name="dishes",
         blank=True,
     )
-    
+
     image_url = models.URLField(
         blank=True,
     )
@@ -192,8 +192,4 @@ class DishRestriction(models.Model):
         ]
 
     def __str__(self):
-        return (
-            f"{self.dish} - "
-            f"{self.restriction} "
-            f"({self.presence_type})"
-        )
+        return f"{self.dish} - {self.restriction} ({self.presence_type})"

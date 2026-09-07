@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from recipes.models import (
@@ -11,7 +10,6 @@ from recipes.models import (
 
 @pytest.mark.django_db
 class TestRecipeFilter:
-
     def test_profile_blocking_restriction_excludes_recipe(
         self,
         authenticated_client,
@@ -39,20 +37,13 @@ class TestRecipeFilter:
             relation_type=RecipeRestrictionType.BLOCKS,
         )
 
-        client_user.food_profile.restrictions.add(
-            restrictions[0]
-        )
+        client_user.food_profile.restrictions.add(restrictions[0])
 
-        response = authenticated_client.get(
-            "/api/search/recipes/?use_profile=true"
-        )
+        response = authenticated_client.get("/api/search/recipes/?use_profile=true")
 
         assert response.status_code == status.HTTP_200_OK
 
-        titles = [
-            recipe["title"]
-            for recipe in response.data
-        ]
+        titles = [recipe["title"] for recipe in response.data]
 
         assert blocked_recipe.title not in titles
         assert allowed_recipe.title in titles
@@ -77,20 +68,13 @@ class TestRecipeFilter:
             relation_type=RecipeRestrictionType.ADAPTED_FOR,
         )
 
-        client_user.food_profile.restrictions.add(
-            restrictions[0]
-        )
+        client_user.food_profile.restrictions.add(restrictions[0])
 
-        response = authenticated_client.get(
-            "/api/search/recipes/?use_profile=true"
-        )
+        response = authenticated_client.get("/api/search/recipes/?use_profile=true")
 
         assert response.status_code == status.HTTP_200_OK
 
-        titles = [
-            recipe["title"]
-            for recipe in response.data
-        ]
+        titles = [recipe["title"] for recipe in response.data]
 
         assert adapted_recipe.title in titles
 
@@ -114,20 +98,13 @@ class TestRecipeFilter:
             relation_type=RecipeRestrictionType.BLOCKS,
         )
 
-        client_user.food_profile.restrictions.add(
-            restrictions[0]
-        )
+        client_user.food_profile.restrictions.add(restrictions[0])
 
-        response = authenticated_client.get(
-            "/api/search/recipes/?use_profile=false"
-        )
+        response = authenticated_client.get("/api/search/recipes/?use_profile=false")
 
         assert response.status_code == status.HTTP_200_OK
 
-        titles = [
-            recipe["title"]
-            for recipe in response.data
-        ]
+        titles = [recipe["title"] for recipe in response.data]
 
         assert recipe.title in titles
 
@@ -159,18 +136,12 @@ class TestRecipeFilter:
         )
 
         response = authenticated_client.get(
-            (
-                "/api/search/recipes/"
-                f"?use_profile=false&restrictions={restrictions[0].id}"
-            )
+            (f"/api/search/recipes/?use_profile=false&restrictions={restrictions[0].id}")
         )
 
         assert response.status_code == status.HTTP_200_OK
 
-        titles = [
-            recipe["title"]
-            for recipe in response.data
-        ]
+        titles = [recipe["title"] for recipe in response.data]
 
         assert blocked_recipe.title not in titles
         assert allowed_recipe.title in titles
@@ -215,23 +186,15 @@ class TestRecipeFilter:
             relation_type=RecipeRestrictionType.BLOCKS,
         )
 
-        client_user.food_profile.restrictions.add(
-            restrictions[0]
-        )
+        client_user.food_profile.restrictions.add(restrictions[0])
 
         response = authenticated_client.get(
-            (
-                "/api/search/recipes/"
-                f"?use_profile=true&restrictions={restrictions[1].id}"
-            )
+            (f"/api/search/recipes/?use_profile=true&restrictions={restrictions[1].id}")
         )
 
         assert response.status_code == status.HTTP_200_OK
 
-        titles = [
-            recipe["title"]
-            for recipe in response.data
-        ]
+        titles = [recipe["title"] for recipe in response.data]
 
         assert profile_blocked_recipe.title not in titles
         assert additional_blocked_recipe.title not in titles
@@ -242,9 +205,7 @@ class TestRecipeFilter:
         authenticated_client,
     ):
         """Unknown restriction IDs must return a bad request."""
-        response = authenticated_client.get(
-            "/api/search/recipes/?restrictions=999999"
-        )
+        response = authenticated_client.get("/api/search/recipes/?restrictions=999999")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -253,8 +214,6 @@ class TestRecipeFilter:
         authenticated_client,
     ):
         """Invalid use_profile values must return a bad request."""
-        response = authenticated_client.get(
-            "/api/search/recipes/?use_profile=maybe"
-        )
+        response = authenticated_client.get("/api/search/recipes/?use_profile=maybe")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

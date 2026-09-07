@@ -1,15 +1,12 @@
 import pytest
-
 from django.contrib.auth import get_user_model
 from rest_framework import status
-
 
 User = get_user_model()
 
 
 @pytest.mark.django_db
 class TestOwnerRegistration:
-
     def test_client_cannot_create_owner(
         self,
         authenticated_client,
@@ -27,10 +24,7 @@ class TestOwnerRegistration:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-        assert not User.objects.filter(
-            username="new_owner"
-        ).exists()
-
+        assert not User.objects.filter(username="new_owner").exists()
 
     def test_admin_can_create_owner(
         self,
@@ -53,7 +47,6 @@ class TestOwnerRegistration:
 
         assert user.role == User.Role.OWNER
         assert user.check_password("Password123!")
-
 
     def test_admin_cannot_choose_role_when_creating_owner(
         self,

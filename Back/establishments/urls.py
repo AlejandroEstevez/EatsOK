@@ -9,7 +9,6 @@ from .views import (
     TagListCreateView,
 )
 
-
 urlpatterns = [
     path(
         "",

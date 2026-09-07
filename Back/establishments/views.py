@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-
 from rest_framework import generics
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -31,13 +30,8 @@ class EstablishmentListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Establishment.objects.all()
 
-        if (
-            self.request.query_params.get("mine")
-            == "true"
-        ):
-            queryset = queryset.filter(
-                owner=self.request.user
-            )
+        if self.request.query_params.get("mine") == "true":
+            queryset = queryset.filter(owner=self.request.user)
 
         return queryset
 
@@ -60,13 +54,8 @@ class EstablishmentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         active_restrictions = []
 
-        if (
-            self.request.user.role
-            == self.request.user.Role.CLIENT
-        ):
-            active_restrictions = (
-                self.request.user.food_profile.restrictions.all()
-            )
+        if self.request.user.role == self.request.user.Role.CLIENT:
+            active_restrictions = self.request.user.food_profile.restrictions.all()
 
         context["active_restrictions"] = active_restrictions
 
@@ -92,9 +81,7 @@ class DishListCreateView(generics.ListCreateAPIView):
         )
 
         if establishment.owner != self.request.user:
-            raise PermissionDenied(
-                "You can only add dishes to your own establishments."
-            )
+            raise PermissionDenied("You can only add dishes to your own establishments.")
 
         serializer.save(
             establishment=establishment,

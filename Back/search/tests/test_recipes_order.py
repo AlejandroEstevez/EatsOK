@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from recipes.models import (
@@ -11,16 +10,13 @@ from recipes.models import (
 
 @pytest.mark.django_db
 class TestRecipeOrder:
-
     def test_order_by_rating(
         self,
         authenticated_client,
         recipes_data,
     ):
         """Recipes must be ordered by rating."""
-        response = authenticated_client.get(
-            "/api/search/recipes/?ordering=-rating"
-        )
+        response = authenticated_client.get("/api/search/recipes/?ordering=-rating")
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data[0]["title"] == "Tortitas sin gluten"
@@ -32,9 +28,7 @@ class TestRecipeOrder:
         recipes_data,
     ):
         """Recipes must be ordered by preparation time."""
-        response = authenticated_client.get(
-            "/api/search/recipes/?ordering=preparation_time"
-        )
+        response = authenticated_client.get("/api/search/recipes/?ordering=preparation_time")
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data[0]["title"] == "Tortitas sin gluten"
@@ -47,7 +41,7 @@ class TestRecipeOrder:
         restrictions,
     ):
         """Recipes adapted to active restrictions must appear first."""
-        normal_recipe = Recipe.objects.create(
+        Recipe.objects.create(
             author=client_user,
             title="Receta normal",
             ingredients="Ingrediente",
@@ -94,9 +88,7 @@ class TestRecipeOrder:
             restrictions[1],
         )
 
-        response = authenticated_client.get(
-            "/api/search/recipes/?ordering=preparation_time"
-        )
+        response = authenticated_client.get("/api/search/recipes/?ordering=preparation_time")
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -110,8 +102,6 @@ class TestRecipeOrder:
         recipes_data,
     ):
         """Invalid ordering values must return a bad request."""
-        response = authenticated_client.get(
-            "/api/search/recipes/?ordering=invalid"
-        )
+        response = authenticated_client.get("/api/search/recipes/?ordering=invalid")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

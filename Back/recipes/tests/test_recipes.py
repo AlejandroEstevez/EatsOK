@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from food_profiles.models import Restriction
@@ -8,7 +7,6 @@ from recipes.models import Recipe
 
 @pytest.mark.django_db
 class TestRecipes:
-
     def test_recipe_list_requires_authentication(
         self,
         api_client,
@@ -26,9 +24,7 @@ class TestRecipes:
         client_user,
     ):
         """Clients must be able to publish recipes."""
-        restrictions = list(
-            Restriction.objects.order_by("id")[:2]
-        )
+        restrictions = list(Restriction.objects.order_by("id")[:2])
 
         response = authenticated_client.post(
             "/api/recipes/",
@@ -38,10 +34,7 @@ class TestRecipes:
                 "ingredients": "Harina sin gluten\nHuevos\nLeche",
                 "steps": "Mezclar ingredientes y cocinar.",
                 "preparation_time": 20,
-                "restrictions": [
-                    restriction.id
-                    for restriction in restrictions
-                ],
+                "restrictions": [restriction.id for restriction in restrictions],
             },
             format="json",
         )

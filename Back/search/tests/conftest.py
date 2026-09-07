@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework.test import APIClient
 
 from establishments.models import (
@@ -47,9 +46,7 @@ def authenticated_client(api_client, client_user):
 
 @pytest.fixture
 def restrictions(db):
-    return list(
-        Restriction.objects.order_by("id")[:3]
-    )
+    return list(Restriction.objects.order_by("id")[:3])
 
 
 @pytest.fixture

@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 100
+exclude = [
+    ".venv",
+    "venv",
+    "**/migrations/**",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

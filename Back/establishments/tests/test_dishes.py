@@ -1,5 +1,4 @@
 import pytest
-
 from rest_framework import status
 
 from establishments.models import Dish
@@ -8,7 +7,6 @@ from food_profiles.models import Restriction
 
 @pytest.mark.django_db
 class TestDishes:
-
     def test_client_can_list_dishes(
         self,
         authenticated_client,
@@ -34,9 +32,7 @@ class TestDishes:
         authenticated_owner,
         establishment,
     ):
-        restrictions = list(
-            Restriction.objects.order_by("id")[:2]
-        )
+        restrictions = list(Restriction.objects.order_by("id")[:2])
 
         response = authenticated_owner.post(
             f"/api/establishments/{establishment.id}/dishes/",
@@ -121,9 +117,7 @@ class TestDishes:
         authenticated_owner,
         establishment,
     ):
-        restrictions = list(
-            Restriction.objects.order_by("id")[:3]
-        )
+        restrictions = list(Restriction.objects.order_by("id")[:3])
 
         dish = Dish.objects.create(
             establishment=establishment,

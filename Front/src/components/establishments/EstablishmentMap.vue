@@ -218,7 +218,9 @@ onMounted(() => {
     {
       maxZoom: 20,
       attribution:
-        '&copy; OpenStreetMap contributors &copy; Stadia Maps',
+        '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank">Stadia Maps</a> ' +
+        '&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> ' +
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
     }
   ).addTo(map)
 

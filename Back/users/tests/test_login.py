@@ -1,12 +1,10 @@
 import pytest
-
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @pytest.mark.django_db
 class TestLogin:
-
     def test_login_with_valid_credentials(
         self,
         api_client,

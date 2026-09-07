@@ -2,7 +2,6 @@ from django.urls import path
 
 from .views import EstablishmentSearchView, RecipeSearchView
 
-
 urlpatterns = [
     path(
         "establishments/",

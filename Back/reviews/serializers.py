@@ -68,9 +68,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 establishment=establishment,
             ).exists()
         ):
-            raise serializers.ValidationError(
-                "You have already reviewed this establishment."
-            )
+            raise serializers.ValidationError("You have already reviewed this establishment.")
 
         if (
             recipe is not None
@@ -78,9 +76,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                 recipe=recipe,
             ).exists()
         ):
-            raise serializers.ValidationError(
-                "You have already reviewed this recipe."
-            )
+            raise serializers.ValidationError("You have already reviewed this recipe.")
 
         return attrs
 
