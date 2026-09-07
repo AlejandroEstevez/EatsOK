@@ -41,17 +41,15 @@ const selectorType = ref('allergy')
 
 const selectedAllergies = computed(() =>
   props.restrictions.filter(
-    restriction =>
-      restriction.type === 'allergy'
-      && props.selectedRestrictions.includes(restriction.id)
+    (restriction) =>
+      restriction.type === 'allergy' && props.selectedRestrictions.includes(restriction.id)
   )
 )
 
 const selectedDiets = computed(() =>
   props.restrictions.filter(
-    restriction =>
-      restriction.type === 'diet'
-      && props.selectedRestrictions.includes(restriction.id)
+    (restriction) =>
+      restriction.type === 'diet' && props.selectedRestrictions.includes(restriction.id)
   )
 )
 
@@ -77,65 +75,43 @@ function confirmSelector(selection) {
 <template>
   <aside class="recipe-filters">
     <section class="recipe-filters-section">
-      <h2>
-        Buscar
-      </h2>
+      <h2>Buscar</h2>
 
       <div class="recipe-search">
-        <span class="recipe-search-icon">
-          ⌕
-        </span>
+        <span class="recipe-search-icon"> ⌕ </span>
 
         <input
           :value="search"
           type="text"
           placeholder="Buscar recetas..."
-          @input="emit(
-            'update:search',
-            $event.target.value
-          )"
-        >
+          @input="emit('update:search', $event.target.value)"
+        />
       </div>
     </section>
 
     <div class="recipe-filters-divider" />
 
-    <section
-      class="
-        recipe-filters-section
-        recipe-food-filters-section
-      "
-    >
-      <h2>
-        Filtros
-      </h2>
+    <section class="recipe-filters-section recipe-food-filters-section">
+      <h2>Filtros</h2>
 
       <div class="recipe-profile-filter-row">
-        <span>
-          Usar mi perfil alimentario
-        </span>
+        <span> Usar mi perfil alimentario </span>
 
         <button
           type="button"
           class="recipe-profile-toggle"
           :class="{
-            'recipe-profile-toggle--active':
-              useProfile,
+            'recipe-profile-toggle--active': useProfile,
           }"
           :aria-pressed="useProfile"
-          @click="emit(
-            'update:use-profile',
-            !useProfile
-          )"
+          @click="emit('update:use-profile', !useProfile)"
         >
           <span />
         </button>
       </div>
 
       <div class="recipe-restriction-group">
-        <span class="recipe-restriction-group-title">
-          Alergias e intolerancias
-        </span>
+        <span class="recipe-restriction-group-title"> Alergias e intolerancias </span>
 
         <div class="recipe-filter-restrictions">
           <RestrictionCard
@@ -143,26 +119,17 @@ function confirmSelector(selection) {
             :key="restriction.id"
             :restriction="restriction"
             selected
-            @toggle="emit(
-              'toggle-restriction',
-              $event
-            )"
+            @toggle="emit('toggle-restriction', $event)"
           />
         </div>
 
-        <button
-          type="button"
-          class="recipe-add-filter-button"
-          @click="openSelector('allergy')"
-        >
+        <button type="button" class="recipe-add-filter-button" @click="openSelector('allergy')">
           +Añadir más
         </button>
       </div>
 
       <div class="recipe-restriction-group">
-        <span class="recipe-restriction-group-title">
-          Dietas
-        </span>
+        <span class="recipe-restriction-group-title"> Dietas </span>
 
         <div class="recipe-filter-restrictions">
           <RestrictionCard
@@ -170,31 +137,18 @@ function confirmSelector(selection) {
             :key="restriction.id"
             :restriction="restriction"
             selected
-            @toggle="emit(
-              'toggle-restriction',
-              $event
-            )"
+            @toggle="emit('toggle-restriction', $event)"
           />
         </div>
 
-        <button
-          type="button"
-          class="recipe-add-filter-button"
-          @click="openSelector('diet')"
-        >
+        <button type="button" class="recipe-add-filter-button" @click="openSelector('diet')">
           +Añadir más
         </button>
       </div>
     </section>
 
-    <button
-      type="button"
-      class="recipe-clear-filters-button"
-      @click="emit('clear')"
-    >
-      <span class="recipe-clear-filters-icon">
-        ↻
-      </span>
+    <button type="button" class="recipe-clear-filters-button" @click="emit('clear')">
+      <span class="recipe-clear-filters-icon"> ↻ </span>
 
       Limpiar filtros
     </button>

@@ -1,20 +1,10 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import EstablishmentCard
-  from '../EstablishmentCard.vue'
+import EstablishmentCard from '../EstablishmentCard.vue'
 
-
-function makeEstablishment(
-  overrides = {}
-) {
+function makeEstablishment(overrides = {}) {
   return {
     id: 1,
     name: 'Restaurante Test',
@@ -38,307 +28,130 @@ function makeEstablishment(
   }
 }
 
-
-function mountCard(
-  overrides = {}
-) {
-  return shallowMount(
-    EstablishmentCard,
-    {
-      props: {
-        establishment:
-          makeEstablishment(
-            overrides
-          ),
-      },
-    }
-  )
+function mountCard(overrides = {}) {
+  return shallowMount(EstablishmentCard, {
+    props: {
+      establishment: makeEstablishment(overrides),
+    },
+  })
 }
 
+describe('EstablishmentCard', () => {
+  it('renders establishment information', () => {
+    const wrapper = mountCard()
 
-describe(
-  'EstablishmentCard',
-  () => {
-    it(
-      'renders establishment information',
-      () => {
-        const wrapper =
-          mountCard()
+    expect(wrapper.text()).toContain('Restaurante Test')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Restaurante Test'
-        )
+    expect(wrapper.text()).toContain('Italiano')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Italiano'
-        )
+    expect(wrapper.text()).toContain('Familiar')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Familiar'
-        )
+    expect(wrapper.text()).toContain('4')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          '4'
-        )
+    expect(wrapper.text()).toContain('5')
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          '5'
-        )
-      }
-    )
+  it('shows high compatibility', () => {
+    const wrapper = mountCard({
+      compatible_percentage: 85,
+    })
 
+    const badge = wrapper.find('.compatibility-badge')
 
-    it(
-      'shows high compatibility',
-      () => {
-        const wrapper =
-          mountCard({
-            compatible_percentage: 85,
-          })
+    expect(badge.classes()).toContain('compatibility-badge--high')
 
-        const badge =
-          wrapper.find(
-            '.compatibility-badge'
-          )
+    expect(badge.text()).toContain('Alta')
 
-        expect(
-          badge.classes()
-        ).toContain(
-          'compatibility-badge--high'
-        )
+    expect(badge.text()).toContain('85%')
+  })
 
-        expect(
-          badge.text()
-        ).toContain('Alta')
+  it('shows medium compatibility', () => {
+    const wrapper = mountCard({
+      compatible_percentage: 60,
+    })
 
-        expect(
-          badge.text()
-        ).toContain('85%')
-      }
-    )
+    const badge = wrapper.find('.compatibility-badge')
 
+    expect(badge.classes()).toContain('compatibility-badge--medium')
 
-    it(
-      'shows medium compatibility',
-      () => {
-        const wrapper =
-          mountCard({
-            compatible_percentage: 60,
-          })
+    expect(badge.text()).toContain('Media')
+  })
 
-        const badge =
-          wrapper.find(
-            '.compatibility-badge'
-          )
+  it('shows low compatibility', () => {
+    const wrapper = mountCard({
+      compatible_percentage: 25,
+    })
 
-        expect(
-          badge.classes()
-        ).toContain(
-          'compatibility-badge--medium'
-        )
+    const badge = wrapper.find('.compatibility-badge')
 
-        expect(
-          badge.text()
-        ).toContain('Media')
-      }
-    )
+    expect(badge.classes()).toContain('compatibility-badge--low')
 
+    expect(badge.text()).toContain('Baja')
+  })
 
-    it(
-      'shows low compatibility',
-      () => {
-        const wrapper =
-          mountCard({
-            compatible_percentage: 25,
-          })
+  it('rounds compatibility percentage', () => {
+    const wrapper = mountCard({
+      compatible_percentage: 84.6,
+    })
 
-        const badge =
-          wrapper.find(
-            '.compatibility-badge'
-          )
+    expect(wrapper.find('.compatibility-badge').text()).toContain('85%')
+  })
 
-        expect(
-          badge.classes()
-        ).toContain(
-          'compatibility-badge--low'
-        )
+  it('formats the average rating with one decimal', () => {
+    const wrapper = mountCard({
+      average_rating: 4.36,
+    })
 
-        expect(
-          badge.text()
-        ).toContain('Baja')
-      }
-    )
+    expect(wrapper.find('.establishment-rating').text()).toContain('4.4')
 
+    expect(wrapper.find('.establishment-review-count').text()).toContain('(12)')
+  })
 
-    it(
-      'rounds compatibility percentage',
-      () => {
-        const wrapper =
-          mountCard({
-            compatible_percentage:
-              84.6,
-          })
+  it('shows no ratings message when average rating is null', () => {
+    const wrapper = mountCard({
+      average_rating: null,
+    })
 
-        expect(
-          wrapper
-            .find(
-              '.compatibility-badge'
-            )
-            .text()
-        ).toContain('85%')
-      }
-    )
+    expect(wrapper.text()).toContain('Sin valoraciones')
 
+    expect(wrapper.find('.establishment-rating').exists()).toBe(false)
+  })
 
-    it(
-      'formats the average rating with one decimal',
-      () => {
-        const wrapper =
-          mountCard({
-            average_rating: 4.36,
-          })
+  it('shows distance when available', () => {
+    const wrapper = mountCard({
+      distance: 2.4,
+    })
 
-        expect(
-          wrapper
-            .find(
-              '.establishment-rating'
-            )
-            .text()
-        ).toContain('4.4')
+    expect(wrapper.text()).toContain('2.4 km')
+  })
 
-        expect(
-          wrapper
-            .find(
-              '.establishment-review-count'
-            )
-            .text()
-        ).toContain('(12)')
-      }
-    )
+  it('emits select with the establishment when clicked', async () => {
+    const establishment = makeEstablishment()
 
+    const wrapper = shallowMount(EstablishmentCard, {
+      props: {
+        establishment,
+      },
+    })
 
-    it(
-      'shows no ratings message when average rating is null',
-      () => {
-        const wrapper =
-          mountCard({
-            average_rating: null,
-          })
+    await wrapper.trigger('click')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Sin valoraciones'
-        )
+    expect(wrapper.emitted('select')).toEqual([[establishment]])
+  })
 
-        expect(
-          wrapper.find(
-            '.establishment-rating'
-          ).exists()
-        ).toBe(false)
-      }
-    )
+  it('emits hover with the establishment id', async () => {
+    const wrapper = mountCard()
 
+    await wrapper.trigger('mouseenter')
 
-    it(
-      'shows distance when available',
-      () => {
-        const wrapper =
-          mountCard({
-            distance: 2.4,
-          })
+    expect(wrapper.emitted('hover')).toEqual([[1]])
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          '2.4 km'
-        )
-      }
-    )
+  it('emits leave when the pointer leaves the card', async () => {
+    const wrapper = mountCard()
 
+    await wrapper.trigger('mouseleave')
 
-    it(
-      'emits select with the establishment when clicked',
-      async () => {
-        const establishment =
-          makeEstablishment()
-
-        const wrapper =
-          shallowMount(
-            EstablishmentCard,
-            {
-              props: {
-                establishment,
-              },
-            }
-          )
-
-        await wrapper.trigger(
-          'click'
-        )
-
-        expect(
-          wrapper.emitted(
-            'select'
-          )
-        ).toEqual([
-          [
-            establishment,
-          ],
-        ])
-      }
-    )
-
-
-    it(
-      'emits hover with the establishment id',
-      async () => {
-        const wrapper =
-          mountCard()
-
-        await wrapper.trigger(
-          'mouseenter'
-        )
-
-        expect(
-          wrapper.emitted(
-            'hover'
-          )
-        ).toEqual([
-          [
-            1,
-          ],
-        ])
-      }
-    )
-
-
-    it(
-      'emits leave when the pointer leaves the card',
-      async () => {
-        const wrapper =
-          mountCard()
-
-        await wrapper.trigger(
-          'mouseleave'
-        )
-
-        expect(
-          wrapper.emitted(
-            'leave'
-          )
-        ).toHaveLength(1)
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('leave')).toHaveLength(1)
+  })
+})

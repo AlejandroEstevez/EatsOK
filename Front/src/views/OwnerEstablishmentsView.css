@@ -21,11 +21,8 @@
 
   border-radius: 20px;
 
-  box-shadow:
-    0 4px 18px
-    rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
-
 
 /* HEADER */
 
@@ -86,7 +83,6 @@
   filter: brightness(0.94);
 }
 
-
 /* LIST */
 
 .owner-establishments-list {
@@ -132,11 +128,8 @@
 
   transform: translateY(-1px);
 
-  box-shadow:
-    0 4px 14px
-    rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
-
 
 /* IMAGE */
 
@@ -167,7 +160,6 @@
 
   filter: grayscale(1);
 }
-
 
 /* INFO */
 
@@ -234,7 +226,6 @@
   line-height: 1.4;
 }
 
-
 /* ARROW */
 
 .owner-establishment-arrow {
@@ -245,7 +236,6 @@
   font-size: 36px;
   font-weight: 500;
 }
-
 
 /* STATES */
 

@@ -15,7 +15,7 @@ import './HomeView.css'
 </script>
 
 <template>
-  <div class="home-page":style="{ backgroundImage: `url(${background})` }">
+  <div class="home-page" :style="{ backgroundImage: `url(${background})` }">
     <Navbar />
 
     <main>
@@ -27,40 +27,26 @@ import './HomeView.css'
           </h1>
 
           <p class="hero-description">
-            Restaurantes, platos y recetas adaptadas a tus alergias,
-            intolerancias y preferencias alimentarias
+            Restaurantes, platos y recetas adaptadas a tus alergias, intolerancias y preferencias
+            alimentarias
           </p>
 
-          <form
-            class="search-bar"
-            @submit.prevent
-          >
+          <form class="search-bar" @submit.prevent>
             <span class="search-icon">⌕</span>
 
-            <input
-              type="text"
-              placeholder="Buscar restaurantes, recetas, platos..."
-            />
+            <input type="text" placeholder="Buscar restaurantes, recetas, platos..." />
 
-            <button type="submit">
-              Buscar
-            </button>
+            <button type="submit">Buscar</button>
           </form>
         </div>
 
         <div class="hero-food-container">
-          <img
-            :src="eatsokFood"
-            alt=""
-            class="hero-food"
-          />
+          <img :src="eatsokFood" alt="" class="hero-food" />
         </div>
       </section>
 
       <section class="explore-section">
-        <h2>
-          Explora EatsOK
-        </h2>
+        <h2>Explora EatsOK</h2>
 
         <div class="cards-grid">
           <ExploreCard
@@ -90,20 +76,12 @@ import './HomeView.css'
 
         <div class="owner-banner">
           <div class="owner-info">
-            <img
-              :src="eatsokTag"
-              alt=""
-              class="owner-logo"
-            />
+            <img :src="eatsokTag" alt="" class="owner-logo" />
 
             <div>
-              <strong>
-                ¿Eres propietario de un establecimiento?
-              </strong>
+              <strong> ¿Eres propietario de un establecimiento? </strong>
 
-              <p>
-                Consulta cómo gestionar tu negocio en EatsOK para llegar a más personas.
-              </p>
+              <p>Consulta cómo gestionar tu negocio en EatsOK para llegar a más personas.</p>
             </div>
           </div>
 
@@ -113,9 +91,7 @@ import './HomeView.css'
           </button>
         </div>
 
-        <p class="slogan">
-          Everyone can tag along
-        </p>
+        <p class="slogan">Everyone can tag along</p>
       </section>
     </main>
   </div>

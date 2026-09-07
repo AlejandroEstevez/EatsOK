@@ -1,16 +1,8 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import RecipeFilters
-  from '../RecipeFilters.vue'
-
+import RecipeFilters from '../RecipeFilters.vue'
 
 const restrictions = [
   {
@@ -35,16 +27,13 @@ const restrictions = [
   },
 ]
 
-
 const RestrictionCardStub = {
   props: {
     restriction: Object,
     selected: Boolean,
   },
 
-  emits: [
-    'toggle',
-  ],
+  emits: ['toggle'],
 
   template: `
     <button
@@ -62,7 +51,6 @@ const RestrictionCardStub = {
   `,
 }
 
-
 const RestrictionSelectorModalStub = {
   props: {
     open: Boolean,
@@ -71,10 +59,7 @@ const RestrictionSelectorModalStub = {
     selectedRestrictions: Array,
   },
 
-  emits: [
-    'close',
-    'confirm',
-  ],
+  emits: ['close', 'confirm'],
 
   template: `
     <div
@@ -108,385 +93,151 @@ const RestrictionSelectorModalStub = {
   `,
 }
 
+function mountFilters(props = {}) {
+  return shallowMount(RecipeFilters, {
+    props: {
+      search: '',
+      useProfile: true,
+      restrictions,
+      selectedRestrictions: [1, 3],
+      ...props,
+    },
 
-function mountFilters(
-  props = {}
-) {
-  return shallowMount(
-    RecipeFilters,
-    {
-      props: {
-        search: '',
-        useProfile: true,
-        restrictions,
-        selectedRestrictions: [
-          1,
-          3,
-        ],
-        ...props,
+    global: {
+      stubs: {
+        RestrictionCard: RestrictionCardStub,
+
+        RestrictionSelectorModal: RestrictionSelectorModalStub,
       },
-
-      global: {
-        stubs: {
-          RestrictionCard:
-            RestrictionCardStub,
-
-          RestrictionSelectorModal:
-            RestrictionSelectorModalStub,
-        },
-      },
-    }
-  )
+    },
+  })
 }
 
+describe('RecipeFilters', () => {
+  it('renders the current search value', () => {
+    const wrapper = mountFilters({
+      search: 'pasta',
+    })
 
-describe(
-  'RecipeFilters',
-  () => {
-    it(
-      'renders the current search value',
-      () => {
-        const wrapper =
-          mountFilters({
-            search: 'pasta',
-          })
+    expect(wrapper.find('.recipe-search input').element.value).toBe('pasta')
+  })
 
-        expect(
-          wrapper
-            .find(
-              '.recipe-search input'
-            )
-            .element.value
-        ).toBe(
-          'pasta'
-        )
-      }
-    )
+  it('emits search changes', async () => {
+    const wrapper = mountFilters()
 
+    await wrapper.find('.recipe-search input').setValue('tarta')
 
-    it(
-      'emits search changes',
-      async () => {
-        const wrapper =
-          mountFilters()
+    expect(wrapper.emitted('update:search')).toEqual([['tarta']])
+  })
 
-        await wrapper
-          .find(
-            '.recipe-search input'
-          )
-          .setValue(
-            'tarta'
-          )
+  it('shows the profile toggle as active', () => {
+    const wrapper = mountFilters({
+      useProfile: true,
+    })
 
-        expect(
-          wrapper.emitted(
-            'update:search'
-          )
-        ).toEqual([
-          [
-            'tarta',
-          ],
-        ])
-      }
-    )
+    const toggle = wrapper.find('.recipe-profile-toggle')
 
+    expect(toggle.classes()).toContain('recipe-profile-toggle--active')
 
-    it(
-      'shows the profile toggle as active',
-      () => {
-        const wrapper =
-          mountFilters({
-            useProfile: true,
-          })
+    expect(toggle.attributes('aria-pressed')).toBe('true')
+  })
 
-        const toggle =
-          wrapper.find(
-            '.recipe-profile-toggle'
-          )
+  it('emits the opposite profile value', async () => {
+    const wrapper = mountFilters({
+      useProfile: true,
+    })
 
-        expect(
-          toggle.classes()
-        ).toContain(
-          'recipe-profile-toggle--active'
-        )
+    await wrapper.find('.recipe-profile-toggle').trigger('click')
 
-        expect(
-          toggle.attributes(
-            'aria-pressed'
-          )
-        ).toBe('true')
-      }
-    )
+    expect(wrapper.emitted('update:use-profile')).toEqual([[false]])
+  })
 
+  it('renders only selected restrictions', () => {
+    const wrapper = mountFilters({
+      selectedRestrictions: [1, 3],
+    })
 
-    it(
-      'emits the opposite profile value',
-      async () => {
-        const wrapper =
-          mountFilters({
-            useProfile: true,
-          })
+    const cards = wrapper.findAll('.restriction-card-stub')
 
-        await wrapper
-          .find(
-            '.recipe-profile-toggle'
-          )
-          .trigger('click')
+    expect(cards).toHaveLength(2)
 
-        expect(
-          wrapper.emitted(
-            'update:use-profile'
-          )
-        ).toEqual([
-          [
-            false,
-          ],
-        ])
-      }
-    )
+    expect(cards[0].text()).toBe('Gluten')
 
+    expect(cards[1].text()).toBe('Vegano')
 
-    it(
-      'renders only selected restrictions',
-      () => {
-        const wrapper =
-          mountFilters({
-            selectedRestrictions: [
-              1,
-              3,
-            ],
-          })
+    expect(wrapper.text()).not.toContain('Lactosa')
 
-        const cards =
-          wrapper.findAll(
-            '.restriction-card-stub'
-          )
+    expect(wrapper.text()).not.toContain('Halal')
+  })
 
-        expect(
-          cards
-        ).toHaveLength(2)
+  it('forwards restriction toggle events', async () => {
+    const wrapper = mountFilters()
 
-        expect(
-          cards[0].text()
-        ).toBe(
-          'Gluten'
-        )
+    await wrapper.find('.restriction-card-stub').trigger('click')
 
-        expect(
-          cards[1].text()
-        ).toBe(
-          'Vegano'
-        )
+    expect(wrapper.emitted('toggle-restriction')).toEqual([[1]])
+  })
 
-        expect(
-          wrapper.text()
-        ).not.toContain(
-          'Lactosa'
-        )
+  it('opens the selector for allergies', async () => {
+    const wrapper = mountFilters()
 
-        expect(
-          wrapper.text()
-        ).not.toContain(
-          'Halal'
-        )
-      }
-    )
+    await wrapper.findAll('.recipe-add-filter-button')[0].trigger('click')
 
+    const modal = wrapper.find('.selector-modal-stub')
 
-    it(
-      'forwards restriction toggle events',
-      async () => {
-        const wrapper =
-          mountFilters()
+    expect(modal.attributes('data-open')).toBe('true')
 
-        await wrapper
-          .find(
-            '.restriction-card-stub'
-          )
-          .trigger('click')
+    expect(modal.attributes('data-type')).toBe('allergy')
+  })
 
-        expect(
-          wrapper.emitted(
-            'toggle-restriction'
-          )
-        ).toEqual([
-          [
-            1,
-          ],
-        ])
-      }
-    )
+  it('opens the selector for diets', async () => {
+    const wrapper = mountFilters()
 
+    await wrapper.findAll('.recipe-add-filter-button')[1].trigger('click')
 
-    it(
-      'opens the selector for allergies',
-      async () => {
-        const wrapper =
-          mountFilters()
+    const modal = wrapper.find('.selector-modal-stub')
 
-        await wrapper
-          .findAll(
-            '.recipe-add-filter-button'
-          )[0]
-          .trigger('click')
+    expect(modal.attributes('data-open')).toBe('true')
 
-        const modal =
-          wrapper.find(
-            '.selector-modal-stub'
-          )
+    expect(modal.attributes('data-type')).toBe('diet')
+  })
 
-        expect(
-          modal.attributes(
-            'data-open'
-          )
-        ).toBe('true')
+  it('emits replacement restrictions and closes the selector', async () => {
+    const wrapper = mountFilters()
 
-        expect(
-          modal.attributes(
-            'data-type'
-          )
-        ).toBe(
-          'allergy'
-        )
-      }
-    )
+    await wrapper.findAll('.recipe-add-filter-button')[0].trigger('click')
 
+    await wrapper.find('.selector-confirm-stub').trigger('click')
 
-    it(
-      'opens the selector for diets',
-      async () => {
-        const wrapper =
-          mountFilters()
+    expect(wrapper.emitted('replace-restrictions')).toEqual([
+      [
+        {
+          type: 'allergy',
+          selection: [2],
+        },
+      ],
+    ])
 
-        await wrapper
-          .findAll(
-            '.recipe-add-filter-button'
-          )[1]
-          .trigger('click')
+    expect(wrapper.find('.selector-modal-stub').attributes('data-open')).toBe('false')
+  })
 
-        const modal =
-          wrapper.find(
-            '.selector-modal-stub'
-          )
+  it('closes the selector without replacing restrictions', async () => {
+    const wrapper = mountFilters()
 
-        expect(
-          modal.attributes(
-            'data-open'
-          )
-        ).toBe('true')
+    await wrapper.findAll('.recipe-add-filter-button')[0].trigger('click')
 
-        expect(
-          modal.attributes(
-            'data-type'
-          )
-        ).toBe(
-          'diet'
-        )
-      }
-    )
+    await wrapper.find('.selector-close-stub').trigger('click')
 
+    expect(wrapper.emitted('replace-restrictions')).toBeUndefined()
 
-    it(
-      'emits replacement restrictions and closes the selector',
-      async () => {
-        const wrapper =
-          mountFilters()
+    expect(wrapper.find('.selector-modal-stub').attributes('data-open')).toBe('false')
+  })
 
-        await wrapper
-          .findAll(
-            '.recipe-add-filter-button'
-          )[0]
-          .trigger('click')
+  it('emits clear', async () => {
+    const wrapper = mountFilters()
 
-        await wrapper
-          .find(
-            '.selector-confirm-stub'
-          )
-          .trigger('click')
+    await wrapper.find('.recipe-clear-filters-button').trigger('click')
 
-        expect(
-          wrapper.emitted(
-            'replace-restrictions'
-          )
-        ).toEqual([
-          [
-            {
-              type: 'allergy',
-              selection: [
-                2,
-              ],
-            },
-          ],
-        ])
-
-        expect(
-          wrapper
-            .find(
-              '.selector-modal-stub'
-            )
-            .attributes(
-              'data-open'
-            )
-        ).toBe('false')
-      }
-    )
-
-
-    it(
-      'closes the selector without replacing restrictions',
-      async () => {
-        const wrapper =
-          mountFilters()
-
-        await wrapper
-          .findAll(
-            '.recipe-add-filter-button'
-          )[0]
-          .trigger('click')
-
-        await wrapper
-          .find(
-            '.selector-close-stub'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'replace-restrictions'
-          )
-        ).toBeUndefined()
-
-        expect(
-          wrapper
-            .find(
-              '.selector-modal-stub'
-            )
-            .attributes(
-              'data-open'
-            )
-        ).toBe('false')
-      }
-    )
-
-
-    it(
-      'emits clear',
-      async () => {
-        const wrapper =
-          mountFilters()
-
-        await wrapper
-          .find(
-            '.recipe-clear-filters-button'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'clear'
-          )
-        ).toHaveLength(1)
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('clear')).toHaveLength(1)
+  })
+})

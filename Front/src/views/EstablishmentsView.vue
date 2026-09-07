@@ -12,7 +12,6 @@ import api from '../services/api'
 
 import { useRouter } from 'vue-router'
 
-
 const filters = reactive({
   search: '',
   locationMode: 'current',
@@ -22,12 +21,10 @@ const filters = reactive({
   ordering: 'distance',
 })
 
-
 const restrictions = reactive({
   all: [],
   profile: [],
 })
-
 
 const selectedLocation = ref(null)
 const hoveredEstablishmentId = ref(null)
@@ -38,7 +35,6 @@ const router = useRouter()
 
 /* FILTER PANEL */
 
-
 async function loadRestrictions() {
   const [restrictionsResponse, profileResponse] = await Promise.all([
     api.get('/food-profiles/restrictions/'),
@@ -48,7 +44,7 @@ async function loadRestrictions() {
   restrictions.all = restrictionsResponse.data
 
   restrictions.profile = profileResponse.data.restrictions.map(
-    restriction => restriction.id ?? restriction
+    (restriction) => restriction.id ?? restriction
   )
 
   if (filters.useProfile) {
@@ -56,12 +52,9 @@ async function loadRestrictions() {
   }
 }
 
-
 function toggleRestriction(restrictionId) {
   if (filters.selectedRestrictions.includes(restrictionId)) {
-    filters.selectedRestrictions = filters.selectedRestrictions.filter(
-      id => id !== restrictionId
-    )
+    filters.selectedRestrictions = filters.selectedRestrictions.filter((id) => id !== restrictionId)
   } else {
     filters.selectedRestrictions.push(restrictionId)
   }
@@ -69,38 +62,28 @@ function toggleRestriction(restrictionId) {
   filters.useProfile = false
 }
 
-
 function toggleProfile(value) {
   filters.useProfile = value
 
   if (value) {
     filters.selectedRestrictions = [
-      ...new Set([
-        ...filters.selectedRestrictions,
-        ...restrictions.profile,
-      ]),
+      ...new Set([...filters.selectedRestrictions, ...restrictions.profile]),
     ]
   }
 }
 
-
 function replaceRestrictions({ type, selection }) {
   const otherTypeIds = restrictions.all
     .filter(
-      restriction =>
-        restriction.type !== type
-        && filters.selectedRestrictions.includes(restriction.id)
+      (restriction) =>
+        restriction.type !== type && filters.selectedRestrictions.includes(restriction.id)
     )
-    .map(restriction => restriction.id)
+    .map((restriction) => restriction.id)
 
-  filters.selectedRestrictions = [
-    ...otherTypeIds,
-    ...selection,
-  ]
+  filters.selectedRestrictions = [...otherTypeIds, ...selection]
 
   filters.useProfile = false
 }
-
 
 function clearFilters() {
   filters.search = ''
@@ -112,9 +95,7 @@ function clearFilters() {
   selectedLocation.value = null
 }
 
-
 /* MAP PANEL */
-
 
 async function loadEstablishments() {
   loadingEstablishments.value = true
@@ -135,17 +116,11 @@ async function loadEstablishments() {
       params.radius = filters.radius
     }
 
-    const response = await api.get(
-      '/search/establishments/',
-      { params }
-    )
+    const response = await api.get('/search/establishments/', { params })
 
     establishments.value = response.data
   } catch (error) {
-    console.error(
-      'Error loading establishments:',
-      error
-    )
+    console.error('Error loading establishments:', error)
 
     establishments.value = []
   } finally {
@@ -153,12 +128,10 @@ async function loadEstablishments() {
   }
 }
 
-
 function selectLocation(location) {
   selectedLocation.value = location
   filters.locationMode = 'map'
 }
-
 
 function selectEstablishment(establishment) {
   router.push({
@@ -169,17 +142,13 @@ function selectEstablishment(establishment) {
   })
 }
 
-
 /* RESULTS PANEL */
-
 
 function updateOrdering(ordering) {
   filters.ordering = ordering
 }
 
-
 /* WATCHERS */
-
 
 watch(
   [
@@ -198,9 +167,7 @@ watch(
   }
 )
 
-
 /* INITIALIZATION */
-
 
 onMounted(async () => {
   await loadRestrictions()
@@ -255,8 +222,6 @@ onMounted(async () => {
       />
     </main>
 
-    <p class="establishments-slogan">
-      Everyone can tag along
-    </p>
+    <p class="establishments-slogan">Everyone can tag along</p>
   </div>
 </template>

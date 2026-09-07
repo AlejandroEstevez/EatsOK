@@ -18,17 +18,14 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  'close',
-  'submit',
-])
+const emit = defineEmits(['close', 'submit'])
 
 const rating = ref(0)
 const comment = ref('')
 
 watch(
   () => props.open,
-  open => {
+  (open) => {
     if (open) {
       rating.value = 0
       comment.value = ''
@@ -41,32 +38,18 @@ function formatRating(value) {
 }
 
 function submit() {
-  emit(
-    'submit',
-    {
-      rating: Number(rating.value),
-      comment: comment.value.trim(),
-    }
-  )
+  emit('submit', {
+    rating: Number(rating.value),
+    comment: comment.value.trim(),
+  })
 }
 </script>
 
 <template>
-  <div
-    v-if="open"
-    class="review-modal-backdrop"
-    @click.self="emit('close')"
-  >
-    <div
-      class="review-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="review-modal-title"
-    >
+  <div v-if="open" class="review-modal-backdrop" @click.self="emit('close')">
+    <div class="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
       <div class="review-modal-header">
-        <h2 id="review-modal-title">
-          Escribir reseña
-        </h2>
+        <h2 id="review-modal-title">Escribir reseña</h2>
 
         <button
           type="button"
@@ -82,19 +65,14 @@ function submit() {
       <div class="review-modal-body">
         <div class="review-rating-field">
           <div class="review-rating-heading">
-            <label for="review-rating">
-              Tu valoración
-            </label>
+            <label for="review-rating"> Tu valoración </label>
 
             <strong>
               {{ formatRating(rating) }}
             </strong>
           </div>
 
-          <StarRating
-            :rating="Number(rating)"
-            size="large"
-          />
+          <StarRating :rating="Number(rating)" size="large" />
 
           <input
             id="review-rating"
@@ -104,7 +82,7 @@ function submit() {
             min="0"
             max="5"
             step="0.1"
-          >
+          />
 
           <div class="review-rating-scale">
             <span>0</span>
@@ -130,10 +108,7 @@ function submit() {
           />
         </div>
 
-        <p
-          v-if="error"
-          class="review-modal-error"
-        >
+        <p v-if="error" class="review-modal-error">
           {{ error }}
         </p>
       </div>
@@ -148,17 +123,8 @@ function submit() {
           Cancelar
         </button>
 
-        <button
-          type="button"
-          class="review-modal-submit"
-          :disabled="submitting"
-          @click="submit"
-        >
-          {{
-            submitting
-              ? 'Publicando...'
-              : 'Publicar'
-          }}
+        <button type="button" class="review-modal-submit" :disabled="submitting" @click="submit">
+          {{ submitting ? 'Publicando...' : 'Publicar' }}
         </button>
       </div>
     </div>

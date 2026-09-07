@@ -12,7 +12,6 @@ import OwnerRegisterView from '../views/OwnerRegisterView.vue'
 import OwnerEstablishmentsView from '../views/OwnerEstablishmentsView.vue'
 import EstablishmentFormView from '../views/EstablishmentFormView.vue'
 
-
 const routes = [
   {
     path: '/',

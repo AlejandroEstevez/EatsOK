@@ -109,9 +109,7 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    invert(1);
+  filter: brightness(0) invert(1);
 }
 
 .establishment-detail-tags {
@@ -194,15 +192,8 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(52%)
-    sepia(95%)
-    saturate(2103%)
-    hue-rotate(2deg)
-    brightness(103%)
-    contrast(104%);
+  filter: brightness(0) saturate(100%) invert(52%) sepia(95%) saturate(2103%) hue-rotate(2deg)
+    brightness(103%) contrast(104%);
 }
 
 .cross-contamination p {
@@ -215,8 +206,7 @@
   width: 100%;
 
   display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
 
   margin-top: 24px;
@@ -256,15 +246,8 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(18%)
-    sepia(24%)
-    saturate(1600%)
-    hue-rotate(100deg)
-    brightness(90%)
-    contrast(105%);
+  filter: brightness(0) saturate(100%) invert(18%) sepia(24%) saturate(1600%) hue-rotate(100deg)
+    brightness(90%) contrast(105%);
 }
 
 .detail-info-item p {
@@ -337,8 +320,7 @@
 
 .dish-grid {
   display: grid;
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 
   align-items: stretch;
@@ -456,15 +438,8 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(52%)
-    sepia(95%)
-    saturate(2103%)
-    hue-rotate(2deg)
-    brightness(103%)
-    contrast(104%);
+  filter: brightness(0) saturate(100%) invert(52%) sepia(95%) saturate(2103%) hue-rotate(2deg)
+    brightness(103%) contrast(104%);
 }
 
 .dishes-empty {

@@ -30,11 +30,7 @@ defineProps({
     <div class="card-content">
       <div class="card-title">
         <div :class="['round-icon', variant]">
-          <img
-            :src="icon"
-            alt=""
-            class="card-title-icon"
-          />
+          <img :src="icon" alt="" class="card-title-icon" />
         </div>
 
         <h3>{{ title }}</h3>

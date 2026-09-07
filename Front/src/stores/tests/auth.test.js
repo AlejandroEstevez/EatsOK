@@ -1,30 +1,17 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  createPinia,
-  setActivePinia,
-} from 'pinia'
-
+import { createPinia, setActivePinia } from 'pinia'
 
 const apiMock = vi.hoisted(() => ({
   get: vi.fn(),
   post: vi.fn(),
 }))
 
-
 vi.mock('../../services/api', () => ({
   default: apiMock,
 }))
 
-
 import { useAuthStore } from '../auth'
-
 
 const user = {
   id: 1,
@@ -33,847 +20,439 @@ const user = {
   role: 'CLIENT',
 }
 
-
 beforeEach(() => {
   localStorage.clear()
   sessionStorage.clear()
 
   vi.clearAllMocks()
 
-  setActivePinia(
-    createPinia()
-  )
+  setActivePinia(createPinia())
 })
-
 
 describe('auth store', () => {
   describe('initialize', () => {
-    it(
-      'finishes initialization without requesting the user when there is no access token',
-      async () => {
-        const store =
-          useAuthStore()
+    it('finishes initialization without requesting the user when there is no access token', async () => {
+      const store = useAuthStore()
 
-        await store.initialize()
+      await store.initialize()
 
-        expect(
-          apiMock.get
-        ).not.toHaveBeenCalled()
+      expect(apiMock.get).not.toHaveBeenCalled()
 
-        expect(
-          store.initialized
-        ).toBe(true)
+      expect(store.initialized).toBe(true)
 
-        expect(
-          store.user
-        ).toBeNull()
-      }
-    )
+      expect(store.user).toBeNull()
+    })
 
+    it('fetches the authenticated user when an access token exists', async () => {
+      localStorage.setItem('accessToken', 'access-token')
 
-    it(
-      'fetches the authenticated user when an access token exists',
-      async () => {
-        localStorage.setItem(
-          'accessToken',
-          'access-token'
-        )
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
-        })
+      const store = useAuthStore()
 
-        const store =
-          useAuthStore()
+      await store.initialize()
 
-        await store.initialize()
+      expect(apiMock.get).toHaveBeenCalledWith('/users/me/', {
+        headers: {
+          Authorization: 'Bearer access-token',
+        },
+      })
 
-        expect(
-          apiMock.get
-        ).toHaveBeenCalledWith(
-          '/users/me/',
-          {
-            headers: {
-              Authorization:
-                'Bearer access-token',
-            },
-          }
-        )
+      expect(store.user).toEqual(user)
 
-        expect(
-          store.user
-        ).toEqual(user)
+      expect(store.initialized).toBe(true)
 
-        expect(
-          store.initialized
-        ).toBe(true)
+      expect(store.isAuthenticated).toBe(true)
+    })
 
-        expect(
-          store.isAuthenticated
-        ).toBe(true)
-      }
-    )
+    it('clears the session when fetching the user fails during initialization', async () => {
+      localStorage.setItem('accessToken', 'invalid-access')
 
+      localStorage.setItem('refreshToken', 'invalid-refresh')
 
-    it(
-      'clears the session when fetching the user fails during initialization',
-      async () => {
-        localStorage.setItem(
-          'accessToken',
-          'invalid-access'
-        )
+      apiMock.get.mockRejectedValueOnce(new Error('Unauthorized'))
 
-        localStorage.setItem(
-          'refreshToken',
-          'invalid-refresh'
-        )
+      const store = useAuthStore()
 
-        apiMock.get.mockRejectedValueOnce(
-          new Error('Unauthorized')
-        )
+      await store.initialize()
 
-        const store =
-          useAuthStore()
+      expect(store.user).toBeNull()
 
-        await store.initialize()
+      expect(store.accessToken).toBeNull()
 
-        expect(
-          store.user
-        ).toBeNull()
+      expect(store.refreshToken).toBeNull()
 
-        expect(
-          store.accessToken
-        ).toBeNull()
+      expect(localStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          store.refreshToken
-        ).toBeNull()
+      expect(localStorage.getItem('refreshToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
-
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-
-        expect(
-          store.initialized
-        ).toBe(true)
-      }
-    )
+      expect(store.initialized).toBe(true)
+    })
   })
-
 
   describe('login', () => {
-    it(
-      'logs in and fetches the authenticated user',
-      async () => {
-        apiMock.post.mockResolvedValueOnce({
-          data: {
-            access: 'access-token',
-            refresh: 'refresh-token',
-          },
-        })
+    it('logs in and fetches the authenticated user', async () => {
+      apiMock.post.mockResolvedValueOnce({
+        data: {
+          access: 'access-token',
+          refresh: 'refresh-token',
+        },
+      })
 
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
-        })
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        const store =
-          useAuthStore()
+      const store = useAuthStore()
 
-        await store.login(
-          'alex@example.com',
-          'password123'
-        )
+      await store.login('alex@example.com', 'password123')
 
-        expect(
-          apiMock.post
-        ).toHaveBeenCalledWith(
-          '/users/login/',
-          {
-            email:
-              'alex@example.com',
-            password:
-              'password123',
-          }
-        )
+      expect(apiMock.post).toHaveBeenCalledWith('/users/login/', {
+        email: 'alex@example.com',
+        password: 'password123',
+      })
 
-        expect(
-          apiMock.get
-        ).toHaveBeenCalledWith(
-          '/users/me/',
-          {
-            headers: {
-              Authorization:
-                'Bearer access-token',
-            },
-          }
-        )
+      expect(apiMock.get).toHaveBeenCalledWith('/users/me/', {
+        headers: {
+          Authorization: 'Bearer access-token',
+        },
+      })
 
-        expect(
-          store.accessToken
-        ).toBe('access-token')
+      expect(store.accessToken).toBe('access-token')
 
-        expect(
-          store.refreshToken
-        ).toBe('refresh-token')
+      expect(store.refreshToken).toBe('refresh-token')
 
-        expect(
-          store.user
-        ).toEqual(user)
+      expect(store.user).toEqual(user)
 
-        expect(
-          store.isAuthenticated
-        ).toBe(true)
-      }
-    )
+      expect(store.isAuthenticated).toBe(true)
+    })
 
+    it('stores login tokens in sessionStorage by default', async () => {
+      apiMock.post.mockResolvedValueOnce({
+        data: {
+          access: 'access-token',
+          refresh: 'refresh-token',
+        },
+      })
 
-    it(
-      'stores login tokens in sessionStorage by default',
-      async () => {
-        apiMock.post.mockResolvedValueOnce({
-          data: {
-            access: 'access-token',
-            refresh: 'refresh-token',
-          },
-        })
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
-        })
+      const store = useAuthStore()
 
-        const store =
-          useAuthStore()
+      await store.login('alex@example.com', 'password123')
 
-        await store.login(
-          'alex@example.com',
-          'password123'
-        )
+      expect(sessionStorage.getItem('accessToken')).toBe('access-token')
 
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBe('access-token')
+      expect(sessionStorage.getItem('refreshToken')).toBe('refresh-token')
 
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBe('refresh-token')
+      expect(localStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+      expect(localStorage.getItem('refreshToken')).toBeNull()
+    })
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+    it('stores login tokens in localStorage when rememberMe is enabled', async () => {
+      apiMock.post.mockResolvedValueOnce({
+        data: {
+          access: 'access-token',
+          refresh: 'refresh-token',
+        },
+      })
 
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-    it(
-      'stores login tokens in localStorage when rememberMe is enabled',
-      async () => {
-        apiMock.post.mockResolvedValueOnce({
-          data: {
-            access: 'access-token',
-            refresh: 'refresh-token',
-          },
-        })
+      const store = useAuthStore()
 
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
-        })
+      await store.login('alex@example.com', 'password123', true)
 
-        const store =
-          useAuthStore()
+      expect(localStorage.getItem('accessToken')).toBe('access-token')
 
-        await store.login(
-          'alex@example.com',
-          'password123',
-          true
-        )
+      expect(localStorage.getItem('refreshToken')).toBe('refresh-token')
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBe('access-token')
+      expect(sessionStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBe('refresh-token')
+      expect(sessionStorage.getItem('refreshToken')).toBeNull()
+    })
 
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+    it('clears the session when fetching the user fails after login', async () => {
+      apiMock.post.mockResolvedValueOnce({
+        data: {
+          access: 'access-token',
+          refresh: 'refresh-token',
+        },
+      })
 
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+      apiMock.get.mockRejectedValueOnce(new Error('Unable to fetch user'))
 
+      const store = useAuthStore()
 
-    it(
-      'clears the session when fetching the user fails after login',
-      async () => {
-        apiMock.post.mockResolvedValueOnce({
-          data: {
-            access: 'access-token',
-            refresh: 'refresh-token',
-          },
-        })
+      await expect(store.login('alex@example.com', 'password123')).rejects.toThrow(
+        'Unable to fetch user'
+      )
 
-        apiMock.get.mockRejectedValueOnce(
-          new Error('Unable to fetch user')
-        )
+      expect(store.user).toBeNull()
 
-        const store =
-          useAuthStore()
+      expect(store.accessToken).toBeNull()
 
-        await expect(
-          store.login(
-            'alex@example.com',
-            'password123'
-          )
-        ).rejects.toThrow(
-          'Unable to fetch user'
-        )
+      expect(store.refreshToken).toBeNull()
 
-        expect(
-          store.user
-        ).toBeNull()
+      expect(sessionStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          store.accessToken
-        ).toBeNull()
-
-        expect(
-          store.refreshToken
-        ).toBeNull()
-
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
-
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+      expect(sessionStorage.getItem('refreshToken')).toBeNull()
+    })
   })
-
 
   describe('register', () => {
-    it(
-      'registers the user and logs in afterwards',
-      async () => {
-        apiMock.post
-          .mockResolvedValueOnce({
-            data: {
-              id: 1,
-            },
-          })
-          .mockResolvedValueOnce({
-            data: {
-              access: 'access-token',
-              refresh: 'refresh-token',
-            },
-          })
-
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
+    it('registers the user and logs in afterwards', async () => {
+      apiMock.post
+        .mockResolvedValueOnce({
+          data: {
+            id: 1,
+          },
+        })
+        .mockResolvedValueOnce({
+          data: {
+            access: 'access-token',
+            refresh: 'refresh-token',
+          },
         })
 
-        const store =
-          useAuthStore()
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        await store.register(
-          'alex',
-          'alex@example.com',
-          'password123'
-        )
+      const store = useAuthStore()
 
-        expect(
-          apiMock.post
-        ).toHaveBeenNthCalledWith(
-          1,
-          '/users/register/',
-          {
-            username: 'alex',
-            email:
-              'alex@example.com',
-            password:
-              'password123',
-          }
-        )
+      await store.register('alex', 'alex@example.com', 'password123')
 
-        expect(
-          apiMock.post
-        ).toHaveBeenNthCalledWith(
-          2,
-          '/users/login/',
-          {
-            email:
-              'alex@example.com',
-            password:
-              'password123',
-          }
-        )
+      expect(apiMock.post).toHaveBeenNthCalledWith(1, '/users/register/', {
+        username: 'alex',
+        email: 'alex@example.com',
+        password: 'password123',
+      })
 
-        expect(
-          apiMock.get
-        ).toHaveBeenCalledWith(
-          '/users/me/',
-          {
-            headers: {
-              Authorization:
-                'Bearer access-token',
-            },
-          }
-        )
+      expect(apiMock.post).toHaveBeenNthCalledWith(2, '/users/login/', {
+        email: 'alex@example.com',
+        password: 'password123',
+      })
 
-        expect(
-          store.user
-        ).toEqual(user)
+      expect(apiMock.get).toHaveBeenCalledWith('/users/me/', {
+        headers: {
+          Authorization: 'Bearer access-token',
+        },
+      })
 
-        expect(
-          store.isAuthenticated
-        ).toBe(true)
-      }
-    )
+      expect(store.user).toEqual(user)
 
+      expect(store.isAuthenticated).toBe(true)
+    })
 
-    it(
-      'keeps registered user tokens in localStorage',
-      async () => {
-        apiMock.post
-          .mockResolvedValueOnce({
-            data: {
-              id: 1,
-            },
-          })
-          .mockResolvedValueOnce({
-            data: {
-              access: 'access-token',
-              refresh: 'refresh-token',
-            },
-          })
-
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
+    it('keeps registered user tokens in localStorage', async () => {
+      apiMock.post
+        .mockResolvedValueOnce({
+          data: {
+            id: 1,
+          },
+        })
+        .mockResolvedValueOnce({
+          data: {
+            access: 'access-token',
+            refresh: 'refresh-token',
+          },
         })
 
-        const store =
-          useAuthStore()
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        await store.register(
-          'alex',
-          'alex@example.com',
-          'password123'
-        )
+      const store = useAuthStore()
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBe('access-token')
+      await store.register('alex', 'alex@example.com', 'password123')
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBe('refresh-token')
-      }
-    )
+      expect(localStorage.getItem('accessToken')).toBe('access-token')
+
+      expect(localStorage.getItem('refreshToken')).toBe('refresh-token')
+    })
   })
-
 
   describe('fetchUser', () => {
-    it(
-      'stores the user returned by the API',
-      async () => {
-        apiMock.get.mockResolvedValueOnce({
-          data: user,
-        })
+    it('stores the user returned by the API', async () => {
+      apiMock.get.mockResolvedValueOnce({
+        data: user,
+      })
 
-        const store =
-          useAuthStore()
+      const store = useAuthStore()
 
-        store.accessToken =
-          'access-token'
+      store.accessToken = 'access-token'
 
-        await store.fetchUser()
+      await store.fetchUser()
 
-        expect(
-          apiMock.get
-        ).toHaveBeenCalledWith(
-          '/users/me/',
-          {
-            headers: {
-              Authorization:
-                'Bearer access-token',
-            },
-          }
-        )
+      expect(apiMock.get).toHaveBeenCalledWith('/users/me/', {
+        headers: {
+          Authorization: 'Bearer access-token',
+        },
+      })
 
-        expect(
-          store.user
-        ).toEqual(user)
-      }
-    )
+      expect(store.user).toEqual(user)
+    })
   })
-
 
   describe('logout', () => {
-    it(
-      'sends the refresh token and clears the session',
-      async () => {
-        apiMock.post.mockResolvedValueOnce({
-          data: {},
-        })
+    it('sends the refresh token and clears the session', async () => {
+      apiMock.post.mockResolvedValueOnce({
+        data: {},
+      })
 
-        const store =
-          useAuthStore()
+      const store = useAuthStore()
 
-        store.user = user
-        store.accessToken =
-          'access-token'
-        store.refreshToken =
-          'refresh-token'
+      store.user = user
+      store.accessToken = 'access-token'
+      store.refreshToken = 'refresh-token'
 
-        localStorage.setItem(
-          'accessToken',
-          'access-token'
-        )
+      localStorage.setItem('accessToken', 'access-token')
 
-        localStorage.setItem(
-          'refreshToken',
-          'refresh-token'
-        )
+      localStorage.setItem('refreshToken', 'refresh-token')
 
-        await store.logout()
+      await store.logout()
 
-        expect(
-          apiMock.post
-        ).toHaveBeenCalledWith(
-          '/users/logout/',
-          {
-            refresh:
-              'refresh-token',
+      expect(apiMock.post).toHaveBeenCalledWith(
+        '/users/logout/',
+        {
+          refresh: 'refresh-token',
+        },
+        {
+          headers: {
+            Authorization: 'Bearer access-token',
           },
-          {
-            headers: {
-              Authorization:
-                'Bearer access-token',
-            },
-          }
-        )
+        }
+      )
 
-        expect(
-          store.user
-        ).toBeNull()
+      expect(store.user).toBeNull()
 
-        expect(
-          store.accessToken
-        ).toBeNull()
+      expect(store.accessToken).toBeNull()
 
-        expect(
-          store.refreshToken
-        ).toBeNull()
+      expect(store.refreshToken).toBeNull()
 
-        expect(
-          store.isAuthenticated
-        ).toBe(false)
-      }
-    )
+      expect(store.isAuthenticated).toBe(false)
+    })
 
+    it('clears the local session even when logout request fails', async () => {
+      apiMock.post.mockRejectedValueOnce(new Error('Server error'))
 
-    it(
-      'clears the local session even when logout request fails',
-      async () => {
-        apiMock.post.mockRejectedValueOnce(
-          new Error('Server error')
-        )
+      const store = useAuthStore()
 
-        const store =
-          useAuthStore()
+      store.user = user
+      store.accessToken = 'access-token'
+      store.refreshToken = 'refresh-token'
 
-        store.user = user
-        store.accessToken =
-          'access-token'
-        store.refreshToken =
-          'refresh-token'
+      sessionStorage.setItem('accessToken', 'access-token')
 
-        sessionStorage.setItem(
-          'accessToken',
-          'access-token'
-        )
+      sessionStorage.setItem('refreshToken', 'refresh-token')
 
-        sessionStorage.setItem(
-          'refreshToken',
-          'refresh-token'
-        )
+      await expect(store.logout()).rejects.toThrow('Server error')
 
-        await expect(
-          store.logout()
-        ).rejects.toThrow(
-          'Server error'
-        )
+      expect(store.user).toBeNull()
 
-        expect(
-          store.user
-        ).toBeNull()
+      expect(store.accessToken).toBeNull()
 
-        expect(
-          store.accessToken
-        ).toBeNull()
+      expect(store.refreshToken).toBeNull()
 
-        expect(
-          store.refreshToken
-        ).toBeNull()
+      expect(sessionStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+      expect(sessionStorage.getItem('refreshToken')).toBeNull()
+    })
 
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+    it('does not call the logout endpoint when there are no tokens', async () => {
+      const store = useAuthStore()
 
+      store.user = user
 
-    it(
-      'does not call the logout endpoint when there are no tokens',
-      async () => {
-        const store =
-          useAuthStore()
+      await store.logout()
 
-        store.user = user
+      expect(apiMock.post).not.toHaveBeenCalled()
 
-        await store.logout()
+      expect(store.user).toBeNull()
 
-        expect(
-          apiMock.post
-        ).not.toHaveBeenCalled()
-
-        expect(
-          store.user
-        ).toBeNull()
-
-        expect(
-          store.isAuthenticated
-        ).toBe(false)
-      }
-    )
+      expect(store.isAuthenticated).toBe(false)
+    })
   })
 
-
   describe('token management', () => {
-    it(
-      'setTokens uses sessionStorage when rememberMe is false',
-      () => {
-        localStorage.setItem(
-          'accessToken',
-          'old-access'
-        )
+    it('setTokens uses sessionStorage when rememberMe is false', () => {
+      localStorage.setItem('accessToken', 'old-access')
 
-        localStorage.setItem(
-          'refreshToken',
-          'old-refresh'
-        )
+      localStorage.setItem('refreshToken', 'old-refresh')
 
-        const store =
-          useAuthStore()
+      const store = useAuthStore()
 
-        store.setTokens(
-          'new-access',
-          'new-refresh'
-        )
+      store.setTokens('new-access', 'new-refresh')
 
-        expect(
-          store.accessToken
-        ).toBe('new-access')
+      expect(store.accessToken).toBe('new-access')
 
-        expect(
-          store.refreshToken
-        ).toBe('new-refresh')
+      expect(store.refreshToken).toBe('new-refresh')
 
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBe('new-access')
+      expect(sessionStorage.getItem('accessToken')).toBe('new-access')
 
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBe('new-refresh')
+      expect(sessionStorage.getItem('refreshToken')).toBe('new-refresh')
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+      expect(localStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+      expect(localStorage.getItem('refreshToken')).toBeNull()
+    })
 
+    it('setTokens uses localStorage when rememberMe is true', () => {
+      sessionStorage.setItem('accessToken', 'old-access')
 
-    it(
-      'setTokens uses localStorage when rememberMe is true',
-      () => {
-        sessionStorage.setItem(
-          'accessToken',
-          'old-access'
-        )
+      sessionStorage.setItem('refreshToken', 'old-refresh')
 
-        sessionStorage.setItem(
-          'refreshToken',
-          'old-refresh'
-        )
+      const store = useAuthStore()
 
-        const store =
-          useAuthStore()
+      store.setTokens('new-access', 'new-refresh', true)
 
-        store.setTokens(
-          'new-access',
-          'new-refresh',
-          true
-        )
+      expect(localStorage.getItem('accessToken')).toBe('new-access')
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBe('new-access')
+      expect(localStorage.getItem('refreshToken')).toBe('new-refresh')
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBe('new-refresh')
+      expect(sessionStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+      expect(sessionStorage.getItem('refreshToken')).toBeNull()
+    })
 
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+    it('clearSession removes user and tokens from both storages', () => {
+      localStorage.setItem('accessToken', 'local-access')
 
+      localStorage.setItem('refreshToken', 'local-refresh')
 
-    it(
-      'clearSession removes user and tokens from both storages',
-      () => {
-        localStorage.setItem(
-          'accessToken',
-          'local-access'
-        )
+      sessionStorage.setItem('accessToken', 'session-access')
 
-        localStorage.setItem(
-          'refreshToken',
-          'local-refresh'
-        )
+      sessionStorage.setItem('refreshToken', 'session-refresh')
 
-        sessionStorage.setItem(
-          'accessToken',
-          'session-access'
-        )
+      const store = useAuthStore()
 
-        sessionStorage.setItem(
-          'refreshToken',
-          'session-refresh'
-        )
+      store.user = user
+      store.accessToken = 'access-token'
+      store.refreshToken = 'refresh-token'
 
-        const store =
-          useAuthStore()
+      store.clearSession()
 
-        store.user = user
-        store.accessToken =
-          'access-token'
-        store.refreshToken =
-          'refresh-token'
+      expect(store.user).toBeNull()
 
-        store.clearSession()
+      expect(store.accessToken).toBeNull()
 
-        expect(
-          store.user
-        ).toBeNull()
+      expect(store.refreshToken).toBeNull()
 
-        expect(
-          store.accessToken
-        ).toBeNull()
+      expect(localStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          store.refreshToken
-        ).toBeNull()
+      expect(localStorage.getItem('refreshToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
+      expect(sessionStorage.getItem('accessToken')).toBeNull()
 
-        expect(
-          localStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-
-        expect(
-          sessionStorage.getItem(
-            'accessToken'
-          )
-        ).toBeNull()
-
-        expect(
-          sessionStorage.getItem(
-            'refreshToken'
-          )
-        ).toBeNull()
-      }
-    )
+      expect(sessionStorage.getItem('refreshToken')).toBeNull()
+    })
   })
 })

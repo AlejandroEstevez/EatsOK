@@ -24,7 +24,6 @@ import kosherIcon from '../../assets/icons/restrictions/kosher.svg'
 
 import './RestrictionCard.css'
 
-
 const props = defineProps({
   restriction: {
     type: Object,
@@ -42,11 +41,7 @@ const props = defineProps({
   },
 })
 
-
-defineEmits([
-  'toggle',
-])
-
+defineEmits(['toggle'])
 
 const restrictionIcons = {
   Gluten: glutenIcon,
@@ -71,9 +66,7 @@ const restrictionIcons = {
   Kosher: kosherIcon,
 }
 
-
-const restrictionIcon = () =>
-  restrictionIcons[props.restriction.name]
+const restrictionIcon = () => restrictionIcons[props.restriction.name]
 </script>
 
 <template>
@@ -89,24 +82,14 @@ const restrictionIcon = () =>
     ]"
     @click="$emit('toggle', restriction.id)"
   >
-    <img
-      :src="restrictionIcon()"
-      alt=""
-      class="restriction-icon"
-    />
+    <img :src="restrictionIcon()" alt="" class="restriction-icon" />
 
     <span class="restriction-name">
       {{ restriction.name }}
     </span>
 
-    <span
-      v-if="selected && !summary"
-      class="restriction-check"
-    >
-      <img
-        :src="checkIcon"
-        alt=""
-      />
+    <span v-if="selected && !summary" class="restriction-check">
+      <img :src="checkIcon" alt="" />
     </span>
   </button>
 </template>

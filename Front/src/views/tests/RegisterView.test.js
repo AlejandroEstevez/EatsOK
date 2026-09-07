@@ -1,16 +1,6 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  flushPromises,
-  shallowMount,
-} from '@vue/test-utils'
-
+import { flushPromises, shallowMount } from '@vue/test-utils'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn(),
@@ -21,11 +11,9 @@ const mocks = vi.hoisted(() => ({
   },
 }))
 
-
 vi.mock('../../stores/auth', () => ({
   useAuthStore: () => mocks.authStore,
 }))
-
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -33,14 +21,10 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-
 import RegisterView from '../RegisterView.vue'
 
-
 const RouterLinkStub = {
-  props: [
-    'to',
-  ],
+  props: ['to'],
 
   template: `
     <a
@@ -52,21 +36,16 @@ const RouterLinkStub = {
   `,
 }
 
-
 function mountRegister() {
-  return shallowMount(
-    RegisterView,
-    {
-      global: {
-        stubs: {
-          RouterLink: RouterLinkStub,
-          AccessBrand: true,
-        },
+  return shallowMount(RegisterView, {
+    global: {
+      stubs: {
+        RouterLink: RouterLinkStub,
+        AccessBrand: true,
       },
-    }
-  )
+    },
+  })
 }
-
 
 async function fillRegisterForm(
   wrapper,
@@ -78,29 +57,18 @@ async function fillRegisterForm(
     acceptTerms = true,
   } = {}
 ) {
-  await wrapper
-    .find('#name')
-    .setValue(name)
+  await wrapper.find('#name').setValue(name)
 
-  await wrapper
-    .find('#email')
-    .setValue(email)
+  await wrapper.find('#email').setValue(email)
 
-  await wrapper
-    .find('#password')
-    .setValue(password)
+  await wrapper.find('#password').setValue(password)
 
-  await wrapper
-    .find('#password-confirm')
-    .setValue(passwordConfirm)
+  await wrapper.find('#password-confirm').setValue(passwordConfirm)
 
   if (acceptTerms) {
-    await wrapper
-      .find('.terms-option input')
-      .setValue(true)
+    await wrapper.find('.terms-option input').setValue(true)
   }
 }
-
 
 beforeEach(() => {
   mocks.push.mockReset()
@@ -108,398 +76,186 @@ beforeEach(() => {
 
   mocks.register.mockResolvedValue()
 
-  mocks.authStore.register =
-    mocks.register
+  mocks.authStore.register = mocks.register
 })
 
-
 describe('RegisterView', () => {
-  it(
-    'renders the registration form',
-    () => {
-      const wrapper =
-        mountRegister()
+  it('renders the registration form', () => {
+    const wrapper = mountRegister()
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        '¡Crea tu cuenta!'
-      )
+    expect(wrapper.text()).toContain('¡Crea tu cuenta!')
 
-      expect(
-        wrapper.find('#name').exists()
-      ).toBe(true)
+    expect(wrapper.find('#name').exists()).toBe(true)
 
-      expect(
-        wrapper.find('#email').exists()
-      ).toBe(true)
+    expect(wrapper.find('#email').exists()).toBe(true)
 
-      expect(
-        wrapper.find('#password').exists()
-      ).toBe(true)
+    expect(wrapper.find('#password').exists()).toBe(true)
 
-      expect(
-        wrapper
-          .find('#password-confirm')
-          .exists()
-      ).toBe(true)
+    expect(wrapper.find('#password-confirm').exists()).toBe(true)
 
-      expect(
-        wrapper
-          .find('.submit-register')
-          .text()
-      ).toBe(
-        'Crear cuenta'
-      )
-    }
-  )
+    expect(wrapper.find('.submit-register').text()).toBe('Crear cuenta')
+  })
 
+  it('uses password type for both password fields by default', () => {
+    const wrapper = mountRegister()
 
-  it(
-    'uses password type for both password fields by default',
-    () => {
-      const wrapper =
-        mountRegister()
+    expect(wrapper.find('#password').attributes('type')).toBe('password')
 
-      expect(
-        wrapper
-          .find('#password')
-          .attributes('type')
-      ).toBe(
-        'password'
-      )
+    expect(wrapper.find('#password-confirm').attributes('type')).toBe('password')
+  })
 
-      expect(
-        wrapper
-          .find('#password-confirm')
-          .attributes('type')
-      ).toBe(
-        'password'
-      )
-    }
-  )
+  it('toggles the main password visibility', async () => {
+    const wrapper = mountRegister()
 
+    const toggles = wrapper.findAll('.password-toggle')
 
-  it(
-    'toggles the main password visibility',
-    async () => {
-      const wrapper =
-        mountRegister()
+    await toggles[0].trigger('click')
 
-      const toggles =
-        wrapper.findAll(
-          '.password-toggle'
-        )
+    expect(wrapper.find('#password').attributes('type')).toBe('text')
 
-      await toggles[0].trigger('click')
+    expect(wrapper.find('#password-confirm').attributes('type')).toBe('password')
 
-      expect(
-        wrapper
-          .find('#password')
-          .attributes('type')
-      ).toBe(
-        'text'
-      )
+    await toggles[0].trigger('click')
 
-      expect(
-        wrapper
-          .find('#password-confirm')
-          .attributes('type')
-      ).toBe(
-        'password'
-      )
+    expect(wrapper.find('#password').attributes('type')).toBe('password')
+  })
 
-      await toggles[0].trigger('click')
+  it('toggles the confirmation password visibility independently', async () => {
+    const wrapper = mountRegister()
 
-      expect(
-        wrapper
-          .find('#password')
-          .attributes('type')
-      ).toBe(
-        'password'
-      )
-    }
-  )
+    const toggles = wrapper.findAll('.password-toggle')
 
+    await toggles[1].trigger('click')
 
-  it(
-    'toggles the confirmation password visibility independently',
-    async () => {
-      const wrapper =
-        mountRegister()
+    expect(wrapper.find('#password-confirm').attributes('type')).toBe('text')
 
-      const toggles =
-        wrapper.findAll(
-          '.password-toggle'
-        )
+    expect(wrapper.find('#password').attributes('type')).toBe('password')
+  })
 
-      await toggles[1].trigger('click')
+  it('does not register when passwords do not match', async () => {
+    const wrapper = mountRegister()
 
-      expect(
-        wrapper
-          .find('#password-confirm')
-          .attributes('type')
-      ).toBe(
-        'text'
-      )
+    await fillRegisterForm(wrapper, {
+      password: 'password123',
 
-      expect(
-        wrapper
-          .find('#password')
-          .attributes('type')
-      ).toBe(
-        'password'
-      )
-    }
-  )
+      passwordConfirm: 'different-password',
+    })
 
+    await wrapper.find('.register-form').trigger('submit')
 
-  it(
-    'does not register when passwords do not match',
-    async () => {
-      const wrapper =
-        mountRegister()
+    await flushPromises()
 
-      await fillRegisterForm(
-        wrapper,
-        {
-          password:
-            'password123',
+    expect(mocks.register).not.toHaveBeenCalled()
 
-          passwordConfirm:
-            'different-password',
-        }
-      )
+    expect(wrapper.find('.register-error').text()).toBe('Las contraseñas no coinciden.')
 
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
+    expect(mocks.push).not.toHaveBeenCalled()
+  })
 
-      await flushPromises()
+  it('does not register when terms are not accepted', async () => {
+    const wrapper = mountRegister()
 
-      expect(
-        mocks.register
-      ).not.toHaveBeenCalled()
+    await fillRegisterForm(wrapper, {
+      acceptTerms: false,
+    })
 
-      expect(
-        wrapper
-          .find('.register-error')
-          .text()
-      ).toBe(
-        'Las contraseñas no coinciden.'
-      )
+    await wrapper.find('.register-form').trigger('submit')
 
-      expect(
-        mocks.push
-      ).not.toHaveBeenCalled()
-    }
-  )
+    await flushPromises()
 
+    expect(mocks.register).not.toHaveBeenCalled()
 
-  it(
-    'does not register when terms are not accepted',
-    async () => {
-      const wrapper =
-        mountRegister()
+    expect(wrapper.find('.register-error').text()).toBe(
+      'Debes aceptar la Política de privacidad y los Términos y condiciones.'
+    )
+  })
 
-      await fillRegisterForm(
-        wrapper,
-        {
-          acceptTerms: false,
-        }
-      )
+  it('registers the user and redirects home', async () => {
+    const wrapper = mountRegister()
 
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
+    await fillRegisterForm(wrapper)
 
-      await flushPromises()
+    await wrapper.find('.register-form').trigger('submit')
 
-      expect(
-        mocks.register
-      ).not.toHaveBeenCalled()
+    await flushPromises()
 
-      expect(
-        wrapper
-          .find('.register-error')
-          .text()
-      ).toBe(
-        'Debes aceptar la Política de privacidad y los Términos y condiciones.'
-      )
-    }
-  )
+    expect(mocks.register).toHaveBeenCalledTimes(1)
 
+    expect(mocks.register).toHaveBeenCalledWith('alex', 'alex@example.com', 'password123')
 
-  it(
-    'registers the user and redirects home',
-    async () => {
-      const wrapper =
-        mountRegister()
+    expect(mocks.push).toHaveBeenCalledWith('/')
+  })
 
-      await fillRegisterForm(
-        wrapper
-      )
-
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
-
-      await flushPromises()
-
-      expect(
-        mocks.register
-      ).toHaveBeenCalledTimes(1)
-
-      expect(
-        mocks.register
-      ).toHaveBeenCalledWith(
-        'alex',
-        'alex@example.com',
-        'password123'
-      )
-
-      expect(
-        mocks.push
-      ).toHaveBeenCalledWith('/')
-    }
-  )
-
-
-  it(
-    'shows a validation message when the API rejects the registration data',
-    async () => {
-      mocks.register.mockRejectedValueOnce({
-        response: {
-          data: {
-            email: [
-              'Already exists',
-            ],
-          },
+  it('shows a validation message when the API rejects the registration data', async () => {
+    mocks.register.mockRejectedValueOnce({
+      response: {
+        data: {
+          email: ['Already exists'],
         },
-      })
+      },
+    })
 
-      const wrapper =
-        mountRegister()
+    const wrapper = mountRegister()
 
-      await fillRegisterForm(
-        wrapper
-      )
+    await fillRegisterForm(wrapper)
 
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
+    await wrapper.find('.register-form').trigger('submit')
 
-      await flushPromises()
+    await flushPromises()
 
-      expect(
-        wrapper
-          .find('.register-error')
-          .text()
-      ).toBe(
-        'No se ha podido crear la cuenta. Revisa los datos introducidos.'
-      )
+    expect(wrapper.find('.register-error').text()).toBe(
+      'No se ha podido crear la cuenta. Revisa los datos introducidos.'
+    )
 
-      expect(
-        mocks.push
-      ).not.toHaveBeenCalled()
-    }
-  )
+    expect(mocks.push).not.toHaveBeenCalled()
+  })
 
+  it('shows a generic message when registration fails without API validation data', async () => {
+    mocks.register.mockRejectedValueOnce(new Error('Network error'))
 
-  it(
-    'shows a generic message when registration fails without API validation data',
-    async () => {
-      mocks.register.mockRejectedValueOnce(
-        new Error(
-          'Network error'
-        )
-      )
+    const wrapper = mountRegister()
 
-      const wrapper =
-        mountRegister()
+    await fillRegisterForm(wrapper)
 
-      await fillRegisterForm(
-        wrapper
-      )
+    await wrapper.find('.register-form').trigger('submit')
 
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
+    await flushPromises()
 
-      await flushPromises()
+    expect(wrapper.find('.register-error').text()).toBe(
+      'No se ha podido crear la cuenta. Inténtalo de nuevo.'
+    )
 
-      expect(
-        wrapper
-          .find('.register-error')
-          .text()
-      ).toBe(
-        'No se ha podido crear la cuenta. Inténtalo de nuevo.'
-      )
+    expect(mocks.push).not.toHaveBeenCalled()
+  })
 
-      expect(
-        mocks.push
-      ).not.toHaveBeenCalled()
-    }
-  )
+  it('shows the loading state while registration is in progress', async () => {
+    let resolveRegister
 
-
-  it(
-    'shows the loading state while registration is in progress',
-    async () => {
-      let resolveRegister
-
-      mocks.register.mockImplementationOnce(
-        () => new Promise(resolve => {
+    mocks.register.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
           resolveRegister = resolve
         })
-      )
+    )
 
-      const wrapper =
-        mountRegister()
+    const wrapper = mountRegister()
 
-      await fillRegisterForm(
-        wrapper
-      )
+    await fillRegisterForm(wrapper)
 
-      await wrapper
-        .find('.register-form')
-        .trigger('submit')
+    await wrapper.find('.register-form').trigger('submit')
 
-      expect(
-        wrapper
-          .find('.submit-register')
-          .text()
-      ).toBe(
-        'Creando cuenta...'
-      )
+    expect(wrapper.find('.submit-register').text()).toBe('Creando cuenta...')
 
-      expect(
-        wrapper
-          .find('.submit-register')
-          .attributes('disabled')
-      ).toBeDefined()
+    expect(wrapper.find('.submit-register').attributes('disabled')).toBeDefined()
 
-      resolveRegister()
+    resolveRegister()
 
-      await flushPromises()
+    await flushPromises()
 
-      expect(
-        wrapper
-          .find('.submit-register')
-          .text()
-      ).toBe(
-        'Crear cuenta'
-      )
+    expect(wrapper.find('.submit-register').text()).toBe('Crear cuenta')
 
-      expect(
-        wrapper
-          .find('.submit-register')
-          .attributes('disabled')
-      ).toBeUndefined()
+    expect(wrapper.find('.submit-register').attributes('disabled')).toBeUndefined()
 
-      expect(
-        mocks.push
-      ).toHaveBeenCalledWith('/')
-    }
-  )
+    expect(mocks.push).toHaveBeenCalledWith('/')
+  })
 })

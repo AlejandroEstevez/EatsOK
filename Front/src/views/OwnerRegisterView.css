@@ -21,9 +21,7 @@
 
   border-radius: 20px;
 
-  box-shadow:
-    0 4px 18px
-    rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 .owner-register-header {
@@ -48,7 +46,6 @@
 
   font-size: 18px;
 }
-
 
 /* FORM */
 
@@ -92,9 +89,7 @@
 .owner-register-input-wrapper:focus-within {
   border-color: var(--dark-green);
 
-  box-shadow:
-    0 0 0 2px
-    rgba(87, 179, 19, 0.12);
+  box-shadow: 0 0 0 2px rgba(87, 179, 19, 0.12);
 }
 
 .owner-register-input-wrapper input {
@@ -149,7 +144,6 @@
   opacity: 1;
 }
 
-
 /* ROLE INFO */
 
 .owner-register-info {
@@ -176,7 +170,6 @@
   line-height: 1.45;
 }
 
-
 /* ERROR */
 
 .owner-register-error {
@@ -187,7 +180,6 @@
   font-size: 15px;
   font-weight: 600;
 }
-
 
 /* SUBMIT */
 
@@ -220,7 +212,6 @@
   cursor: not-allowed;
 }
 
-
 /* SUCCESS POPUP */
 
 .owner-register-popup-overlay {
@@ -248,9 +239,7 @@
   color: var(--dark-green);
   text-align: center;
 
-  box-shadow:
-    0 8px 30px
-    rgba(0, 0, 0, 0.22);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
 }
 
 .owner-register-popup h3 {

@@ -2,18 +2,13 @@ import { defineStore } from 'pinia'
 
 import api from '../services/api'
 
-
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
 
-    accessToken:
-      localStorage.getItem('accessToken')
-      || sessionStorage.getItem('accessToken'),
+    accessToken: localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken'),
 
-    refreshToken:
-      localStorage.getItem('refreshToken')
-      || sessionStorage.getItem('refreshToken'),
+    refreshToken: localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken'),
 
     initialized: false,
   }),
@@ -57,13 +52,13 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async register(name, email, password) {
-        await api.post('/users/register/', {
-            username: name,
-            email,
-            password,
-        })
+      await api.post('/users/register/', {
+        username: name,
+        email,
+        password,
+      })
 
-        await this.login(email, password, true)
+      await this.login(email, password, true)
     },
 
     async fetchUser() {
@@ -77,23 +72,23 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-        try {
-            if (this.refreshToken && this.accessToken) {
-            await api.post(
-                '/users/logout/',
-                {
-                refresh: this.refreshToken,
-                },
-                {
-                headers: {
-                    Authorization: `Bearer ${this.accessToken}`,
-                },
-                },
-            )
+      try {
+        if (this.refreshToken && this.accessToken) {
+          await api.post(
+            '/users/logout/',
+            {
+              refresh: this.refreshToken,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.accessToken}`,
+              },
             }
-        } finally {
-            this.clearSession()
+          )
         }
+      } finally {
+        this.clearSession()
+      }
     },
 
     setTokens(access, refresh, rememberMe = false) {
@@ -106,9 +101,7 @@ export const useAuthStore = defineStore('auth', {
       sessionStorage.removeItem('accessToken')
       sessionStorage.removeItem('refreshToken')
 
-      const storage = rememberMe
-        ? localStorage
-        : sessionStorage
+      const storage = rememberMe ? localStorage : sessionStorage
 
       storage.setItem('accessToken', access)
       storage.setItem('refreshToken', refresh)

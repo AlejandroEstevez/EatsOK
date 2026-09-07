@@ -69,9 +69,8 @@
 
   object-fit: contain;
 
-  filter: brightness(0) saturate(100%)
-    invert(20%) sepia(32%) saturate(1598%)
-    hue-rotate(103deg) brightness(86%) contrast(104%);
+  filter: brightness(0) saturate(100%) invert(20%) sepia(32%) saturate(1598%) hue-rotate(103deg)
+    brightness(86%) contrast(104%);
 }
 
 .access-feature-content h3 {
@@ -104,10 +103,7 @@
 
   object-fit: contain;
 
-  animation:
-    access-food-enter 0.7s
-    cubic-bezier(0.34, 1.56, 0.64, 1)
-    forwards;
+  animation: access-food-enter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes access-food-enter {

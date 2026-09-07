@@ -31,7 +31,6 @@
   transform: translateY(-1px);
 }
 
-
 /* ALLERGIES */
 
 .restriction-card--allergy {
@@ -41,15 +40,8 @@
 }
 
 .restriction-card--allergy .restriction-icon {
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(36%)
-    sepia(95%)
-    saturate(1516%)
-    hue-rotate(2deg)
-    brightness(94%)
-    contrast(101%);
+  filter: brightness(0) saturate(100%) invert(36%) sepia(95%) saturate(1516%) hue-rotate(2deg)
+    brightness(94%) contrast(101%);
 
   opacity: 0.55;
 }
@@ -66,7 +58,6 @@
   opacity: 1;
 }
 
-
 /* DIETS */
 
 .restriction-card--diet {
@@ -76,15 +67,8 @@
 }
 
 .restriction-card--diet .restriction-icon {
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(43%)
-    sepia(72%)
-    saturate(585%)
-    hue-rotate(49deg)
-    brightness(91%)
-    contrast(91%);
+  filter: brightness(0) saturate(100%) invert(43%) sepia(72%) saturate(585%) hue-rotate(49deg)
+    brightness(91%) contrast(91%);
 
   opacity: 0.55;
 }
@@ -101,7 +85,6 @@
   opacity: 1;
 }
 
-
 /* ICON */
 
 .restriction-icon {
@@ -117,13 +100,11 @@
     filter 0.2s ease;
 }
 
-
 /* TEXT */
 
 .restriction-name {
   flex: 1;
 }
-
 
 /* CHECK */
 
@@ -152,29 +133,14 @@
 }
 
 .restriction-card--allergy .restriction-check img {
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(50%)
-    sepia(99%)
-    saturate(2925%)
-    hue-rotate(1deg)
-    brightness(101%)
-    contrast(103%);
+  filter: brightness(0) saturate(100%) invert(50%) sepia(99%) saturate(2925%) hue-rotate(1deg)
+    brightness(101%) contrast(103%);
 }
 
 .restriction-card--diet .restriction-check img {
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(51%)
-    sepia(63%)
-    saturate(876%)
-    hue-rotate(49deg)
-    brightness(96%)
-    contrast(93%);
+  filter: brightness(0) saturate(100%) invert(51%) sepia(63%) saturate(876%) hue-rotate(49deg)
+    brightness(96%) contrast(93%);
 }
-
 
 /* SUMMARY */
 

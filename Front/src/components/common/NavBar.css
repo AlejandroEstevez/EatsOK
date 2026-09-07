@@ -62,7 +62,7 @@
 }
 
 .navbar-link::after {
-  content: "";
+  content: '';
 
   position: absolute;
 
@@ -174,7 +174,6 @@
   position: relative;
 }
 
-
 .navbar-account {
   border: 0;
   padding: 0;
@@ -190,16 +189,13 @@
   cursor: pointer;
 }
 
-
 .account-arrow {
   transition: transform 0.2s ease;
 }
 
-
 .account-arrow.open {
   transform: rotate(180deg);
 }
-
 
 .account-dropdown {
   min-width: 190px;
@@ -220,7 +216,6 @@
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
 }
 
-
 .account-dropdown-item {
   width: 100%;
 
@@ -239,18 +234,15 @@
   cursor: pointer;
 }
 
-
 .account-dropdown-item:hover {
   background: #f4f4f4;
 }
-
 
 .logout-item {
   color: #c62828;
 
   border-top: 1px solid #e5e5e5;
 }
-
 
 /* LOGOUT MESSAGE */
 
@@ -265,7 +257,6 @@
 
   background: rgba(0, 0, 0, 0.3);
 }
-
 
 .logout-message {
   width: 400px;
@@ -282,14 +273,12 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
 }
 
-
 .logout-message h3 {
   margin: 0 0 10px;
 
   font-size: 25px;
   font-weight: 900;
 }
-
 
 .logout-message p {
   margin: 0 0 25px;
@@ -298,7 +287,6 @@
 
   font-size: 17px;
 }
-
 
 .logout-message button {
   min-width: 120px;
@@ -317,7 +305,6 @@
 
   cursor: pointer;
 }
-
 
 .logout-message button:hover {
   background: var(--dark-green);

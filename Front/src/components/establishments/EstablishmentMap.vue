@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css'
 
 import './EstablishmentMap.css'
 
-
 const props = defineProps({
   establishments: {
     type: Array,
@@ -29,19 +28,13 @@ const props = defineProps({
   },
 })
 
-
-const emit = defineEmits([
-  'select-location',
-  'select-establishment',
-])
-
+const emit = defineEmits(['select-location', 'select-establishment'])
 
 const establishmentMarkers = new Map()
 
 let map = null
 let markerLayer = null
 let selectedMarker = null
-
 
 function getCompatibilityColor(percentage) {
   if (percentage >= 80) {
@@ -54,7 +47,6 @@ function getCompatibilityColor(percentage) {
 
   return '#e02d19'
 }
-
 
 function createCompatibilityIcon(percentage) {
   const color = getCompatibilityColor(percentage)
@@ -93,7 +85,6 @@ function createCompatibilityIcon(percentage) {
   })
 }
 
-
 function renderEstablishments() {
   if (!map || !markerLayer) {
     return
@@ -102,7 +93,7 @@ function renderEstablishments() {
   markerLayer.clearLayers()
   establishmentMarkers.clear()
 
-  props.establishments.forEach(establishment => {
+  props.establishments.forEach((establishment) => {
     const latitude = establishment.location?.latitude
     const longitude = establishment.location?.longitude
 
@@ -110,25 +101,14 @@ function renderEstablishments() {
       return
     }
 
-    const marker = L.marker(
-      [
-        latitude,
-        longitude,
-      ],
-      {
-        icon: createCompatibilityIcon(
-          establishment.compatible_percentage
-        ),
-      }
-    )
+    const marker = L.marker([latitude, longitude], {
+      icon: createCompatibilityIcon(establishment.compatible_percentage),
+    })
 
-    marker.bindTooltip(
-      establishment.name,
-      {
-        direction: 'top',
-        offset: [0, -10],
-      }
-    )
+    marker.bindTooltip(establishment.name, {
+      direction: 'top',
+      offset: [0, -10],
+    })
 
     marker.on('click', () => {
       emit('select-establishment', establishment)
@@ -136,15 +116,11 @@ function renderEstablishments() {
 
     marker.addTo(markerLayer)
 
-    establishmentMarkers.set(
-      establishment.id,
-      marker
-    )
+    establishmentMarkers.set(establishment.id, marker)
   })
 
   updateHoveredMarker()
 }
-
 
 function renderSelectedLocation() {
   if (!map) {
@@ -161,10 +137,7 @@ function renderSelectedLocation() {
   }
 
   selectedMarker = L.circleMarker(
-    [
-      props.selectedLocation.latitude,
-      props.selectedLocation.longitude,
-    ],
+    [props.selectedLocation.latitude, props.selectedLocation.longitude],
     {
       radius: 9,
       weight: 3,
@@ -172,7 +145,6 @@ function renderSelectedLocation() {
     }
   ).addTo(map)
 }
-
 
 function updateHoveredMarker() {
   establishmentMarkers.forEach((marker, id) => {
@@ -184,14 +156,9 @@ function updateHoveredMarker() {
 
     const hovered = id === props.hoveredEstablishmentId
 
-    element.classList.toggle(
-      'compatibility-marker-wrapper--hovered',
-      hovered
-    )
+    element.classList.toggle('compatibility-marker-wrapper--hovered', hovered)
 
-    marker.setZIndexOffset(
-      hovered ? 1000 : 0
-    )
+    marker.setZIndexOffset(hovered ? 1000 : 0)
 
     if (hovered) {
       marker.openTooltip()
@@ -201,32 +168,22 @@ function updateHoveredMarker() {
   })
 }
 
-
 onMounted(() => {
   map = L.map('establishment-map', {
     zoomControl: true,
-  }).setView(
-    [
-      40.4168,
-      -3.7038,
-    ],
-    14,
-  )
+  }).setView([40.4168, -3.7038], 14)
 
-  L.tileLayer(
-    'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
-    {
-      maxZoom: 20,
-      attribution:
-        '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank">Stadia Maps</a> ' +
-        '&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> ' +
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
-    }
-  ).addTo(map)
+  L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution:
+      '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank">Stadia Maps</a> ' +
+      '&copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> ' +
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+  }).addTo(map)
 
   markerLayer = L.layerGroup().addTo(map)
 
-  map.on('click', event => {
+  map.on('click', (event) => {
     if (!props.allowSelection) {
       return
     }
@@ -247,7 +204,6 @@ onMounted(() => {
   }, 0)
 })
 
-
 watch(
   () => props.establishments,
   () => {
@@ -257,7 +213,6 @@ watch(
     deep: true,
   }
 )
-
 
 watch(
   () => props.selectedLocation,
@@ -269,14 +224,12 @@ watch(
   }
 )
 
-
 watch(
   () => props.hoveredEstablishmentId,
   () => {
     updateHoveredMarker()
   }
 )
-
 
 onBeforeUnmount(() => {
   if (map) {
@@ -290,10 +243,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="establishment-map-wrapper">
-    <div
-      id="establishment-map"
-      class="establishment-map"
-    ></div>
+    <div id="establishment-map" class="establishment-map"></div>
 
     <div class="map-legend">
       <div class="map-legend-item">

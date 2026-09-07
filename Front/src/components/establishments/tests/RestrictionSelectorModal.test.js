@@ -1,16 +1,8 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import RestrictionSelectorModal
-  from '../RestrictionSelectorModal.vue'
-
+import RestrictionSelectorModal from '../RestrictionSelectorModal.vue'
 
 const restrictions = [
   {
@@ -35,310 +27,144 @@ const restrictions = [
   },
 ]
 
-
-function mountModal(
-  props = {}
-) {
-  return shallowMount(
-    RestrictionSelectorModal,
-    {
-      props: {
-        open: false,
-        type: 'allergy',
-        restrictions,
-        selectedRestrictions: [],
-        ...props,
-      },
-    }
-  )
+function mountModal(props = {}) {
+  return shallowMount(RestrictionSelectorModal, {
+    props: {
+      open: false,
+      type: 'allergy',
+      restrictions,
+      selectedRestrictions: [],
+      ...props,
+    },
+  })
 }
 
+describe('RestrictionSelectorModal', () => {
+  it('is hidden when open is false', () => {
+    const wrapper = mountModal()
 
-describe(
-  'RestrictionSelectorModal',
-  () => {
-    it(
-      'is hidden when open is false',
-      () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.find('.restriction-modal-backdrop').exists()).toBe(false)
+  })
 
-        expect(
-          wrapper.find(
-            '.restriction-modal-backdrop'
-          ).exists()
-        ).toBe(false)
-      }
-    )
+  it('shows only allergy restrictions', async () => {
+    const wrapper = mountModal()
 
+    await wrapper.setProps({
+      open: true,
+    })
 
-    it(
-      'shows only allergy restrictions',
-      async () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.text()).toContain('Añadir alergias e intolerancias')
 
-        await wrapper.setProps({
-          open: true,
-        })
+    expect(wrapper.text()).toContain('Gluten')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Añadir alergias e intolerancias'
-        )
+    expect(wrapper.text()).toContain('Frutos secos')
 
-        expect(
-          wrapper.text()
-        ).toContain('Gluten')
+    expect(wrapper.text()).not.toContain('Vegano')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Frutos secos'
-        )
+    expect(wrapper.text()).not.toContain('Halal')
+  })
 
-        expect(
-          wrapper.text()
-        ).not.toContain(
-          'Vegano'
-        )
+  it('shows only diet restrictions', async () => {
+    const wrapper = mountModal({
+      type: 'diet',
+    })
 
-        expect(
-          wrapper.text()
-        ).not.toContain(
-          'Halal'
-        )
-      }
-    )
+    await wrapper.setProps({
+      open: true,
+    })
 
+    expect(wrapper.text()).toContain('Añadir preferencias')
 
-    it(
-      'shows only diet restrictions',
-      async () => {
-        const wrapper =
-          mountModal({
-            type: 'diet',
-          })
+    expect(wrapper.text()).toContain('Vegano')
 
-        await wrapper.setProps({
-          open: true,
-        })
+    expect(wrapper.text()).toContain('Halal')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Añadir preferencias'
-        )
+    expect(wrapper.text()).not.toContain('Gluten')
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Vegano'
-        )
+  it('copies the selected restrictions when opened', async () => {
+    const wrapper = mountModal({
+      selectedRestrictions: [1],
+    })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Halal'
-        )
+    await wrapper.setProps({
+      open: true,
+    })
 
-        expect(
-          wrapper.text()
-        ).not.toContain(
-          'Gluten'
-        )
-      }
-    )
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
 
+    expect(checkboxes[0].element.checked).toBe(true)
 
-    it(
-      'copies the selected restrictions when opened',
-      async () => {
-        const wrapper =
-          mountModal({
-            selectedRestrictions: [
-              1,
-            ],
-          })
+    expect(checkboxes[1].element.checked).toBe(false)
+  })
 
-        await wrapper.setProps({
-          open: true,
-        })
+  it('adds a restriction to the temporary selection', async () => {
+    const wrapper = mountModal()
 
-        const checkboxes =
-          wrapper.findAll(
-            'input[type="checkbox"]'
-          )
+    await wrapper.setProps({
+      open: true,
+    })
 
-        expect(
-          checkboxes[0]
-            .element.checked
-        ).toBe(true)
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
 
-        expect(
-          checkboxes[1]
-            .element.checked
-        ).toBe(false)
-      }
-    )
+    await checkboxes[1].setValue(true)
 
+    await wrapper.find('.restriction-modal-confirm').trigger('click')
 
-    it(
-      'adds a restriction to the temporary selection',
-      async () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.emitted('confirm')).toEqual([[[2]]])
+  })
 
-        await wrapper.setProps({
-          open: true,
-        })
+  it('removes a previously selected restriction', async () => {
+    const wrapper = mountModal({
+      selectedRestrictions: [1, 2],
+    })
 
-        const checkboxes =
-          wrapper.findAll(
-            'input[type="checkbox"]'
-          )
+    await wrapper.setProps({
+      open: true,
+    })
 
-        await checkboxes[1]
-          .setValue(true)
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
 
-        await wrapper
-          .find(
-            '.restriction-modal-confirm'
-          )
-          .trigger('click')
+    await checkboxes[0].setValue(false)
 
-        expect(
-          wrapper.emitted(
-            'confirm'
-          )
-        ).toEqual([
-          [
-            [
-              2,
-            ],
-          ],
-        ])
-      }
-    )
+    await wrapper.find('.restriction-modal-confirm').trigger('click')
 
+    expect(wrapper.emitted('confirm')).toEqual([[[2]]])
+  })
 
-    it(
-      'removes a previously selected restriction',
-      async () => {
-        const wrapper =
-          mountModal({
-            selectedRestrictions: [
-              1,
-              2,
-            ],
-          })
+  it('emits close from the close button', async () => {
+    const wrapper = mountModal()
 
-        await wrapper.setProps({
-          open: true,
-        })
+    await wrapper.setProps({
+      open: true,
+    })
 
-        const checkboxes =
-          wrapper.findAll(
-            'input[type="checkbox"]'
-          )
+    await wrapper.find('.restriction-modal-close').trigger('click')
 
-        await checkboxes[0]
-          .setValue(false)
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
 
-        await wrapper
-          .find(
-            '.restriction-modal-confirm'
-          )
-          .trigger('click')
+  it('emits close from the cancel button', async () => {
+    const wrapper = mountModal()
 
-        expect(
-          wrapper.emitted(
-            'confirm'
-          )
-        ).toEqual([
-          [
-            [
-              2,
-            ],
-          ],
-        ])
-      }
-    )
+    await wrapper.setProps({
+      open: true,
+    })
 
+    await wrapper.find('.restriction-modal-cancel').trigger('click')
 
-    it(
-      'emits close from the close button',
-      async () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
 
-        await wrapper.setProps({
-          open: true,
-        })
+  it('emits close when the backdrop itself is clicked', async () => {
+    const wrapper = mountModal()
 
-        await wrapper
-          .find(
-            '.restriction-modal-close'
-          )
-          .trigger('click')
+    await wrapper.setProps({
+      open: true,
+    })
 
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
+    await wrapper.find('.restriction-modal-backdrop').trigger('click')
 
-
-    it(
-      'emits close from the cancel button',
-      async () => {
-        const wrapper =
-          mountModal()
-
-        await wrapper.setProps({
-          open: true,
-        })
-
-        await wrapper
-          .find(
-            '.restriction-modal-cancel'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
-
-
-    it(
-      'emits close when the backdrop itself is clicked',
-      async () => {
-        const wrapper =
-          mountModal()
-
-        await wrapper.setProps({
-          open: true,
-        })
-
-        await wrapper
-          .find(
-            '.restriction-modal-backdrop'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+})

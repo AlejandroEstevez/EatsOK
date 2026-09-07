@@ -1,16 +1,6 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  flushPromises,
-  shallowMount,
-} from '@vue/test-utils'
-
+import { flushPromises, shallowMount } from '@vue/test-utils'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn(),
@@ -23,11 +13,9 @@ const mocks = vi.hoisted(() => ({
   },
 }))
 
-
 vi.mock('../../../stores/auth', () => ({
   useAuthStore: () => mocks.authStore,
 }))
-
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({
@@ -35,14 +23,10 @@ vi.mock('vue-router', () => ({
   }),
 }))
 
-
 import NavBar from '../NavBar.vue'
 
-
 const RouterLinkStub = {
-  props: [
-    'to',
-  ],
+  props: ['to'],
 
   template: `
     <a
@@ -54,25 +38,18 @@ const RouterLinkStub = {
   `,
 }
 
-
 function mountNavBar() {
-  return shallowMount(
-    NavBar,
-    {
-      global: {
-        stubs: {
-          RouterLink: RouterLinkStub,
-          UserAvatar: true,
-        },
+  return shallowMount(NavBar, {
+    global: {
+      stubs: {
+        RouterLink: RouterLinkStub,
+        UserAvatar: true,
       },
-    }
-  )
+    },
+  })
 }
 
-
-function authenticate(
-  role = 'CLIENT'
-) {
+function authenticate(role = 'CLIENT') {
   mocks.authStore.isAuthenticated = true
 
   mocks.authStore.user = {
@@ -80,7 +57,6 @@ function authenticate(
     role,
   }
 }
-
 
 beforeEach(() => {
   mocks.push.mockReset()
@@ -93,240 +69,112 @@ beforeEach(() => {
   mocks.authStore.logout = mocks.logout
 })
 
-
 describe('NavBar', () => {
-  it(
-    'shows the login link when the user is not authenticated',
-    () => {
-      const wrapper = mountNavBar()
+  it('shows the login link when the user is not authenticated', () => {
+    const wrapper = mountNavBar()
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Acceder'
-      )
+    expect(wrapper.text()).toContain('Acceder')
 
-      expect(
-        wrapper.find(
-          '.navbar-account'
-        ).exists()
-      ).toBe(false)
-    }
-  )
+    expect(wrapper.find('.navbar-account').exists()).toBe(false)
+  })
 
+  it('shows the authenticated username', () => {
+    authenticate()
 
-  it(
-    'shows the authenticated username',
-    () => {
-      authenticate()
+    const wrapper = mountNavBar()
 
-      const wrapper = mountNavBar()
+    expect(wrapper.text()).toContain('alex')
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'alex'
-      )
+    expect(wrapper.text()).not.toContain('Acceder')
+  })
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Acceder'
-      )
-    }
-  )
+  it('opens the account menu', async () => {
+    authenticate()
 
+    const wrapper = mountNavBar()
 
-  it(
-    'opens the account menu',
-    async () => {
-      authenticate()
+    expect(wrapper.find('.account-dropdown').exists()).toBe(false)
 
-      const wrapper = mountNavBar()
+    await wrapper.find('.navbar-account').trigger('click')
 
-      expect(
-        wrapper.find(
-          '.account-dropdown'
-        ).exists()
-      ).toBe(false)
+    expect(wrapper.find('.account-dropdown').exists()).toBe(true)
 
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
+    expect(wrapper.text()).toContain('Editar datos')
 
-      expect(
-        wrapper.find(
-          '.account-dropdown'
-        ).exists()
-      ).toBe(true)
+    expect(wrapper.text()).toContain('Cerrar sesión')
+  })
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Editar datos'
-      )
+  it('does not show privileged options to a client', async () => {
+    authenticate('CLIENT')
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Cerrar sesión'
-      )
-    }
-  )
+    const wrapper = mountNavBar()
 
+    await wrapper.find('.navbar-account').trigger('click')
 
-  it(
-    'does not show privileged options to a client',
-    async () => {
-      authenticate('CLIENT')
+    expect(wrapper.text()).not.toContain('Registrar propietario')
 
-      const wrapper = mountNavBar()
+    expect(wrapper.text()).not.toContain('Gestionar establecimientos')
+  })
 
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
+  it('shows owner registration to an administrator', async () => {
+    authenticate('ADMIN')
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Registrar propietario'
-      )
+    const wrapper = mountNavBar()
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Gestionar establecimientos'
-      )
-    }
-  )
+    await wrapper.find('.navbar-account').trigger('click')
 
+    expect(wrapper.text()).toContain('Registrar propietario')
 
-  it(
-    'shows owner registration to an administrator',
-    async () => {
-      authenticate('ADMIN')
+    expect(wrapper.text()).not.toContain('Gestionar establecimientos')
+  })
 
-      const wrapper = mountNavBar()
+  it('shows establishment management to an owner', async () => {
+    authenticate('OWNER')
 
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
+    const wrapper = mountNavBar()
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Registrar propietario'
-      )
+    await wrapper.find('.navbar-account').trigger('click')
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Gestionar establecimientos'
-      )
-    }
-  )
+    expect(wrapper.text()).toContain('Gestionar establecimientos')
 
+    expect(wrapper.text()).not.toContain('Registrar propietario')
+  })
 
-  it(
-    'shows establishment management to an owner',
-    async () => {
-      authenticate('OWNER')
+  it('logs out and redirects to the home page', async () => {
+    authenticate()
 
-      const wrapper = mountNavBar()
+    const wrapper = mountNavBar()
 
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
+    await wrapper.find('.navbar-account').trigger('click')
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Gestionar establecimientos'
-      )
+    await wrapper.find('.logout-item').trigger('click')
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Registrar propietario'
-      )
-    }
-  )
+    await flushPromises()
 
+    expect(mocks.logout).toHaveBeenCalledTimes(1)
 
-  it(
-    'logs out and redirects to the home page',
-    async () => {
-      authenticate()
+    expect(mocks.push).toHaveBeenCalledWith('/')
 
-      const wrapper = mountNavBar()
+    expect(wrapper.text()).toContain('Sesión cerrada')
 
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
+    expect(wrapper.text()).toContain('Has cerrado sesión correctamente.')
+  })
 
-      await wrapper
-        .find('.logout-item')
-        .trigger('click')
+  it('closes the logout confirmation message', async () => {
+    authenticate()
 
-      await flushPromises()
+    const wrapper = mountNavBar()
 
-      expect(
-        mocks.logout
-      ).toHaveBeenCalledTimes(1)
+    await wrapper.find('.navbar-account').trigger('click')
 
-      expect(
-        mocks.push
-      ).toHaveBeenCalledWith('/')
+    await wrapper.find('.logout-item').trigger('click')
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Sesión cerrada'
-      )
+    await flushPromises()
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Has cerrado sesión correctamente.'
-      )
-    }
-  )
+    expect(wrapper.find('.logout-message-overlay').exists()).toBe(true)
 
+    await wrapper.find('.logout-message button').trigger('click')
 
-  it(
-    'closes the logout confirmation message',
-    async () => {
-      authenticate()
-
-      const wrapper = mountNavBar()
-
-      await wrapper
-        .find('.navbar-account')
-        .trigger('click')
-
-      await wrapper
-        .find('.logout-item')
-        .trigger('click')
-
-      await flushPromises()
-
-      expect(
-        wrapper.find(
-          '.logout-message-overlay'
-        ).exists()
-      ).toBe(true)
-
-      await wrapper
-        .find(
-          '.logout-message button'
-        )
-        .trigger('click')
-
-      expect(
-        wrapper.find(
-          '.logout-message-overlay'
-        ).exists()
-      ).toBe(false)
-    }
-  )
+    expect(wrapper.find('.logout-message-overlay').exists()).toBe(false)
+  })
 })

@@ -16,7 +16,6 @@ import blindIcon from '../assets/icons/blind.svg'
 
 import './RegisterView.css'
 
-
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -32,7 +31,6 @@ const showPasswordConfirm = ref(false)
 
 const loading = ref(false)
 const error = ref('')
-
 
 const handleRegister = async () => {
   error.value = ''
@@ -50,11 +48,7 @@ const handleRegister = async () => {
   loading.value = true
 
   try {
-    await authStore.register(
-      name.value,
-      email.value,
-      password.value,
-    )
+    await authStore.register(name.value, email.value, password.value)
 
     router.push('/')
   } catch (err) {
@@ -70,10 +64,7 @@ const handleRegister = async () => {
 </script>
 
 <template>
-  <div
-    class="register-page"
-    :style="{ backgroundImage: `url(${background})` }"
-  >
+  <div class="register-page" :style="{ backgroundImage: `url(${background})` }">
     <AccessBrand />
 
     <section class="register-panel-wrapper">
@@ -87,21 +78,13 @@ const handleRegister = async () => {
           </p>
         </header>
 
-        <form
-          class="register-form"
-          @submit.prevent="handleRegister"
-        >
+        <form class="register-form" @submit.prevent="handleRegister">
           <div class="form-group">
-            <label for="name">
-              Nombre
-            </label>
+            <label for="name"> Nombre </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="userIcon"
-                  alt=""
-                />
+                <img :src="userIcon" alt="" />
               </span>
 
               <input
@@ -116,16 +99,11 @@ const handleRegister = async () => {
           </div>
 
           <div class="form-group">
-            <label for="email">
-              Correo electrónico
-            </label>
+            <label for="email"> Correo electrónico </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="mailIcon"
-                  alt=""
-                />
+                <img :src="mailIcon" alt="" />
               </span>
 
               <input
@@ -140,16 +118,11 @@ const handleRegister = async () => {
           </div>
 
           <div class="form-group">
-            <label for="password">
-              Contraseña
-            </label>
+            <label for="password"> Contraseña </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="keyIcon"
-                  alt=""
-                />
+                <img :src="keyIcon" alt="" />
               </span>
 
               <input
@@ -167,25 +140,17 @@ const handleRegister = async () => {
                 :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                 @click="showPassword = !showPassword"
               >
-                <img
-                  :src="showPassword ? blindIcon : eyeIcon"
-                  alt=""
-                />
+                <img :src="showPassword ? blindIcon : eyeIcon" alt="" />
               </button>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="password-confirm">
-              Confirmar contraseña
-            </label>
+            <label for="password-confirm"> Confirmar contraseña </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="keyIcon"
-                  alt=""
-                />
+                <img :src="keyIcon" alt="" />
               </span>
 
               <input
@@ -200,52 +165,30 @@ const handleRegister = async () => {
               <button
                 type="button"
                 class="password-toggle"
-                :aria-label="
-                  showPasswordConfirm
-                    ? 'Ocultar contraseña'
-                    : 'Mostrar contraseña'
-                "
+                :aria-label="showPasswordConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                 @click="showPasswordConfirm = !showPasswordConfirm"
               >
-                <img
-                  :src="showPasswordConfirm ? blindIcon : eyeIcon"
-                  alt=""
-                />
+                <img :src="showPasswordConfirm ? blindIcon : eyeIcon" alt="" />
               </button>
             </div>
           </div>
 
           <label class="terms-option">
-            <input
-              v-model="acceptTerms"
-              type="checkbox"
-            />
+            <input v-model="acceptTerms" type="checkbox" />
 
             <span>
               Acepto la
-              <RouterLink to="/privacy">
-                Política de privacidad
-              </RouterLink>
+              <RouterLink to="/privacy"> Política de privacidad </RouterLink>
               y los
-              <RouterLink to="/terms">
-                Términos y condiciones
-              </RouterLink>
+              <RouterLink to="/terms"> Términos y condiciones </RouterLink>
             </span>
           </label>
 
-          <p
-            v-if="error"
-            class="register-error"
-            role="alert"
-          >
+          <p v-if="error" class="register-error" role="alert">
             {{ error }}
           </p>
 
-          <button
-            type="submit"
-            class="submit-register"
-            :disabled="loading"
-          >
+          <button type="submit" class="submit-register" :disabled="loading">
             {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
           </button>
         </form>
@@ -255,15 +198,11 @@ const handleRegister = async () => {
         <div class="login-link">
           <span>¿Ya tienes cuenta?</span>
 
-          <RouterLink to="/login">
-            Inicia sesión
-          </RouterLink>
+          <RouterLink to="/login"> Inicia sesión </RouterLink>
         </div>
       </div>
     </section>
 
-    <p class="register-slogan">
-      Everyone can tag along
-    </p>
+    <p class="register-slogan">Everyone can tag along</p>
   </div>
 </template>

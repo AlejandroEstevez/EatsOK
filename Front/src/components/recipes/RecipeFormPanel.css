@@ -20,9 +20,7 @@
 
   background: var(--white);
 
-  box-shadow:
-    -8px 0 24px
-    rgba(0, 0, 0, 0.15);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
 }
 
 .recipe-form-scroll {
@@ -310,10 +308,8 @@
   transition: opacity 0.3s ease;
 }
 
-.recipe-form-enter-active
-.recipe-form-panel,
-.recipe-form-leave-active
-.recipe-form-panel {
+.recipe-form-enter-active .recipe-form-panel,
+.recipe-form-leave-active .recipe-form-panel {
   transition: transform 0.3s ease;
 }
 
@@ -322,9 +318,7 @@
   opacity: 0;
 }
 
-.recipe-form-enter-from
-.recipe-form-panel,
-.recipe-form-leave-to
-.recipe-form-panel {
+.recipe-form-enter-from .recipe-form-panel,
+.recipe-form-leave-to .recipe-form-panel {
   transform: translateX(100%);
 }

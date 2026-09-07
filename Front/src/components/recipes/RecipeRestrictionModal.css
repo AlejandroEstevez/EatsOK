@@ -26,9 +26,7 @@
 
   background: var(--white);
 
-  box-shadow:
-    0 12px 35px
-    rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
 }
 
 .recipe-restriction-modal-header {
@@ -99,14 +97,12 @@
 
 .recipe-restriction-modal-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 12px;
 }
 
-.recipe-restriction-modal-grid
-.restriction-card {
+.recipe-restriction-modal-grid .restriction-card {
   width: 100%;
 }
 

@@ -1,12 +1,5 @@
 <script setup>
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 
 import './RecipesView.css'
 
@@ -49,65 +42,39 @@ const filters = reactive({
 })
 
 const canManageSelectedRecipe = computed(() => {
-  if (
-    !selectedRecipe.value
-    || !authStore.user
-  ) {
+  if (!selectedRecipe.value || !authStore.user) {
     return false
   }
 
-  return (
-    Number(selectedRecipe.value.author_id)
-    === Number(authStore.user.id)
-  )
+  return Number(selectedRecipe.value.author_id) === Number(authStore.user.id)
 })
 
 async function loadInitialData() {
   try {
-    const [
-      restrictionsResponse,
-      profileResponse,
-    ] = await Promise.all([
-      api.get(
-        '/food-profiles/restrictions/'
-      ),
-      api.get(
-        '/food-profiles/'
-      ),
+    const [restrictionsResponse, profileResponse] = await Promise.all([
+      api.get('/food-profiles/restrictions/'),
+      api.get('/food-profiles/'),
     ])
 
-    restrictions.value =
-      restrictionsResponse.data
+    restrictions.value = restrictionsResponse.data
 
-    profileRestrictionIds.value = (
-      profileResponse.data.restrictions ?? []
-    ).map(restriction => {
-      if (
-        typeof restriction === 'object'
-        && restriction !== null
-      ) {
+    profileRestrictionIds.value = (profileResponse.data.restrictions ?? []).map((restriction) => {
+      if (typeof restriction === 'object' && restriction !== null) {
         return restriction.id
       }
 
       return restriction
     })
 
-    filters.useProfile =
-      profileResponse.data.enabled
+    filters.useProfile = profileResponse.data.enabled
 
     if (filters.useProfile) {
-      filters.selectedRestrictions = [
-        ...profileRestrictionIds.value,
-      ]
+      filters.selectedRestrictions = [...profileRestrictionIds.value]
     }
   } catch (err) {
-    console.error(
-      'Error loading recipe filters:',
-      err
-    )
+    console.error('Error loading recipe filters:', err)
 
-    error.value =
-      'No se han podido cargar los filtros.'
+    error.value = 'No se han podido cargar los filtros.'
   }
 }
 
@@ -122,39 +89,27 @@ async function searchRecipes() {
       ordering: filters.ordering,
     }
 
-    const additionalRestrictions =
-      filters.useProfile
-        ? filters.selectedRestrictions.filter(
-          restrictionId =>
-            !profileRestrictionIds.value.includes(
-              restrictionId
-            )
+    const additionalRestrictions = filters.useProfile
+      ? filters.selectedRestrictions.filter(
+          (restrictionId) => !profileRestrictionIds.value.includes(restrictionId)
         )
-        : filters.selectedRestrictions
+      : filters.selectedRestrictions
 
     if (additionalRestrictions.length) {
-      params.restrictions =
-        additionalRestrictions.join(',')
+      params.restrictions = additionalRestrictions.join(',')
     }
 
-    const response = await api.get(
-      '/search/recipes/',
-      {
-        params,
-      }
-    )
+    const response = await api.get('/search/recipes/', {
+      params,
+    })
 
     recipes.value = response.data
   } catch (err) {
-    console.error(
-      'Error searching recipes:',
-      err
-    )
+    console.error('Error searching recipes:', err)
 
     recipes.value = []
 
-    error.value =
-      'No se han podido cargar las recetas.'
+    error.value = 'No se han podido cargar las recetas.'
   } finally {
     loading.value = false
   }
@@ -165,10 +120,7 @@ function updateUseProfile(value) {
 
   if (value) {
     filters.selectedRestrictions = [
-      ...new Set([
-        ...filters.selectedRestrictions,
-        ...profileRestrictionIds.value,
-      ]),
+      ...new Set([...filters.selectedRestrictions, ...profileRestrictionIds.value]),
     ]
   }
 }
@@ -176,47 +128,26 @@ function updateUseProfile(value) {
 function toggleRestriction(restrictionId) {
   filters.useProfile = false
 
-  if (
-    filters.selectedRestrictions.includes(
-      restrictionId
-    )
-  ) {
-    filters.selectedRestrictions =
-      filters.selectedRestrictions.filter(
-        id => id !== restrictionId
-      )
+  if (filters.selectedRestrictions.includes(restrictionId)) {
+    filters.selectedRestrictions = filters.selectedRestrictions.filter((id) => id !== restrictionId)
 
     return
   }
 
-  filters.selectedRestrictions = [
-    ...filters.selectedRestrictions,
-    restrictionId,
-  ]
+  filters.selectedRestrictions = [...filters.selectedRestrictions, restrictionId]
 }
 
-function replaceRestrictions({
-  type,
-  selection,
-}) {
+function replaceRestrictions({ type, selection }) {
   filters.useProfile = false
 
   const otherTypeIds = restrictions.value
     .filter(
-      restriction =>
-        restriction.type !== type
-        && filters.selectedRestrictions.includes(
-          restriction.id
-        )
+      (restriction) =>
+        restriction.type !== type && filters.selectedRestrictions.includes(restriction.id)
     )
-    .map(
-      restriction => restriction.id
-    )
+    .map((restriction) => restriction.id)
 
-  filters.selectedRestrictions = [
-    ...otherTypeIds,
-    ...selection,
-  ]
+  filters.selectedRestrictions = [...otherTypeIds, ...selection]
 }
 
 function clearFilters() {
@@ -232,14 +163,9 @@ async function selectRecipe(recipe) {
   detailError.value = ''
 
   try {
-    const response = await api.get(
-      `/recipes/${recipe.id}/`
-    )
+    const response = await api.get(`/recipes/${recipe.id}/`)
 
-    if (
-      selectedRecipe.value?.id
-      !== recipe.id
-    ) {
+    if (selectedRecipe.value?.id !== recipe.id) {
       return
     }
 
@@ -248,23 +174,13 @@ async function selectRecipe(recipe) {
       ...response.data,
     }
   } catch (err) {
-    console.error(
-      'Error loading recipe detail:',
-      err
-    )
+    console.error('Error loading recipe detail:', err)
 
-    if (
-      selectedRecipe.value?.id
-      === recipe.id
-    ) {
-      detailError.value =
-        'No se ha podido cargar el detalle de la receta.'
+    if (selectedRecipe.value?.id === recipe.id) {
+      detailError.value = 'No se ha podido cargar el detalle de la receta.'
     }
   } finally {
-    if (
-      selectedRecipe.value?.id
-      === recipe.id
-    ) {
+    if (selectedRecipe.value?.id === recipe.id) {
       detailLoading.value = false
     }
   }
@@ -294,8 +210,7 @@ function openEditRecipe(recipe) {
   closeRecipeDetail()
 
   recipeFormMode.value = 'edit'
-  recipeFormRecipe.value =
-    recipeToEdit
+  recipeFormRecipe.value = recipeToEdit
   recipeFormError.value = ''
   recipeFormOpen.value = true
 }
@@ -312,44 +227,26 @@ async function saveRecipe(payload) {
   recipeFormError.value = ''
 
   try {
-    if (
-      recipeFormMode.value === 'edit'
-      && recipeFormRecipe.value
-    ) {
-      await api.patch(
-        `/recipes/${recipeFormRecipe.value.id}/`,
-        payload
-      )
+    if (recipeFormMode.value === 'edit' && recipeFormRecipe.value) {
+      await api.patch(`/recipes/${recipeFormRecipe.value.id}/`, payload)
     } else {
-      await api.post(
-        '/recipes/',
-        payload
-      )
+      await api.post('/recipes/', payload)
     }
 
     closeRecipeForm()
 
     await searchRecipes()
   } catch (err) {
-    console.error(
-      'Error saving recipe:',
-      err
-    )
+    console.error('Error saving recipe:', err)
 
-    recipeFormError.value =
-      getApiError(
-        err,
-        'No se ha podido guardar la receta.'
-      )
+    recipeFormError.value = getApiError(err, 'No se ha podido guardar la receta.')
   } finally {
     recipeFormSaving.value = false
   }
 }
 
 async function deleteRecipe(recipe) {
-  const confirmed = window.confirm(
-    `¿Seguro que quieres eliminar "${recipe.title}"?`
-  )
+  const confirmed = window.confirm(`¿Seguro que quieres eliminar "${recipe.title}"?`)
 
   if (!confirmed) {
     return
@@ -358,35 +255,22 @@ async function deleteRecipe(recipe) {
   deletingRecipe.value = true
 
   try {
-    await api.delete(
-      `/recipes/${recipe.id}/`
-    )
+    await api.delete(`/recipes/${recipe.id}/`)
 
     closeRecipeDetail()
 
     await searchRecipes()
   } catch (err) {
-    console.error(
-      'Error deleting recipe:',
-      err
-    )
+    console.error('Error deleting recipe:', err)
 
-    detailError.value =
-      getApiError(
-        err,
-        'No se ha podido eliminar la receta.'
-      )
+    detailError.value = getApiError(err, 'No se ha podido eliminar la receta.')
   } finally {
     deletingRecipe.value = false
   }
 }
 
-function getApiError(
-  err,
-  fallback,
-) {
-  const data =
-    err.response?.data
+function getApiError(err, fallback) {
+  const data = err.response?.data
 
   if (!data) {
     return fallback
@@ -400,16 +284,13 @@ function getApiError(
     return data.detail
   }
 
-  const firstValue =
-    Object.values(data)[0]
+  const firstValue = Object.values(data)[0]
 
   if (Array.isArray(firstValue)) {
     return firstValue[0]
   }
 
-  if (
-    typeof firstValue === 'string'
-  ) {
+  if (typeof firstValue === 'string') {
     return firstValue
   }
 
@@ -441,20 +322,14 @@ watch(
   () => {
     clearTimeout(searchTimeout)
 
-    searchTimeout = setTimeout(
-      () => {
-        searchRecipes()
-      },
-      250
-    )
+    searchTimeout = setTimeout(() => {
+      searchRecipes()
+    }, 250)
   }
 )
 
 onMounted(async () => {
-  window.addEventListener(
-    'keydown',
-    handleKeydown
-  )
+  window.addEventListener('keydown', handleKeydown)
 
   await loadInitialData()
   await searchRecipes()
@@ -463,10 +338,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   clearTimeout(searchTimeout)
 
-  window.removeEventListener(
-    'keydown',
-    handleKeydown
-  )
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -480,45 +352,26 @@ onBeforeUnmount(() => {
           :search="filters.search"
           :use-profile="filters.useProfile"
           :restrictions="restrictions"
-          :selected-restrictions="
-            filters.selectedRestrictions
-          "
-          @update:search="
-            filters.search = $event
-          "
-          @update:use-profile="
-            updateUseProfile
-          "
-          @toggle-restriction="
-            toggleRestriction
-          "
-          @replace-restrictions="
-            replaceRestrictions
-          "
+          :selected-restrictions="filters.selectedRestrictions"
+          @update:search="filters.search = $event"
+          @update:use-profile="updateUseProfile"
+          @toggle-restriction="toggleRestriction"
+          @replace-restrictions="replaceRestrictions"
           @clear="clearFilters"
         />
 
         <section class="recipes-main">
           <div class="recipes-heading">
             <div>
-              <h1>
-                Recetas adaptadas
-              </h1>
+              <h1>Recetas adaptadas</h1>
 
               <p class="recipes-subtitle">
-                Encuentra recetas compatibles
-                con tus restricciones alimentarias.
+                Encuentra recetas compatibles con tus restricciones alimentarias.
               </p>
             </div>
 
-            <button
-              type="button"
-              class="recipes-create-button"
-              @click="openCreateRecipe"
-            >
-              <span>
-                +
-              </span>
+            <button type="button" class="recipes-create-button" @click="openCreateRecipe">
+              <span> + </span>
 
               Crear
             </button>
@@ -528,61 +381,31 @@ onBeforeUnmount(() => {
             <div class="recipes-results-header">
               <strong>
                 {{ recipes.length }}
-                {{
-                  recipes.length === 1
-                    ? 'receta encontrada'
-                    : 'recetas encontradas'
-                }}
+                {{ recipes.length === 1 ? 'receta encontrada' : 'recetas encontradas' }}
               </strong>
 
-              <select
-                v-model="filters.ordering"
-                class="recipes-ordering"
-              >
-                <option value="-publication_date">
-                  Más reciente
-                </option>
+              <select v-model="filters.ordering" class="recipes-ordering">
+                <option value="-publication_date">Más reciente</option>
 
-                <option value="-rating">
-                  Mejor valoradas
-                </option>
+                <option value="-rating">Mejor valoradas</option>
 
-                <option value="preparation_time">
-                  Menor tiempo
-                </option>
+                <option value="preparation_time">Menor tiempo</option>
 
-                <option value="-preparation_time">
-                  Mayor tiempo
-                </option>
+                <option value="-preparation_time">Mayor tiempo</option>
               </select>
             </div>
 
-            <p
-              v-if="loading"
-              class="recipes-state"
-            >
-              Cargando recetas...
-            </p>
+            <p v-if="loading" class="recipes-state">Cargando recetas...</p>
 
-            <p
-              v-else-if="error"
-              class="recipes-state recipes-state--error"
-            >
+            <p v-else-if="error" class="recipes-state recipes-state--error">
               {{ error }}
             </p>
 
-            <p
-              v-else-if="!recipes.length"
-              class="recipes-state"
-            >
-              No se han encontrado recetas
-              con estos filtros.
+            <p v-else-if="!recipes.length" class="recipes-state">
+              No se han encontrado recetas con estos filtros.
             </p>
 
-            <div
-              v-else
-              class="recipes-grid"
-            >
+            <div v-else class="recipes-grid">
               <RecipeCard
                 v-for="recipe in recipes"
                 :key="recipe.id"
@@ -592,9 +415,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <p class="recipes-slogan">
-            Everyone can tag along
-          </p>
+          <p class="recipes-slogan">Everyone can tag along</p>
         </section>
       </main>
 

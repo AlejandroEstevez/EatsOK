@@ -40,18 +40,8 @@ function starStyle(index) {
 </script>
 
 <template>
-  <div
-    class="star-rating"
-    :class="`star-rating--${size}`"
-  >
-    <span
-      v-for="star in 5"
-      :key="star"
-      class="star-rating-star"
-      :style="starStyle(star)"
-    >
-      ★
-    </span>
+  <div class="star-rating" :class="`star-rating--${size}`">
+    <span v-for="star in 5" :key="star" class="star-rating-star" :style="starStyle(star)"> ★ </span>
   </div>
 </template>
 

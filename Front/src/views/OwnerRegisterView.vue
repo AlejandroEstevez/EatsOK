@@ -11,7 +11,6 @@ import blindIcon from '../assets/icons/blind.svg'
 
 import './OwnerRegisterView.css'
 
-
 const authStore = useAuthStore()
 
 const username = ref('')
@@ -24,17 +23,11 @@ const loading = ref(false)
 const error = ref('')
 const showSuccess = ref(false)
 
-
 const registerOwner = async () => {
   error.value = ''
 
-  if (
-    !username.value.trim()
-    || !email.value.trim()
-    || !password.value
-  ) {
-    error.value =
-      'Completa todos los campos.'
+  if (!username.value.trim() || !email.value.trim() || !password.value) {
+    error.value = 'Completa todos los campos.'
 
     return
   }
@@ -51,10 +44,9 @@ const registerOwner = async () => {
       },
       {
         headers: {
-          Authorization:
-            `Bearer ${authStore.accessToken}`,
+          Authorization: `Bearer ${authStore.accessToken}`,
         },
-      },
+      }
     )
 
     username.value = ''
@@ -65,26 +57,17 @@ const registerOwner = async () => {
     showSuccess.value = true
   } catch (err) {
     if (err.response?.data?.email) {
-      error.value =
-        'Ese correo electrónico ya está en uso.'
+      error.value = 'Ese correo electrónico ya está en uso.'
     } else if (err.response?.data?.username) {
-      error.value =
-        'Ese nombre de usuario ya está en uso.'
+      error.value = 'Ese nombre de usuario ya está en uso.'
     } else if (err.response?.data?.password) {
-      const passwordError =
-        err.response.data.password
+      const passwordError = err.response.data.password
 
-      error.value = Array.isArray(passwordError)
-        ? passwordError[0]
-        : passwordError
-    } else if (
-      err.response?.status === 403
-    ) {
-      error.value =
-        'No tienes permisos para registrar propietarios.'
+      error.value = Array.isArray(passwordError) ? passwordError[0] : passwordError
+    } else if (err.response?.status === 403) {
+      error.value = 'No tienes permisos para registrar propietarios.'
     } else {
-      error.value =
-        'No se ha podido registrar el propietario.'
+      error.value = 'No se ha podido registrar el propietario.'
     }
   } finally {
     loading.value = false
@@ -99,24 +82,14 @@ const registerOwner = async () => {
     <main class="owner-register-content">
       <section class="owner-register-card">
         <header class="owner-register-header">
-          <h1>
-            Registrar propietario
-          </h1>
+          <h1>Registrar propietario</h1>
 
-          <p>
-            Crea una cuenta para un propietario
-            de establecimientos.
-          </p>
+          <p>Crea una cuenta para un propietario de establecimientos.</p>
         </header>
 
-        <form
-          class="owner-register-form"
-          @submit.prevent="registerOwner"
-        >
+        <form class="owner-register-form" @submit.prevent="registerOwner">
           <div class="owner-register-field">
-            <label for="owner-username">
-              Nombre de usuario
-            </label>
+            <label for="owner-username"> Nombre de usuario </label>
 
             <div class="owner-register-input-wrapper">
               <input
@@ -130,9 +103,7 @@ const registerOwner = async () => {
           </div>
 
           <div class="owner-register-field">
-            <label for="owner-email">
-              Correo electrónico
-            </label>
+            <label for="owner-email"> Correo electrónico </label>
 
             <div class="owner-register-input-wrapper">
               <input
@@ -146,19 +117,13 @@ const registerOwner = async () => {
           </div>
 
           <div class="owner-register-field">
-            <label for="owner-password">
-              Contraseña
-            </label>
+            <label for="owner-password"> Contraseña </label>
 
             <div class="owner-register-input-wrapper">
               <input
                 id="owner-password"
                 v-model="password"
-                :type="
-                  showPassword
-                    ? 'text'
-                    : 'password'
-                "
+                :type="showPassword ? 'text' : 'password'"
                 autocomplete="new-password"
                 placeholder="Contraseña"
               />
@@ -167,76 +132,37 @@ const registerOwner = async () => {
                 type="button"
                 class="owner-password-toggle"
                 aria-label="Mostrar u ocultar contraseña"
-                @click="
-                  showPassword = !showPassword
-                "
+                @click="showPassword = !showPassword"
               >
-                <img
-                  :src="
-                    showPassword
-                      ? blindIcon
-                      : eyeIcon
-                  "
-                  alt=""
-                />
+                <img :src="showPassword ? blindIcon : eyeIcon" alt="" />
               </button>
             </div>
           </div>
 
           <div class="owner-register-info">
-            <strong>
-              Cuenta de propietario
-            </strong>
+            <strong> Cuenta de propietario </strong>
 
-            <p>
-              La cuenta se registrará automáticamente
-              con permisos de propietario.
-            </p>
+            <p>La cuenta se registrará automáticamente con permisos de propietario.</p>
           </div>
 
-          <p
-            v-if="error"
-            class="owner-register-error"
-            role="alert"
-          >
+          <p v-if="error" class="owner-register-error" role="alert">
             {{ error }}
           </p>
 
-          <button
-            type="submit"
-            class="register-owner-button"
-            :disabled="loading"
-          >
-            {{
-              loading
-                ? 'Registrando...'
-                : 'Registrar propietario'
-            }}
+          <button type="submit" class="register-owner-button" :disabled="loading">
+            {{ loading ? 'Registrando...' : 'Registrar propietario' }}
           </button>
         </form>
       </section>
     </main>
 
-    <div
-      v-if="showSuccess"
-      class="owner-register-popup-overlay"
-    >
+    <div v-if="showSuccess" class="owner-register-popup-overlay">
       <div class="owner-register-popup">
-        <h3>
-          Propietario registrado
-        </h3>
+        <h3>Propietario registrado</h3>
 
-        <p>
-          La cuenta de propietario se ha creado
-          correctamente.
-        </p>
+        <p>La cuenta de propietario se ha creado correctamente.</p>
 
-        <button
-          type="button"
-          @click="showSuccess = false"
-        >
-          Aceptar
-        </button>
+        <button type="button" @click="showSuccess = false">Aceptar</button>
       </div>
     </div>
   </div>

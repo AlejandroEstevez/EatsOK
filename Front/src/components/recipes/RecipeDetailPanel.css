@@ -18,9 +18,7 @@
 
   background: var(--white);
 
-  box-shadow:
-    -8px 0 24px
-    rgba(0, 0, 0, 0.15);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
 }
 
 .recipe-detail-scroll {
@@ -210,15 +208,8 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(20%)
-    sepia(36%)
-    saturate(1450%)
-    hue-rotate(105deg)
-    brightness(86%)
-    contrast(105%);
+  filter: brightness(0) saturate(100%) invert(20%) sepia(36%) saturate(1450%) hue-rotate(105deg)
+    brightness(86%) contrast(105%);
 }
 
 .recipe-detail-establishment {
@@ -330,7 +321,6 @@
   padding: 5px 22px 28px;
 }
 
-
 /* TRANSITION */
 
 .recipe-detail-enter-active,
@@ -338,12 +328,9 @@
   transition: opacity 0.3s ease;
 }
 
-.recipe-detail-enter-active
-.recipe-detail-panel,
-.recipe-detail-leave-active
-.recipe-detail-panel {
-  transition:
-    transform 0.3s ease;
+.recipe-detail-enter-active .recipe-detail-panel,
+.recipe-detail-leave-active .recipe-detail-panel {
+  transition: transform 0.3s ease;
 }
 
 .recipe-detail-enter-from,
@@ -351,9 +338,7 @@
   opacity: 0;
 }
 
-.recipe-detail-enter-from
-.recipe-detail-panel,
-.recipe-detail-leave-to
-.recipe-detail-panel {
+.recipe-detail-enter-from .recipe-detail-panel,
+.recipe-detail-leave-to .recipe-detail-panel {
   transform: translateX(100%);
 }

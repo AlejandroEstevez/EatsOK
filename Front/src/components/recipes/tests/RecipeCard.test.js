@@ -1,27 +1,15 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import RecipeCard
-  from '../RecipeCard.vue'
+import RecipeCard from '../RecipeCard.vue'
 
-
-function makeRecipe(
-  overrides = {}
-) {
+function makeRecipe(overrides = {}) {
   return {
     id: 1,
     title: 'Pasta sin gluten',
-    description:
-      'Una receta sencilla.',
-    image_url:
-      'https://example.com/pasta.jpg',
+    description: 'Una receta sencilla.',
+    image_url: 'https://example.com/pasta.jpg',
     preparation_time: 30,
     author: 'alex',
     average_rating: 4.36,
@@ -44,244 +32,100 @@ function makeRecipe(
   }
 }
 
-
-function mountCard(
-  overrides = {}
-) {
-  return shallowMount(
-    RecipeCard,
-    {
-      props: {
-        recipe:
-          makeRecipe(
-            overrides
-          ),
-      },
-    }
-  )
+function mountCard(overrides = {}) {
+  return shallowMount(RecipeCard, {
+    props: {
+      recipe: makeRecipe(overrides),
+    },
+  })
 }
 
+describe('RecipeCard', () => {
+  it('renders recipe information', () => {
+    const wrapper = mountCard()
 
-describe(
-  'RecipeCard',
-  () => {
-    it(
-      'renders recipe information',
-      () => {
-        const wrapper =
-          mountCard()
+    expect(wrapper.text()).toContain('Pasta sin gluten')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Pasta sin gluten'
-        )
+    expect(wrapper.text()).toContain('Una receta sencilla.')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Una receta sencilla.'
-        )
+    expect(wrapper.text()).toContain('30 min')
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          '30 min'
-        )
+    expect(wrapper.text()).toContain('alex')
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'alex'
-        )
-      }
-    )
+  it('renders the recipe image when available', () => {
+    const wrapper = mountCard()
 
+    const image = wrapper.find('.recipe-card-image img')
 
-    it(
-      'renders the recipe image when available',
-      () => {
-        const wrapper =
-          mountCard()
+    expect(image.exists()).toBe(true)
 
-        const image =
-          wrapper.find(
-            '.recipe-card-image img'
-          )
+    expect(image.attributes('src')).toBe('https://example.com/pasta.jpg')
 
-        expect(
-          image.exists()
-        ).toBe(true)
+    expect(image.attributes('alt')).toBe('Pasta sin gluten')
+  })
 
-        expect(
-          image.attributes('src')
-        ).toBe(
-          'https://example.com/pasta.jpg'
-        )
+  it('shows an image placeholder when there is no image', () => {
+    const wrapper = mountCard({
+      image_url: '',
+    })
 
-        expect(
-          image.attributes('alt')
-        ).toBe(
-          'Pasta sin gluten'
-        )
-      }
-    )
+    expect(wrapper.find('.recipe-card-image img').exists()).toBe(false)
 
+    expect(wrapper.find('.recipe-card-image-placeholder').text()).toContain('📷')
+  })
 
-    it(
-      'shows an image placeholder when there is no image',
-      () => {
-        const wrapper =
-          mountCard({
-            image_url: '',
-          })
+  it('formats adapted allergies and diets', () => {
+    const wrapper = mountCard()
 
-        expect(
-          wrapper.find(
-            '.recipe-card-image img'
-          ).exists()
-        ).toBe(false)
+    const badges = wrapper.findAll('.recipe-adapted-badge')
 
-        expect(
-          wrapper.find(
-            '.recipe-card-image-placeholder'
-          ).text()
-        ).toContain('📷')
-      }
-    )
+    expect(badges).toHaveLength(2)
 
+    expect(badges[0].text()).toContain('Sin gluten')
 
-    it(
-      'formats adapted allergies and diets',
-      () => {
-        const wrapper =
-          mountCard()
+    expect(badges[1].text()).toContain('Vegano')
+  })
 
-        const badges =
-          wrapper.findAll(
-            '.recipe-adapted-badge'
-          )
+  it('formats the average rating with one decimal and comma', () => {
+    const wrapper = mountCard({
+      average_rating: 4.36,
+    })
 
-        expect(
-          badges
-        ).toHaveLength(2)
+    expect(wrapper.find('.recipe-rating-value').text()).toBe('4,4')
 
-        expect(
-          badges[0].text()
-        ).toContain(
-          'Sin gluten'
-        )
+    expect(wrapper.find('.recipe-rating-count').text()).toBe('(12)')
+  })
 
-        expect(
-          badges[1].text()
-        ).toContain(
-          'Vegano'
-        )
-      }
-    )
+  it('shows no ratings message when rating is null', () => {
+    const wrapper = mountCard({
+      average_rating: null,
+    })
 
+    expect(wrapper.find('.recipe-no-rating').text()).toBe('Sin valoraciones')
 
-    it(
-      'formats the average rating with one decimal and comma',
-      () => {
-        const wrapper =
-          mountCard({
-            average_rating: 4.36,
-          })
+    expect(wrapper.find('.recipe-rating-value').exists()).toBe(false)
+  })
 
-        expect(
-          wrapper.find(
-            '.recipe-rating-value'
-          ).text()
-        ).toBe(
-          '4,4'
-        )
+  it('hides description when it is empty', () => {
+    const wrapper = mountCard({
+      description: '',
+    })
 
-        expect(
-          wrapper.find(
-            '.recipe-rating-count'
-          ).text()
-        ).toBe(
-          '(12)'
-        )
-      }
-    )
+    expect(wrapper.find('.recipe-card-description').exists()).toBe(false)
+  })
 
+  it('emits the selected recipe from the view button', async () => {
+    const recipe = makeRecipe()
 
-    it(
-      'shows no ratings message when rating is null',
-      () => {
-        const wrapper =
-          mountCard({
-            average_rating: null,
-          })
+    const wrapper = shallowMount(RecipeCard, {
+      props: {
+        recipe,
+      },
+    })
 
-        expect(
-          wrapper.find(
-            '.recipe-no-rating'
-          ).text()
-        ).toBe(
-          'Sin valoraciones'
-        )
+    await wrapper.find('.recipe-view-button').trigger('click')
 
-        expect(
-          wrapper.find(
-            '.recipe-rating-value'
-          ).exists()
-        ).toBe(false)
-      }
-    )
-
-
-    it(
-      'hides description when it is empty',
-      () => {
-        const wrapper =
-          mountCard({
-            description: '',
-          })
-
-        expect(
-          wrapper.find(
-            '.recipe-card-description'
-          ).exists()
-        ).toBe(false)
-      }
-    )
-
-
-    it(
-      'emits the selected recipe from the view button',
-      async () => {
-        const recipe =
-          makeRecipe()
-
-        const wrapper =
-          shallowMount(
-            RecipeCard,
-            {
-              props: {
-                recipe,
-              },
-            }
-          )
-
-        await wrapper
-          .find(
-            '.recipe-view-button'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'select'
-          )
-        ).toEqual([
-          [
-            recipe,
-          ],
-        ])
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('select')).toEqual([[recipe]])
+  })
+})

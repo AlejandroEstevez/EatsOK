@@ -1,16 +1,8 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import EstablishmentResults
-  from '../EstablishmentResults.vue'
-
+import EstablishmentResults from '../EstablishmentResults.vue'
 
 const establishments = [
   {
@@ -23,17 +15,10 @@ const establishments = [
   },
 ]
 
-
 const EstablishmentCardStub = {
-  props: [
-    'establishment',
-  ],
+  props: ['establishment'],
 
-  emits: [
-    'select',
-    'hover',
-    'leave',
-  ],
+  emits: ['select', 'hover', 'leave'],
 
   template: `
     <button
@@ -60,215 +45,91 @@ const EstablishmentCardStub = {
   `,
 }
 
+function mountResults(props = {}) {
+  return shallowMount(EstablishmentResults, {
+    props: {
+      establishments,
+      loading: false,
+      ordering: 'distance',
+      ...props,
+    },
 
-function mountResults(
-  props = {}
-) {
-  return shallowMount(
-    EstablishmentResults,
-    {
-      props: {
-        establishments,
-        loading: false,
-        ordering: 'distance',
-        ...props,
+    global: {
+      stubs: {
+        EstablishmentCard: EstablishmentCardStub,
       },
-
-      global: {
-        stubs: {
-          EstablishmentCard:
-            EstablishmentCardStub,
-        },
-      },
-    }
-  )
+    },
+  })
 }
 
+describe('EstablishmentResults', () => {
+  it('shows the number of results', () => {
+    const wrapper = mountResults()
 
-describe(
-  'EstablishmentResults',
-  () => {
-    it(
-      'shows the number of results',
-      () => {
-        const wrapper =
-          mountResults()
+    expect(wrapper.text()).toContain('Resultados (2)')
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Resultados (2)'
-        )
-      }
-    )
+  it('shows the loading state', () => {
+    const wrapper = mountResults({
+      loading: true,
+    })
 
+    expect(wrapper.text()).toContain('Cargando establecimientos...')
 
-    it(
-      'shows the loading state',
-      () => {
-        const wrapper =
-          mountResults({
-            loading: true,
-          })
+    expect(wrapper.find('.results-list').exists()).toBe(false)
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'Cargando establecimientos...'
-        )
+  it('shows the empty state', () => {
+    const wrapper = mountResults({
+      establishments: [],
+    })
 
-        expect(
-          wrapper.find(
-            '.results-list'
-          ).exists()
-        ).toBe(false)
-      }
-    )
+    expect(wrapper.text()).toContain('No se han encontrado establecimientos.')
+  })
 
+  it('renders one card for each establishment', () => {
+    const wrapper = mountResults()
 
-    it(
-      'shows the empty state',
-      () => {
-        const wrapper =
-          mountResults({
-            establishments: [],
-          })
+    expect(wrapper.findAll('.establishment-card-stub')).toHaveLength(2)
+  })
 
-        expect(
-          wrapper.text()
-        ).toContain(
-          'No se han encontrado establecimientos.'
-        )
-      }
-    )
+  it('uses the selected ordering', () => {
+    const wrapper = mountResults({
+      ordering: '-compatible_percentage',
+    })
 
+    expect(wrapper.find('.results-ordering').element.value).toBe('-compatible_percentage')
+  })
 
-    it(
-      'renders one card for each establishment',
-      () => {
-        const wrapper =
-          mountResults()
+  it('emits ordering changes', async () => {
+    const wrapper = mountResults()
 
-        expect(
-          wrapper.findAll(
-            '.establishment-card-stub'
-          )
-        ).toHaveLength(2)
-      }
-    )
+    await wrapper.find('.results-ordering').setValue('-rating')
 
+    expect(wrapper.emitted('update:ordering')).toEqual([['-rating']])
+  })
 
-    it(
-      'uses the selected ordering',
-      () => {
-        const wrapper =
-          mountResults({
-            ordering:
-              '-compatible_percentage',
-          })
+  it('forwards establishment selection', async () => {
+    const wrapper = mountResults()
 
-        expect(
-          wrapper
-            .find('.results-ordering')
-            .element.value
-        ).toBe(
-          '-compatible_percentage'
-        )
-      }
-    )
+    await wrapper.findAll('.establishment-card-stub')[0].trigger('click')
 
+    expect(wrapper.emitted('select-establishment')).toEqual([[establishments[0]]])
+  })
 
-    it(
-      'emits ordering changes',
-      async () => {
-        const wrapper =
-          mountResults()
+  it('forwards establishment hover', async () => {
+    const wrapper = mountResults()
 
-        await wrapper
-          .find('.results-ordering')
-          .setValue('-rating')
+    await wrapper.findAll('.establishment-card-stub')[0].trigger('mouseenter')
 
-        expect(
-          wrapper.emitted(
-            'update:ordering'
-          )
-        ).toEqual([
-          [
-            '-rating',
-          ],
-        ])
-      }
-    )
+    expect(wrapper.emitted('hover-establishment')).toEqual([[1]])
+  })
 
+  it('forwards establishment leave', async () => {
+    const wrapper = mountResults()
 
-    it(
-      'forwards establishment selection',
-      async () => {
-        const wrapper =
-          mountResults()
+    await wrapper.findAll('.establishment-card-stub')[0].trigger('mouseleave')
 
-        await wrapper
-          .findAll(
-            '.establishment-card-stub'
-          )[0]
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'select-establishment'
-          )
-        ).toEqual([
-          [
-            establishments[0],
-          ],
-        ])
-      }
-    )
-
-
-    it(
-      'forwards establishment hover',
-      async () => {
-        const wrapper =
-          mountResults()
-
-        await wrapper
-          .findAll(
-            '.establishment-card-stub'
-          )[0]
-          .trigger('mouseenter')
-
-        expect(
-          wrapper.emitted(
-            'hover-establishment'
-          )
-        ).toEqual([
-          [
-            1,
-          ],
-        ])
-      }
-    )
-
-
-    it(
-      'forwards establishment leave',
-      async () => {
-        const wrapper =
-          mountResults()
-
-        await wrapper
-          .findAll(
-            '.establishment-card-stub'
-          )[0]
-          .trigger('mouseleave')
-
-        expect(
-          wrapper.emitted(
-            'leave-establishment'
-          )
-        ).toHaveLength(1)
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('leave-establishment')).toHaveLength(1)
+  })
+})

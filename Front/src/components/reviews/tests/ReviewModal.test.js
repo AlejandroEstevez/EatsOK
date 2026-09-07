@@ -1,20 +1,10 @@
-import {
-  describe,
-  expect,
-  it,
-} from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  shallowMount,
-} from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 
-import {
-  nextTick,
-} from 'vue'
+import { nextTick } from 'vue'
 
-import ReviewModal
-  from '../ReviewModal.vue'
-
+import ReviewModal from '../ReviewModal.vue'
 
 const StarRatingStub = {
   name: 'StarRatingStub',
@@ -33,387 +23,175 @@ const StarRatingStub = {
   `,
 }
 
+function mountModal(props = {}) {
+  return shallowMount(ReviewModal, {
+    props: {
+      open: false,
+      submitting: false,
+      error: '',
+      ...props,
+    },
 
-function mountModal(
-  props = {}
-) {
-  return shallowMount(
-    ReviewModal,
-    {
-      props: {
-        open: false,
-        submitting: false,
-        error: '',
-        ...props,
+    global: {
+      stubs: {
+        StarRating: StarRatingStub,
       },
-
-      global: {
-        stubs: {
-          StarRating:
-            StarRatingStub,
-        },
-      },
-    }
-  )
+    },
+  })
 }
 
+describe('ReviewModal', () => {
+  it('is hidden when closed', () => {
+    const wrapper = mountModal()
 
-describe(
-  'ReviewModal',
-  () => {
-    it(
-      'is hidden when closed',
-      () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.find('.review-modal-backdrop').exists()).toBe(false)
+  })
 
-        expect(
-          wrapper.find(
-            '.review-modal-backdrop'
-          ).exists()
-        ).toBe(false)
-      }
-    )
+  it('opens with an empty review', async () => {
+    const wrapper = mountModal()
 
+    await wrapper.setProps({
+      open: true,
+    })
 
-    it(
-      'opens with an empty review',
-      async () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.find('.review-rating-slider').element.value).toBe('0')
 
-        await wrapper.setProps({
-          open: true,
+    expect(wrapper.find('#review-comment').element.value).toBe('')
+
+    expect(wrapper.find('.review-rating-heading strong').text()).toBe('0.0')
+  })
+
+  it('updates the rating and star preview', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
+
+    await wrapper.find('.review-rating-slider').setValue('4.3')
+
+    await nextTick()
+
+    expect(wrapper.find('.review-rating-heading strong').text()).toBe('4.3')
+
+    expect(
+      wrapper
+        .findComponent({
+          name: 'StarRatingStub',
         })
+        .props('rating')
+    ).toBe(4.3)
+  })
 
-        expect(
-          wrapper.find(
-            '.review-rating-slider'
-          ).element.value
-        ).toBe('0')
+  it('emits a normalized review payload', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
 
-        expect(
-          wrapper.find(
-            '#review-comment'
-          ).element.value
-        ).toBe('')
+    await wrapper.find('.review-rating-slider').setValue('4.5')
 
-        expect(
-          wrapper
-            .find(
-              '.review-rating-heading strong'
-            )
-            .text()
-        ).toBe(
-          '0.0'
-        )
-      }
-    )
+    await wrapper.find('#review-comment').setValue('  Muy buena experiencia  ')
 
+    await wrapper.find('.review-modal-submit').trigger('click')
 
-    it(
-      'updates the rating and star preview',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
+    expect(wrapper.emitted('submit')).toEqual([
+      [
+        {
+          rating: 4.5,
+          comment: 'Muy buena experiencia',
+        },
+      ],
+    ])
+  })
 
-        await wrapper
-          .find(
-            '.review-rating-slider'
-          )
-          .setValue(
-            '4.3'
-          )
+  it('allows submitting an empty comment', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
 
-        await nextTick()
+    await wrapper.find('.review-rating-slider').setValue('3')
 
-        expect(
-          wrapper
-            .find(
-              '.review-rating-heading strong'
-            )
-            .text()
-        ).toBe(
-          '4.3'
-        )
+    await wrapper.find('.review-modal-submit').trigger('click')
 
-        expect(
-          wrapper
-            .findComponent({
-              name:
-                'StarRatingStub',
-            })
-            .props('rating')
-        ).toBe(
-          4.3
-        )
-      }
-    )
+    expect(wrapper.emitted('submit')[0][0]).toEqual({
+      rating: 3,
+      comment: '',
+    })
+  })
 
+  it('resets rating and comment whenever it is opened again', async () => {
+    const wrapper = mountModal()
 
-    it(
-      'emits a normalized review payload',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
+    await wrapper.setProps({
+      open: true,
+    })
 
-        await wrapper
-          .find(
-            '.review-rating-slider'
-          )
-          .setValue(
-            '4.5'
-          )
+    await wrapper.find('.review-rating-slider').setValue('5')
 
-        await wrapper
-          .find(
-            '#review-comment'
-          )
-          .setValue(
-            '  Muy buena experiencia  '
-          )
+    await wrapper.find('#review-comment').setValue('Comentario')
 
-        await wrapper
-          .find(
-            '.review-modal-submit'
-          )
-          .trigger('click')
+    await wrapper.setProps({
+      open: false,
+    })
 
-        expect(
-          wrapper.emitted(
-            'submit'
-          )
-        ).toEqual([
-          [
-            {
-              rating: 4.5,
-              comment:
-                'Muy buena experiencia',
-            },
-          ],
-        ])
-      }
-    )
+    await wrapper.setProps({
+      open: true,
+    })
 
+    expect(wrapper.find('.review-rating-slider').element.value).toBe('0')
 
-    it(
-      'allows submitting an empty comment',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
+    expect(wrapper.find('#review-comment').element.value).toBe('')
+  })
 
-        await wrapper
-          .find(
-            '.review-rating-slider'
-          )
-          .setValue(
-            '3'
-          )
+  it('shows the supplied error', async () => {
+    const wrapper = mountModal({
+      open: true,
+      error: 'Ya has publicado una reseña.',
+    })
 
-        await wrapper
-          .find(
-            '.review-modal-submit'
-          )
-          .trigger('click')
+    expect(wrapper.find('.review-modal-error').text()).toBe('Ya has publicado una reseña.')
+  })
 
-        expect(
-          wrapper.emitted(
-            'submit'
-          )[0][0]
-        ).toEqual({
-          rating: 3,
-          comment: '',
-        })
-      }
-    )
+  it('shows submitting state and disables actions', () => {
+    const wrapper = mountModal({
+      open: true,
+      submitting: true,
+    })
 
+    expect(wrapper.find('.review-modal-submit').text()).toBe('Publicando...')
 
-    it(
-      'resets rating and comment whenever it is opened again',
-      async () => {
-        const wrapper =
-          mountModal()
+    expect(wrapper.find('.review-modal-submit').attributes('disabled')).toBeDefined()
 
-        await wrapper.setProps({
-          open: true,
-        })
+    expect(wrapper.find('.review-modal-cancel').attributes('disabled')).toBeDefined()
 
-        await wrapper
-          .find(
-            '.review-rating-slider'
-          )
-          .setValue(
-            '5'
-          )
+    expect(wrapper.find('.review-modal-close').attributes('disabled')).toBeDefined()
+  })
 
-        await wrapper
-          .find(
-            '#review-comment'
-          )
-          .setValue(
-            'Comentario'
-          )
+  it('emits close from the close button', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
 
-        await wrapper.setProps({
-          open: false,
-        })
+    await wrapper.find('.review-modal-close').trigger('click')
 
-        await wrapper.setProps({
-          open: true,
-        })
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
 
-        expect(
-          wrapper.find(
-            '.review-rating-slider'
-          ).element.value
-        ).toBe('0')
+  it('emits close from the cancel button', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
 
-        expect(
-          wrapper.find(
-            '#review-comment'
-          ).element.value
-        ).toBe('')
-      }
-    )
+    await wrapper.find('.review-modal-cancel').trigger('click')
 
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
 
-    it(
-      'shows the supplied error',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-            error:
-              'Ya has publicado una reseña.',
-          })
+  it('emits close when the backdrop itself is clicked', async () => {
+    const wrapper = mountModal({
+      open: true,
+    })
 
-        expect(
-          wrapper.find(
-            '.review-modal-error'
-          ).text()
-        ).toBe(
-          'Ya has publicado una reseña.'
-        )
-      }
-    )
+    await wrapper.find('.review-modal-backdrop').trigger('click')
 
-
-    it(
-      'shows submitting state and disables actions',
-      () => {
-        const wrapper =
-          mountModal({
-            open: true,
-            submitting: true,
-          })
-
-        expect(
-          wrapper.find(
-            '.review-modal-submit'
-          ).text()
-        ).toBe(
-          'Publicando...'
-        )
-
-        expect(
-          wrapper.find(
-            '.review-modal-submit'
-          ).attributes(
-            'disabled'
-          )
-        ).toBeDefined()
-
-        expect(
-          wrapper.find(
-            '.review-modal-cancel'
-          ).attributes(
-            'disabled'
-          )
-        ).toBeDefined()
-
-        expect(
-          wrapper.find(
-            '.review-modal-close'
-          ).attributes(
-            'disabled'
-          )
-        ).toBeDefined()
-      }
-    )
-
-
-    it(
-      'emits close from the close button',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
-
-        await wrapper
-          .find(
-            '.review-modal-close'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
-
-
-    it(
-      'emits close from the cancel button',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
-
-        await wrapper
-          .find(
-            '.review-modal-cancel'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
-
-
-    it(
-      'emits close when the backdrop itself is clicked',
-      async () => {
-        const wrapper =
-          mountModal({
-            open: true,
-          })
-
-        await wrapper
-          .find(
-            '.review-modal-backdrop'
-          )
-          .trigger('click')
-
-        expect(
-          wrapper.emitted(
-            'close'
-          )
-        ).toHaveLength(1)
-      }
-    )
-  }
-)
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+})

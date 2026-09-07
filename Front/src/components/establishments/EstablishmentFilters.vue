@@ -6,7 +6,6 @@ import './EstablishmentFilters.css'
 import RestrictionCard from '../food-profile/RestrictionCard.vue'
 import RestrictionSelectorModal from './RestrictionSelectorModal.vue'
 
-
 const props = defineProps({
   search: {
     type: String,
@@ -39,7 +38,6 @@ const props = defineProps({
   },
 })
 
-
 const emit = defineEmits([
   'update:search',
   'update:location-mode',
@@ -50,39 +48,31 @@ const emit = defineEmits([
   'clear',
 ])
 
-
 const selectorOpen = ref(false)
 const selectorType = ref('allergy')
 
-
 const selectedAllergies = computed(() =>
   props.restrictions.filter(
-    restriction =>
-      restriction.type === 'allergy'
-      && props.selectedRestrictions.includes(restriction.id)
+    (restriction) =>
+      restriction.type === 'allergy' && props.selectedRestrictions.includes(restriction.id)
   )
 )
-
 
 const selectedDiets = computed(() =>
   props.restrictions.filter(
-    restriction =>
-      restriction.type === 'diet'
-      && props.selectedRestrictions.includes(restriction.id)
+    (restriction) =>
+      restriction.type === 'diet' && props.selectedRestrictions.includes(restriction.id)
   )
 )
-
 
 function openSelector(type) {
   selectorType.value = type
   selectorOpen.value = true
 }
 
-
 function closeSelector() {
   selectorOpen.value = false
 }
-
 
 function confirmSelector(selection) {
   emit('replace-restrictions', {
@@ -100,9 +90,7 @@ function confirmSelector(selection) {
       <h2>Buscar</h2>
 
       <div class="establishment-search">
-        <span class="establishment-search-icon">
-          ⌕
-        </span>
+        <span class="establishment-search-icon"> ⌕ </span>
 
         <input
           :value="search"
@@ -143,9 +131,7 @@ function confirmSelector(selection) {
       <div class="radius-header">
         <span>Radio de búsqueda</span>
 
-        <strong>
-          {{ radius }}km
-        </strong>
+        <strong> {{ radius }}km </strong>
       </div>
 
       <input
@@ -179,9 +165,7 @@ function confirmSelector(selection) {
       </div>
 
       <div class="restriction-group">
-        <span class="restriction-group-title">
-          Alergias e intolerancias
-        </span>
+        <span class="restriction-group-title"> Alergias e intolerancias </span>
 
         <div class="filter-restrictions">
           <RestrictionCard
@@ -193,19 +177,13 @@ function confirmSelector(selection) {
           />
         </div>
 
-        <button
-          type="button"
-          class="add-filter-button"
-          @click="openSelector('allergy')"
-        >
+        <button type="button" class="add-filter-button" @click="openSelector('allergy')">
           +Añadir más
         </button>
       </div>
 
       <div class="restriction-group">
-        <span class="restriction-group-title">
-          Preferencias
-        </span>
+        <span class="restriction-group-title"> Preferencias </span>
 
         <div class="filter-restrictions">
           <RestrictionCard
@@ -217,24 +195,14 @@ function confirmSelector(selection) {
           />
         </div>
 
-        <button
-          type="button"
-          class="add-filter-button"
-          @click="openSelector('diet')"
-        >
+        <button type="button" class="add-filter-button" @click="openSelector('diet')">
           +Añadir más
         </button>
       </div>
     </section>
 
-    <button
-      type="button"
-      class="clear-filters-button"
-      @click="emit('clear')"
-    >
-      <span class="clear-filters-icon">
-        ↻
-      </span>
+    <button type="button" class="clear-filters-button" @click="emit('clear')">
+      <span class="clear-filters-icon"> ↻ </span>
 
       Limpiar filtros
     </button>

@@ -11,14 +11,7 @@ defineProps({
 </script>
 
 <template>
-  <div
-    class="user-avatar"
-    :style="{ width: `${size}px`, height: `${size}px` }"
-  >
-    <img
-      :src="userIcon"
-      alt=""
-      class="user-avatar-icon"
-    />
+  <div class="user-avatar" :style="{ width: `${size}px`, height: `${size}px` }">
+    <img :src="userIcon" alt="" class="user-avatar-icon" />
   </div>
 </template>

@@ -14,7 +14,6 @@
   padding: 36px 30px 35px;
 }
 
-
 /* HEADER */
 
 .establishment-form-header {
@@ -73,11 +72,8 @@
 
   text-align: center;
 
-  box-shadow:
-    0 4px 18px
-    rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 }
-
 
 /* FORM */
 
@@ -94,9 +90,7 @@
 
   background: var(--white);
 
-  box-shadow:
-    0 4px 18px
-    rgba(0, 0, 0, 0.09);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.09);
 }
 
 .establishment-section-heading {
@@ -127,8 +121,7 @@
 
 .establishment-form-grid {
   display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px 24px;
 }
 
@@ -190,9 +183,7 @@
 .establishment-field textarea:focus {
   border-color: var(--green);
 
-  box-shadow:
-    0 0 0 2px
-    rgba(87, 179, 19, 0.1);
+  box-shadow: 0 0 0 2px rgba(87, 179, 19, 0.1);
 }
 
 .establishment-active-toggle {
@@ -216,7 +207,6 @@
 
   accent-color: var(--green);
 }
-
 
 /* TAGS */
 
@@ -270,7 +260,6 @@
 
   font-size: 13px;
 }
-
 
 /* DISHES */
 
@@ -388,7 +377,6 @@
   background: #fff2f2;
 }
 
-
 /* RESTRICTIONS */
 
 .dish-restrictions {
@@ -419,8 +407,7 @@
   font-size: 12px;
 }
 
-.restriction-table-block
-+ .restriction-table-block {
+.restriction-table-block + .restriction-table-block {
   margin-top: 22px;
 }
 
@@ -485,23 +472,19 @@
   font-size: 12px;
 }
 
-.restriction-grid--allergies
-.restriction-grid-cell:nth-last-child(-n + 5) {
+.restriction-grid--allergies .restriction-grid-cell:nth-last-child(-n + 5) {
   border-bottom: 0;
 }
 
-.restriction-grid--diets
-.restriction-grid-cell:nth-last-child(-n + 3) {
+.restriction-grid--diets .restriction-grid-cell:nth-last-child(-n + 3) {
   border-bottom: 0;
 }
 
-.restriction-grid--allergies
-.restriction-grid-cell:nth-child(5n) {
+.restriction-grid--allergies .restriction-grid-cell:nth-child(5n) {
   border-right: 0;
 }
 
-.restriction-grid--diets
-.restriction-grid-cell:nth-child(3n) {
+.restriction-grid--diets .restriction-grid-cell:nth-child(3n) {
   border-right: 0;
 }
 
@@ -551,7 +534,6 @@
   display: none;
 }
 
-
 /* EMPTY DISHES */
 
 .dish-form-empty {
@@ -576,7 +558,6 @@
 
   font-size: 13px;
 }
-
 
 /* ERROR + ACTIONS */
 
@@ -645,7 +626,6 @@
   font-style: italic;
   font-weight: 700;
 }
-
 
 /* RESPONSIVE */
 

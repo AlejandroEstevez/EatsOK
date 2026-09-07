@@ -137,15 +137,8 @@
 
   object-fit: contain;
 
-  filter:
-    brightness(0)
-    saturate(100%)
-    invert(20%)
-    sepia(36%)
-    saturate(1450%)
-    hue-rotate(105deg)
-    brightness(86%)
-    contrast(105%);
+  filter: brightness(0) saturate(100%) invert(20%) sepia(36%) saturate(1450%) hue-rotate(105deg)
+    brightness(86%) contrast(105%);
 }
 .recipe-card-footer {
   display: flex;

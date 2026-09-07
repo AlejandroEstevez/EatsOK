@@ -13,7 +13,6 @@
   background-size: cover;
 }
 
-
 /* REGISTER PANEL */
 
 .register-panel-wrapper {
@@ -36,8 +35,7 @@
 
   border-radius: 20px;
 
-  box-shadow:
-    0 4px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
 
   transform: translateX(-130px);
 }
@@ -65,7 +63,6 @@
   font-size: 20px;
   line-height: 1.35;
 }
-
 
 /* FORM */
 
@@ -109,9 +106,7 @@
 .input-wrapper:focus-within {
   border-color: var(--green);
 
-  box-shadow:
-    0 0 0 3px
-    rgba(87, 179, 19, 0.12);
+  box-shadow: 0 0 0 3px rgba(87, 179, 19, 0.12);
 }
 
 .input-icon {
@@ -182,7 +177,6 @@
   opacity: 1;
 }
 
-
 /* TERMS */
 
 .terms-option {
@@ -222,7 +216,6 @@
   text-decoration: underline;
 }
 
-
 /* ERROR */
 
 .register-error {
@@ -233,7 +226,6 @@
   font-size: 15px;
   font-weight: 600;
 }
-
 
 /* SUBMIT */
 
@@ -272,7 +264,6 @@
   cursor: not-allowed;
 }
 
-
 /* LOGIN LINK */
 
 .register-separator {
@@ -304,7 +295,6 @@
 .login-link a:hover {
   text-decoration: underline;
 }
-
 
 /* SLOGAN */
 

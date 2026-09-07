@@ -15,7 +15,6 @@ import blindIcon from '../assets/icons/blind.svg'
 
 import './LoginView.css'
 
-
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -27,17 +26,12 @@ const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
 
-
 const handleLogin = async () => {
   error.value = ''
   loading.value = true
 
   try {
-    await authStore.login(
-      email.value,
-      password.value,
-      rememberMe.value,
-    )
+    await authStore.login(email.value, password.value, rememberMe.value)
 
     router.push('/')
   } catch (err) {
@@ -53,10 +47,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div
-    class="login-page"
-    :style="{ backgroundImage: `url(${background})` }"
-  >
+  <div class="login-page" :style="{ backgroundImage: `url(${background})` }">
     <AccessBrand />
 
     <section class="login-panel-wrapper">
@@ -66,21 +57,13 @@ const handleLogin = async () => {
           <p>Inicia sesión para continuar</p>
         </header>
 
-        <form
-          class="login-form"
-          @submit.prevent="handleLogin"
-        >
+        <form class="login-form" @submit.prevent="handleLogin">
           <div class="form-group">
-            <label for="email">
-              Correo electrónico
-            </label>
+            <label for="email"> Correo electrónico </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="mailIcon"
-                  alt=""
-                />
+                <img :src="mailIcon" alt="" />
               </span>
 
               <input
@@ -95,16 +78,11 @@ const handleLogin = async () => {
           </div>
 
           <div class="form-group">
-            <label for="password">
-              Contraseña
-            </label>
+            <label for="password"> Contraseña </label>
 
             <div class="input-wrapper">
               <span class="input-icon">
-                <img
-                  :src="keyIcon"
-                  alt=""
-                />
+                <img :src="keyIcon" alt="" />
               </span>
 
               <input
@@ -122,45 +100,28 @@ const handleLogin = async () => {
                 :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
                 @click="showPassword = !showPassword"
               >
-                <img
-                  :src="showPassword ? blindIcon : eyeIcon"
-                  alt=""
-                />
+                <img :src="showPassword ? blindIcon : eyeIcon" alt="" />
               </button>
             </div>
           </div>
 
           <div class="login-options">
             <label class="remember-option">
-              <input
-                v-model="rememberMe"
-                type="checkbox"
-              />
+              <input v-model="rememberMe" type="checkbox" />
 
               <span>Recordarme</span>
             </label>
 
-            <RouterLink
-              to="/forgot-password"
-              class="forgot-link"
-            >
+            <RouterLink to="/forgot-password" class="forgot-link">
               ¿Has olvidado tu contraseña?
             </RouterLink>
           </div>
 
-          <p
-            v-if="error"
-            class="login-error"
-            role="alert"
-          >
+          <p v-if="error" class="login-error" role="alert">
             {{ error }}
           </p>
 
-          <button
-            type="submit"
-            class="submit-login"
-            :disabled="loading"
-          >
+          <button type="submit" class="submit-login" :disabled="loading">
             {{ loading ? 'Iniciando sesión...' : 'Iniciar sesión' }}
           </button>
         </form>
@@ -170,15 +131,11 @@ const handleLogin = async () => {
         <div class="register-link">
           <span>¿No tienes cuenta?</span>
 
-          <RouterLink to="/register">
-            Regístrate aquí
-          </RouterLink>
+          <RouterLink to="/register"> Regístrate aquí </RouterLink>
         </div>
       </div>
     </section>
 
-    <p class="login-slogan">
-      Everyone can tag along
-    </p>
+    <p class="login-slogan">Everyone can tag along</p>
   </div>
 </template>

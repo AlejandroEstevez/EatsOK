@@ -10,13 +10,7 @@ defineProps({
   },
 })
 
-
-defineEmits([
-  'select',
-  'hover',
-  'leave',
-])
-
+defineEmits(['select', 'hover', 'leave'])
 
 function getCompatibilityLevel(percentage) {
   if (percentage >= 80) {
@@ -46,12 +40,8 @@ function getCompatibilityLevel(percentage) {
     @click="$emit('select', establishment)"
     @mouseenter="$emit('hover', establishment.id)"
     @mouseleave="$emit('leave')"
-    >
-    <img
-      class="establishment-card-image"
-      :src="establishmentImage"
-      :alt="establishment.name"
-    />
+  >
+    <img class="establishment-card-image" :src="establishmentImage" :alt="establishment.name" />
 
     <div class="establishment-card-content">
       <div class="establishment-card-header">
@@ -61,48 +51,31 @@ function getCompatibilityLevel(percentage) {
 
         <span
           class="compatibility-badge"
-          :class="`compatibility-badge--${getCompatibilityLevel(
-            establishment.compatible_percentage
-          ).className}`"
+          :class="`compatibility-badge--${
+            getCompatibilityLevel(establishment.compatible_percentage).className
+          }`"
         >
-          {{ getCompatibilityLevel(
-            establishment.compatible_percentage
-          ).label }}
+          {{ getCompatibilityLevel(establishment.compatible_percentage).label }}
 
           {{ Math.round(establishment.compatible_percentage) }}%
         </span>
       </div>
 
       <div class="establishment-card-meta">
-        <span
-        v-if="establishment.average_rating !== null"
-        class="establishment-rating"
-        >
-        ★ {{ Number(establishment.average_rating).toFixed(1) }}
-        <span class="establishment-review-count">
-            ({{ establishment.review_count }})
-        </span>
+        <span v-if="establishment.average_rating !== null" class="establishment-rating">
+          ★ {{ Number(establishment.average_rating).toFixed(1) }}
+          <span class="establishment-review-count"> ({{ establishment.review_count }}) </span>
         </span>
 
-        <span v-else>
-        Sin valoraciones
-        </span>
+        <span v-else> Sin valoraciones </span>
 
-        <span v-if="establishment.distance !== null">
-          · {{ establishment.distance }} km
-        </span>
+        <span v-if="establishment.distance !== null"> · {{ establishment.distance }} km </span>
       </div>
 
-      <p
-        v-if="establishment.tags?.length"
-        class="establishment-card-tags"
-        >
-        <template
-            v-for="(tag, index) in establishment.tags"
-            :key="tag.id"
-        >
-            <span>{{ tag.name }}</span>
-            <span v-if="index < establishment.tags.length - 1"> · </span>
+      <p v-if="establishment.tags?.length" class="establishment-card-tags">
+        <template v-for="(tag, index) in establishment.tags" :key="tag.id">
+          <span>{{ tag.name }}</span>
+          <span v-if="index < establishment.tags.length - 1"> · </span>
         </template>
       </p>
 
@@ -121,8 +94,6 @@ function getCompatibilityLevel(percentage) {
       </p>
     </div>
 
-    <span class="establishment-card-arrow">
-      ›
-    </span>
+    <span class="establishment-card-arrow"> › </span>
   </article>
 </template>

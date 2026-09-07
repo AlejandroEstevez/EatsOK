@@ -1,22 +1,11 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  flushPromises,
-  shallowMount,
-} from '@vue/test-utils'
-
+import { flushPromises, shallowMount } from '@vue/test-utils'
 
 const mocks = vi.hoisted(() => ({
   get: vi.fn(),
   patch: vi.fn(),
 }))
-
 
 vi.mock('../../services/api', () => ({
   default: {
@@ -25,9 +14,7 @@ vi.mock('../../services/api', () => ({
   },
 }))
 
-
 import FoodProfileView from '../FoodProfileView.vue'
-
 
 const restrictions = [
   {
@@ -52,14 +39,9 @@ const restrictions = [
   },
 ]
 
-
 const profile = {
-  restrictions: [
-    restrictions[0],
-    restrictions[2],
-  ],
+  restrictions: [restrictions[0], restrictions[2]],
 }
-
 
 const RestrictionCardStub = {
   props: {
@@ -68,9 +50,7 @@ const RestrictionCardStub = {
     summary: Boolean,
   },
 
-  emits: [
-    'toggle',
-  ],
+  emits: ['toggle'],
 
   template: `
     <button
@@ -85,605 +65,296 @@ const RestrictionCardStub = {
   `,
 }
 
-
 function mockProfileLoad() {
-  mocks.get.mockImplementation(
-    url => {
-      if (
-        url
-        === '/food-profiles/restrictions/'
-      ) {
-        return Promise.resolve({
-          data: restrictions,
-        })
-      }
-
-      if (
-        url
-        === '/food-profiles/'
-      ) {
-        return Promise.resolve({
-          data: profile,
-        })
-      }
-
-      return Promise.reject(
-        new Error('Unknown endpoint')
-      )
+  mocks.get.mockImplementation((url) => {
+    if (url === '/food-profiles/restrictions/') {
+      return Promise.resolve({
+        data: restrictions,
+      })
     }
-  )
-}
 
+    if (url === '/food-profiles/') {
+      return Promise.resolve({
+        data: profile,
+      })
+    }
+
+    return Promise.reject(new Error('Unknown endpoint'))
+  })
+}
 
 function mountFoodProfile() {
-  return shallowMount(
-    FoodProfileView,
-    {
-      global: {
-        stubs: {
-          NavBar: true,
-          RestrictionCard:
-            RestrictionCardStub,
-        },
+  return shallowMount(FoodProfileView, {
+    global: {
+      stubs: {
+        NavBar: true,
+        RestrictionCard: RestrictionCardStub,
       },
-    }
-  )
+    },
+  })
 }
-
 
 async function mountLoadedProfile() {
   mockProfileLoad()
 
-  const wrapper =
-    mountFoodProfile()
+  const wrapper = mountFoodProfile()
 
   await flushPromises()
 
   return wrapper
 }
 
-
 beforeEach(() => {
   mocks.get.mockReset()
   mocks.patch.mockReset()
 })
 
-
 describe('FoodProfileView', () => {
-  it(
-    'loads restrictions and the current food profile',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+  it('loads restrictions and the current food profile', async () => {
+    const wrapper = await mountLoadedProfile()
 
-      expect(
-        mocks.get
-      ).toHaveBeenCalledTimes(2)
+    expect(mocks.get).toHaveBeenCalledTimes(2)
 
-      expect(
-        mocks.get
-      ).toHaveBeenCalledWith(
-        '/food-profiles/restrictions/'
-      )
+    expect(mocks.get).toHaveBeenCalledWith('/food-profiles/restrictions/')
 
-      expect(
-        mocks.get
-      ).toHaveBeenCalledWith(
-        '/food-profiles/'
-      )
+    expect(mocks.get).toHaveBeenCalledWith('/food-profiles/')
 
-      expect(
-        wrapper.text()
-      ).not.toContain(
-        'Cargando perfil...'
-      )
-    }
-  )
+    expect(wrapper.text()).not.toContain('Cargando perfil...')
+  })
 
+  it('shows an error when the profile cannot be loaded', async () => {
+    mocks.get.mockRejectedValue(new Error('Server error'))
 
-  it(
-    'shows an error when the profile cannot be loaded',
-    async () => {
-      mocks.get.mockRejectedValue(
-        new Error('Server error')
-      )
+    const wrapper = mountFoodProfile()
 
-      const wrapper =
-        mountFoodProfile()
+    await flushPromises()
 
-      await flushPromises()
+    expect(wrapper.find('.profile-error').text()).toBe(
+      'No se ha podido cargar tu perfil alimentario.'
+    )
 
-      expect(
-        wrapper
-          .find('.profile-error')
-          .text()
-      ).toBe(
-        'No se ha podido cargar tu perfil alimentario.'
-      )
+    expect(wrapper.find('.profile-loading').exists()).toBe(false)
+  })
 
-      expect(
-        wrapper.find(
-          '.profile-loading'
-        ).exists()
-      ).toBe(false)
-    }
-  )
+  it('separates allergies and diets', async () => {
+    const wrapper = await mountLoadedProfile()
 
+    const allergyCards = wrapper.find('.allergies-grid').findAll('.restriction-card-stub')
 
-  it(
-    'separates allergies and diets',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+    const dietCards = wrapper.find('.diets-grid').findAll('.restriction-card-stub')
 
-      const allergyCards =
-        wrapper
-          .find('.allergies-grid')
-          .findAll(
-            '.restriction-card-stub'
-          )
+    expect(allergyCards).toHaveLength(2)
 
-      const dietCards =
-        wrapper
-          .find('.diets-grid')
-          .findAll(
-            '.restriction-card-stub'
-          )
+    expect(allergyCards[0].text()).toBe('Gluten')
 
-      expect(
-        allergyCards
-      ).toHaveLength(2)
+    expect(allergyCards[1].text()).toBe('Lácteos')
 
-      expect(
-        allergyCards[0].text()
-      ).toBe('Gluten')
+    expect(dietCards).toHaveLength(2)
 
-      expect(
-        allergyCards[1].text()
-      ).toBe('Lácteos')
+    expect(dietCards[0].text()).toBe('Vegano')
 
-      expect(
-        dietCards
-      ).toHaveLength(2)
+    expect(dietCards[1].text()).toBe('Halal')
+  })
 
-      expect(
-        dietCards[0].text()
-      ).toBe('Vegano')
+  it('shows the selected restrictions in the profile summary', async () => {
+    const wrapper = await mountLoadedProfile()
 
-      expect(
-        dietCards[1].text()
-      ).toBe('Halal')
-    }
-  )
+    const summaryCards = wrapper.find('.summary-restrictions').findAll('.restriction-card-stub')
 
+    expect(summaryCards).toHaveLength(2)
 
-  it(
-    'shows the selected restrictions in the profile summary',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+    expect(summaryCards[0].text()).toBe('Gluten')
 
-      const summaryCards =
-        wrapper
-          .find('.summary-restrictions')
-          .findAll(
-            '.restriction-card-stub'
-          )
+    expect(summaryCards[1].text()).toBe('Vegano')
+  })
 
-      expect(
-        summaryCards
-      ).toHaveLength(2)
+  it('marks current restrictions as selected', async () => {
+    const wrapper = await mountLoadedProfile()
 
-      expect(
-        summaryCards[0].text()
-      ).toBe('Gluten')
+    const cards = wrapper.findAll('.restriction-card-stub')
 
-      expect(
-        summaryCards[1].text()
-      ).toBe('Vegano')
-    }
-  )
+    const glutenCard = cards.find(
+      (card) => card.attributes('data-id') === '1' && card.attributes('data-summary') === 'false'
+    )
 
+    const milkCard = cards.find((card) => card.attributes('data-id') === '2')
 
-  it(
-    'marks current restrictions as selected',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+    expect(glutenCard.attributes('data-selected')).toBe('true')
 
-      const cards =
-        wrapper.findAll(
-          '.restriction-card-stub'
-        )
+    expect(milkCard.attributes('data-selected')).toBe('false')
+  })
 
-      const glutenCard =
-        cards.find(
-          card =>
-            card.attributes(
-              'data-id'
-            ) === '1'
-            && card.attributes(
-              'data-summary'
-            ) === 'false'
-        )
+  it('adds a restriction when it is selected', async () => {
+    const wrapper = await mountLoadedProfile()
 
-      const milkCard =
-        cards.find(
-          card =>
-            card.attributes(
-              'data-id'
-            ) === '2'
-        )
+    const milkCard = wrapper
+      .find('.allergies-grid')
+      .findAll('.restriction-card-stub')
+      .find((card) => card.attributes('data-id') === '2')
 
-      expect(
-        glutenCard.attributes(
-          'data-selected'
-        )
-      ).toBe('true')
+    await milkCard.trigger('click')
 
-      expect(
-        milkCard.attributes(
-          'data-selected'
-        )
-      ).toBe('false')
-    }
-  )
+    const summaryCards = wrapper.find('.summary-restrictions').findAll('.restriction-card-stub')
 
+    expect(summaryCards).toHaveLength(3)
 
-  it(
-    'adds a restriction when it is selected',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+    expect(summaryCards.some((card) => card.text() === 'Lácteos')).toBe(true)
+  })
 
-      const milkCard =
-        wrapper
-          .find('.allergies-grid')
-          .findAll(
-            '.restriction-card-stub'
-          )
-          .find(
-            card =>
-              card.attributes(
-                'data-id'
-              ) === '2'
-          )
+  it('removes a restriction when it is selected again', async () => {
+    const wrapper = await mountLoadedProfile()
 
-      await milkCard.trigger(
-        'click'
-      )
+    const glutenCard = wrapper
+      .find('.allergies-grid')
+      .findAll('.restriction-card-stub')
+      .find((card) => card.attributes('data-id') === '1')
 
-      const summaryCards =
-        wrapper
-          .find('.summary-restrictions')
-          .findAll(
-            '.restriction-card-stub'
-          )
+    await glutenCard.trigger('click')
 
-      expect(
-        summaryCards
-      ).toHaveLength(3)
+    const summaryCards = wrapper.find('.summary-restrictions').findAll('.restriction-card-stub')
 
-      expect(
-        summaryCards.some(
-          card =>
-            card.text()
-            === 'Lácteos'
-        )
-      ).toBe(true)
-    }
-  )
+    expect(summaryCards).toHaveLength(1)
 
+    expect(summaryCards[0].text()).toBe('Vegano')
+  })
 
-  it(
-    'removes a restriction when it is selected again',
-    async () => {
-      const wrapper =
-        await mountLoadedProfile()
+  it('shows the empty summary when no restriction is selected', async () => {
+    mocks.get.mockImplementation((url) => {
+      if (url === '/food-profiles/restrictions/') {
+        return Promise.resolve({
+          data: restrictions,
+        })
+      }
 
-      const glutenCard =
-        wrapper
-          .find('.allergies-grid')
-          .findAll(
-            '.restriction-card-stub'
-          )
-          .find(
-            card =>
-              card.attributes(
-                'data-id'
-              ) === '1'
-          )
-
-      await glutenCard.trigger(
-        'click'
-      )
-
-      const summaryCards =
-        wrapper
-          .find('.summary-restrictions')
-          .findAll(
-            '.restriction-card-stub'
-          )
-
-      expect(
-        summaryCards
-      ).toHaveLength(1)
-
-      expect(
-        summaryCards[0].text()
-      ).toBe('Vegano')
-    }
-  )
-
-
-  it(
-    'shows the empty summary when no restriction is selected',
-    async () => {
-      mocks.get.mockImplementation(
-        url => {
-          if (
-            url
-            === '/food-profiles/restrictions/'
-          ) {
-            return Promise.resolve({
-              data: restrictions,
-            })
-          }
-
-          return Promise.resolve({
-            data: {
-              restrictions: [],
-            },
-          })
-        }
-      )
-
-      const wrapper =
-        mountFoodProfile()
-
-      await flushPromises()
-
-      expect(
-        wrapper
-          .find('.empty-profile')
-          .text()
-      ).toBe(
-        'Todavía no has seleccionado ninguna restricción.'
-      )
-    }
-  )
-
-
-  it(
-    'saves the selected restriction ids',
-    async () => {
-      mocks.patch.mockResolvedValueOnce({
-        data: {},
+      return Promise.resolve({
+        data: {
+          restrictions: [],
+        },
       })
+    })
 
-      const wrapper =
-        await mountLoadedProfile()
+    const wrapper = mountFoodProfile()
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+    await flushPromises()
 
-      await flushPromises()
+    expect(wrapper.find('.empty-profile').text()).toBe(
+      'Todavía no has seleccionado ninguna restricción.'
+    )
+  })
 
-      expect(
-        mocks.patch
-      ).toHaveBeenCalledTimes(1)
+  it('saves the selected restriction ids', async () => {
+    mocks.patch.mockResolvedValueOnce({
+      data: {},
+    })
 
-      expect(
-        mocks.patch
-      ).toHaveBeenCalledWith(
-        '/food-profiles/',
-        {
-          restriction_ids: [
-            1,
-            3,
-          ],
-        }
-      )
-    }
-  )
+    const wrapper = await mountLoadedProfile()
 
+    await wrapper.find('.save-profile-button').trigger('click')
 
-  it(
-    'saves changes made to the selected restrictions',
-    async () => {
-      mocks.patch.mockResolvedValueOnce({
-        data: {},
-      })
+    await flushPromises()
 
-      const wrapper =
-        await mountLoadedProfile()
+    expect(mocks.patch).toHaveBeenCalledTimes(1)
 
-      const milkCard =
-        wrapper
-          .find('.allergies-grid')
-          .findAll(
-            '.restriction-card-stub'
-          )
-          .find(
-            card =>
-              card.attributes(
-                'data-id'
-              ) === '2'
-          )
+    expect(mocks.patch).toHaveBeenCalledWith('/food-profiles/', {
+      restriction_ids: [1, 3],
+    })
+  })
 
-      await milkCard.trigger(
-        'click'
-      )
+  it('saves changes made to the selected restrictions', async () => {
+    mocks.patch.mockResolvedValueOnce({
+      data: {},
+    })
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+    const wrapper = await mountLoadedProfile()
 
-      await flushPromises()
+    const milkCard = wrapper
+      .find('.allergies-grid')
+      .findAll('.restriction-card-stub')
+      .find((card) => card.attributes('data-id') === '2')
 
-      expect(
-        mocks.patch
-      ).toHaveBeenCalledWith(
-        '/food-profiles/',
-        {
-          restriction_ids: [
-            1,
-            3,
-            2,
-          ],
-        }
-      )
-    }
-  )
+    await milkCard.trigger('click')
 
+    await wrapper.find('.save-profile-button').trigger('click')
 
-  it(
-    'shows the success modal after saving',
-    async () => {
-      mocks.patch.mockResolvedValueOnce({
-        data: {},
-      })
+    await flushPromises()
 
-      const wrapper =
-        await mountLoadedProfile()
+    expect(mocks.patch).toHaveBeenCalledWith('/food-profiles/', {
+      restriction_ids: [1, 3, 2],
+    })
+  })
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+  it('shows the success modal after saving', async () => {
+    mocks.patch.mockResolvedValueOnce({
+      data: {},
+    })
 
-      await flushPromises()
+    const wrapper = await mountLoadedProfile()
 
-      expect(
-        wrapper.find(
-          '.profile-modal-overlay'
-        ).exists()
-      ).toBe(true)
+    await wrapper.find('.save-profile-button').trigger('click')
 
-      expect(
-        wrapper.text()
-      ).toContain(
-        'Perfil actualizado'
-      )
-    }
-  )
+    await flushPromises()
 
+    expect(wrapper.find('.profile-modal-overlay').exists()).toBe(true)
 
-  it(
-    'closes the success modal',
-    async () => {
-      mocks.patch.mockResolvedValueOnce({
-        data: {},
-      })
+    expect(wrapper.text()).toContain('Perfil actualizado')
+  })
 
-      const wrapper =
-        await mountLoadedProfile()
+  it('closes the success modal', async () => {
+    mocks.patch.mockResolvedValueOnce({
+      data: {},
+    })
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+    const wrapper = await mountLoadedProfile()
 
-      await flushPromises()
+    await wrapper.find('.save-profile-button').trigger('click')
 
-      await wrapper
-        .find(
-          '.profile-modal button'
-        )
-        .trigger('click')
+    await flushPromises()
 
-      expect(
-        wrapper.find(
-          '.profile-modal-overlay'
-        ).exists()
-      ).toBe(false)
-    }
-  )
+    await wrapper.find('.profile-modal button').trigger('click')
 
+    expect(wrapper.find('.profile-modal-overlay').exists()).toBe(false)
+  })
 
-  it(
-    'shows an error when saving fails',
-    async () => {
-      mocks.patch.mockRejectedValueOnce(
-        new Error('Server error')
-      )
+  it('shows an error when saving fails', async () => {
+    mocks.patch.mockRejectedValueOnce(new Error('Server error'))
 
-      const wrapper =
-        await mountLoadedProfile()
+    const wrapper = await mountLoadedProfile()
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+    await wrapper.find('.save-profile-button').trigger('click')
 
-      await flushPromises()
+    await flushPromises()
 
-      expect(
-        wrapper
-          .find('.profile-error')
-          .text()
-      ).toBe(
-        'No se han podido guardar los cambios.'
-      )
+    expect(wrapper.find('.profile-error').text()).toBe('No se han podido guardar los cambios.')
 
-      expect(
-        wrapper.find(
-          '.profile-modal-overlay'
-        ).exists()
-      ).toBe(false)
-    }
-  )
+    expect(wrapper.find('.profile-modal-overlay').exists()).toBe(false)
+  })
 
+  it('shows loading state while saving', async () => {
+    let resolvePatch
 
-  it(
-    'shows loading state while saving',
-    async () => {
-      let resolvePatch
-
-      mocks.patch.mockImplementationOnce(
-        () => new Promise(resolve => {
+    mocks.patch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
           resolvePatch = resolve
         })
-      )
+    )
 
-      const wrapper =
-        await mountLoadedProfile()
+    const wrapper = await mountLoadedProfile()
 
-      await wrapper
-        .find('.save-profile-button')
-        .trigger('click')
+    await wrapper.find('.save-profile-button').trigger('click')
 
-      expect(
-        wrapper
-          .find('.save-profile-button')
-          .text()
-      ).toBe(
-        'Guardando...'
-      )
+    expect(wrapper.find('.save-profile-button').text()).toBe('Guardando...')
 
-      expect(
-        wrapper
-          .find('.save-profile-button')
-          .attributes('disabled')
-      ).toBeDefined()
+    expect(wrapper.find('.save-profile-button').attributes('disabled')).toBeDefined()
 
-      resolvePatch({
-        data: {},
-      })
+    resolvePatch({
+      data: {},
+    })
 
-      await flushPromises()
+    await flushPromises()
 
-      expect(
-        wrapper
-          .find('.save-profile-button')
-          .text()
-      ).toBe(
-        'Guardar cambios'
-      )
+    expect(wrapper.find('.save-profile-button').text()).toBe('Guardar cambios')
 
-      expect(
-        wrapper
-          .find('.save-profile-button')
-          .attributes('disabled')
-      ).toBeUndefined()
-    }
-  )
+    expect(wrapper.find('.save-profile-button').attributes('disabled')).toBeUndefined()
+  })
 })

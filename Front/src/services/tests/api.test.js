@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from 'vitest'
-
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const axiosMock = vi.hoisted(() => {
   const requestInterceptor = {
@@ -16,29 +9,22 @@ const axiosMock = vi.hoisted(() => {
   const instance = {
     interceptors: {
       request: {
-        use: vi.fn(
-          (fulfilled, rejected) => {
-            requestInterceptor.fulfilled =
-              fulfilled
+        use: vi.fn((fulfilled, rejected) => {
+          requestInterceptor.fulfilled = fulfilled
 
-            requestInterceptor.rejected =
-              rejected
-          }
-        ),
+          requestInterceptor.rejected = rejected
+        }),
       },
     },
   }
 
   return {
-    create: vi.fn(
-      () => instance
-    ),
+    create: vi.fn(() => instance),
 
     instance,
     requestInterceptor,
   }
 })
-
 
 vi.mock('axios', () => ({
   default: {
@@ -46,9 +32,7 @@ vi.mock('axios', () => ({
   },
 }))
 
-
 let api
-
 
 beforeEach(async () => {
   localStorage.clear()
@@ -57,166 +41,87 @@ beforeEach(async () => {
   vi.clearAllMocks()
   vi.resetModules()
 
-  axiosMock.requestInterceptor.fulfilled =
-    null
+  axiosMock.requestInterceptor.fulfilled = null
 
-  axiosMock.requestInterceptor.rejected =
-    null
+  axiosMock.requestInterceptor.rejected = null
 
-  api = (
-    await import('../api')
-  ).default
+  api = (await import('../api')).default
 })
 
-
 describe('api service', () => {
-  it(
-    'creates the Axios instance with the backend configuration',
-    () => {
-      expect(
-        axiosMock.create
-      ).toHaveBeenCalledTimes(1)
+  it('creates the Axios instance with the backend configuration', () => {
+    expect(axiosMock.create).toHaveBeenCalledTimes(1)
 
-      expect(
-        axiosMock.create
-      ).toHaveBeenCalledWith({
-        baseURL:
-          'http://127.0.0.1:8000/api',
+    expect(axiosMock.create).toHaveBeenCalledWith({
+      baseURL: 'http://127.0.0.1:8000/api',
 
-        headers: {
-          'Content-Type':
-            'application/json',
-        },
-      })
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
 
-      expect(api).toBe(
-        axiosMock.instance
-      )
+    expect(api).toBe(axiosMock.instance)
+  })
+
+  it('adds the access token from localStorage to the request', () => {
+    localStorage.setItem('accessToken', 'local-access-token')
+
+    const config = {
+      headers: {},
     }
-  )
 
+    const result = axiosMock.requestInterceptor.fulfilled(config)
 
-  it(
-    'adds the access token from localStorage to the request',
-    () => {
-      localStorage.setItem(
-        'accessToken',
-        'local-access-token'
-      )
+    expect(result.headers.Authorization).toBe('Bearer local-access-token')
 
-      const config = {
-        headers: {},
-      }
+    expect(result).toBe(config)
+  })
 
-      const result =
-        axiosMock
-          .requestInterceptor
-          .fulfilled(config)
+  it('uses the access token from sessionStorage when localStorage has no token', () => {
+    sessionStorage.setItem('accessToken', 'session-access-token')
 
-      expect(
-        result.headers.Authorization
-      ).toBe(
-        'Bearer local-access-token'
-      )
-
-      expect(result).toBe(config)
+    const config = {
+      headers: {},
     }
-  )
 
+    const result = axiosMock.requestInterceptor.fulfilled(config)
 
-  it(
-    'uses the access token from sessionStorage when localStorage has no token',
-    () => {
-      sessionStorage.setItem(
-        'accessToken',
-        'session-access-token'
-      )
+    expect(result.headers.Authorization).toBe('Bearer session-access-token')
 
-      const config = {
-        headers: {},
-      }
+    expect(result).toBe(config)
+  })
 
-      const result =
-        axiosMock
-          .requestInterceptor
-          .fulfilled(config)
+  it('prioritizes localStorage when both storages contain an access token', () => {
+    localStorage.setItem('accessToken', 'local-access-token')
 
-      expect(
-        result.headers.Authorization
-      ).toBe(
-        'Bearer session-access-token'
-      )
+    sessionStorage.setItem('accessToken', 'session-access-token')
 
-      expect(result).toBe(config)
+    const config = {
+      headers: {},
     }
-  )
 
+    const result = axiosMock.requestInterceptor.fulfilled(config)
 
-  it(
-    'prioritizes localStorage when both storages contain an access token',
-    () => {
-      localStorage.setItem(
-        'accessToken',
-        'local-access-token'
-      )
+    expect(result.headers.Authorization).toBe('Bearer local-access-token')
 
-      sessionStorage.setItem(
-        'accessToken',
-        'session-access-token'
-      )
+    expect(result).toBe(config)
+  })
 
-      const config = {
-        headers: {},
-      }
-
-      const result =
-        axiosMock
-          .requestInterceptor
-          .fulfilled(config)
-
-      expect(
-        result.headers.Authorization
-      ).toBe(
-        'Bearer local-access-token'
-      )
-
-      expect(result).toBe(config)
+  it('does not add an Authorization header when there is no access token', () => {
+    const config = {
+      headers: {},
     }
-  )
 
+    const result = axiosMock.requestInterceptor.fulfilled(config)
 
-  it(
-    'does not add an Authorization header when there is no access token',
-    () => {
-      const config = {
-        headers: {},
-      }
+    expect(result.headers.Authorization).toBeUndefined()
 
-      const result =
-        axiosMock
-          .requestInterceptor
-          .fulfilled(config)
+    expect(result).toBe(config)
+  })
 
-      expect(
-        result.headers.Authorization
-      ).toBeUndefined()
+  it('rejects errors received by the request interceptor', async () => {
+    const error = new Error('Request error')
 
-      expect(result).toBe(config)
-    }
-  )
-
-
-  it(
-    'rejects errors received by the request interceptor',
-    async () => {
-      const error =
-        new Error('Request error')
-
-      await expect(
-        axiosMock
-          .requestInterceptor
-          .rejected(error)
-      ).rejects.toBe(error)
-    }
-  )
+    await expect(axiosMock.requestInterceptor.rejected(error)).rejects.toBe(error)
+  })
 })
