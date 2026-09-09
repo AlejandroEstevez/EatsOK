@@ -58,7 +58,7 @@
   white-space: nowrap;
 }
 
-.compatibility-badge {
+.establishment-card .compatibility-badge {
   padding: 5px 7px;
 
   flex-shrink: 0;

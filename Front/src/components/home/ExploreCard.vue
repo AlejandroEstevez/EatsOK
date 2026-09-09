@@ -18,6 +18,14 @@ defineProps({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
+  to: {
+    type: String,
+    required: true,
+  },
   variant: {
     type: String,
     default: 'green',
@@ -40,12 +48,12 @@ defineProps({
         {{ description }}
       </p>
 
-      <button :class="['card-button', variant]">
+      <RouterLink :to="to" :class="['card-button', variant]">
         {{ buttonText }}
         <span>›</span>
-      </button>
+      </RouterLink>
     </div>
 
-    <div class="card-image"></div>
+    <img :src="image" alt="" class="card-image" />
   </article>
 </template>

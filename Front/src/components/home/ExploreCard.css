@@ -101,6 +101,7 @@
   border-radius: 10px;
 
   color: white;
+  text-decoration: none;
 
   font-weight: 800;
 }
@@ -125,7 +126,6 @@
   width: 100%;
   height: 100%;
 
-  background: var(--dark-green);
-
-  border-radius: 100% 0 0 0;
+  object-fit: contain;
+  object-position: right bottom;
 }

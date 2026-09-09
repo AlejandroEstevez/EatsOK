@@ -11,6 +11,10 @@ import recipesIcon from '../assets/icons/recipes.svg'
 import eatsokTag from '../assets/logo/eatsok-tag.png'
 import eatsokFood from '../assets/logo/eatsok-food.png'
 
+import profileImage from '../assets/home/profile-card.png'
+import establishmentsImage from '../assets/home/establishments-card.png'
+import recipesImage from '../assets/home/recipes-card.png'
+
 import './HomeView.css'
 </script>
 
@@ -54,6 +58,8 @@ import './HomeView.css'
             description="Indica tus alergias, intolerancias y preferencias para adaptar EatsOK a tus necesidades."
             button-text="Configurar perfil"
             :icon="profileIcon"
+            :image="profileImage"
+            to="/profile"
             variant="orange"
           />
 
@@ -62,6 +68,8 @@ import './HomeView.css'
             description="Encuentra lugares compatibles contigo y consulta sus opciones antes de ir."
             button-text="Explorar mapa"
             :icon="establishmentsIcon"
+            :image="establishmentsImage"
+            to="/establishments"
             variant="green"
           />
 
@@ -70,6 +78,8 @@ import './HomeView.css'
             description="Descubre recetas compatibles con tu perfil y encuentra nuevas ideas para cocinar."
             button-text="Explorar recetas"
             :icon="recipesIcon"
+            :image="recipesImage"
+            to="/recipes"
             variant="yellow"
           />
         </div>

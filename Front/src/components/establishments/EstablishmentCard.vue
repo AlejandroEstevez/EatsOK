@@ -1,7 +1,7 @@
 <script setup>
 import './EstablishmentCard.css'
 
-import establishmentImage from '../../assets/images/establishment-demo.jpg'
+import fallbackImage from '../../assets/images/establishment-demo.jpg'
 
 defineProps({
   establishment: {
@@ -32,6 +32,10 @@ function getCompatibilityLevel(percentage) {
     label: 'Baja',
   }
 }
+
+function getEstablishmentImage(establishment) {
+  return establishment.image_url || fallbackImage
+}
 </script>
 
 <template>
@@ -41,7 +45,11 @@ function getCompatibilityLevel(percentage) {
     @mouseenter="$emit('hover', establishment.id)"
     @mouseleave="$emit('leave')"
   >
-    <img class="establishment-card-image" :src="establishmentImage" :alt="establishment.name" />
+    <img
+      class="establishment-card-image"
+      :src="getEstablishmentImage(establishment)"
+      :alt="establishment.name"
+    />
 
     <div class="establishment-card-content">
       <div class="establishment-card-header">

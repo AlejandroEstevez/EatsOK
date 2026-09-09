@@ -41,6 +41,11 @@ BEGIN
         SELECT id
         FROM recipes_recipe
         WHERE title LIKE '[DEMO]%'
+        OR author_id IN (
+            SELECT id
+            FROM users_user
+            WHERE email LIKE '%@demo-user.eatsok.local'
+        )
     );
 
     -- Recipe restrictions from demo recipes.
@@ -219,127 +224,127 @@ BEGIN
         (v_owner_id, 'Naranja de Sol', 'Cocina mediterránea contemporánea junto a Puerta del Sol.',
          '910000001', 'naranja.sol@demo.eatsok.local', '12:00', '23:30',
          'La cocina utiliza zonas de preparación compartidas.',
-         'El personal dispone de información sobre ingredientes y alérgenos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'El personal dispone de información sobre ingredientes y alérgenos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Verde Gran Vía', 'Restaurante urbano con bowls, ensaladas y platos ligeros.',
          '910000002', 'verde.granvia@demo.eatsok.local', '11:30', '23:00',
          'Algunos utensilios pueden compartirse entre elaboraciones.',
-         'Se pueden solicitar adaptaciones en varios platos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Se pueden solicitar adaptaciones en varios platos.', TRUE, 'https://images.unsplash.com/photo-1613274554329-70f997f5789f?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'La Mesa de Callao', 'Cocina española de raciones y platos para compartir.',
          '910000003', 'mesa.callao@demo.eatsok.local', '12:30', '00:00',
          'Freidoras y planchas compartidas.',
-         'Consultar al personal antes de realizar el pedido.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Consultar al personal antes de realizar el pedido.', TRUE, 'https://images.unsplash.com/photo-1667388969250-1c7220bf3f37?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Brunch Malasaña', 'Cafetería de brunch, tostadas y desayunos.',
          '910000004', 'brunch.malasana@demo.eatsok.local', '08:30', '20:30',
          'La zona de panadería manipula gluten de forma habitual.',
-         'Disponibles bebidas vegetales y algunas opciones adaptadas.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Disponibles bebidas vegetales y algunas opciones adaptadas.', TRUE, 'https://images.unsplash.com/photo-1567880905822-56f8e06fe630?auto=format&fit=crop&w=1200&h=800&q=80'),
 
-        (v_owner_id, 'Chueca Verde', 'Cocina vegetal e internacional en el barrio de Chueca.',
-         '910000005', 'chueca.verde@demo.eatsok.local', '12:00', '23:00',
-         'La mayor parte de elaboraciones son vegetales, pero existen ingredientes con gluten.',
-         'Carta con indicaciones de compatibilidad alimentaria.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+        (v_owner_id, 'Casa Moyano', 'Cocina madrileña actual con recetas castizas y postres de la casa.',
+         '910000005', 'casa.moyano@demo.eatsok.local', '12:00', '23:30',
+         'La cocina separa las elaboraciones adaptadas, aunque comparte algunas superficies.',
+         'Carta detallada y personal formado para atender alergias e intolerancias.', TRUE, 'https://images.unsplash.com/photo-1636405189493-181ecf851006?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Lavapiés Fusión', 'Pequeño local de cocina asiática e internacional.',
          '910000006', 'lavapies.fusion@demo.eatsok.local', '13:00', '23:30',
          'Uso habitual de soja, sésamo y frutos secos en cocina.',
-         'El personal puede informar de los ingredientes de cada elaboración.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'El personal puede informar de los ingredientes de cada elaboración.', TRUE, 'https://images.unsplash.com/photo-1729394405518-eaf2a0203aa7?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'La Latina Tapas', 'Tapas y raciones de inspiración tradicional.',
          '910000007', 'latina.tapas@demo.eatsok.local', '12:00', '00:00',
          'Freidora compartida entre distintas elaboraciones.',
-         'Se pueden consultar alérgenos antes de pedir.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Se pueden consultar alérgenos antes de pedir.', TRUE, 'https://images.unsplash.com/photo-1494346480775-936a9f0d0877?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Letras Mediterráneo', 'Restaurante mediterráneo en el Barrio de las Letras.',
          '910000008', 'letras.mediterraneo@demo.eatsok.local', '12:30', '23:30',
          'Superficies de preparación compartidas.',
-         'Diversos platos pueden prepararse con pequeñas adaptaciones.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Diversos platos pueden prepararse con pequeñas adaptaciones.', TRUE, 'https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Atocha Bowl', 'Bowls personalizables y cocina saludable cerca de Atocha.',
          '910000009', 'atocha.bowl@demo.eatsok.local', '11:00', '22:30',
          'Los ingredientes se almacenan de forma separada, aunque se comparten zonas de montaje.',
-         'Los bowls permiten seleccionar ingredientes individualmente.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Los bowls permiten seleccionar ingredientes individualmente.', TRUE, 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Retiro Natural', 'Restaurante saludable próximo al parque del Retiro.',
          '910000010', 'retiro.natural@demo.eatsok.local', '10:30', '22:30',
          'Se manipulan frutos secos y semillas en cocina.',
-         'Oferta amplia de platos vegetarianos y veganos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Oferta amplia de platos vegetarianos y veganos.', TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Ópera Italiana', 'Pasta y cocina italiana en la zona de Ópera.',
          '910000011', 'opera.italiana@demo.eatsok.local', '13:00', '23:30',
          'Harinas con gluten presentes de forma habitual.',
-         'Consultar disponibilidad de pasta alternativa.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Consultar disponibilidad de pasta alternativa.', TRUE, 'https://images.unsplash.com/photo-1667388968964-4aa652df0a9b?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Palacio Café', 'Cafetería de desayunos, meriendas y repostería.',
          '910000012', 'palacio.cafe@demo.eatsok.local', '08:00', '21:00',
          'Zona de repostería compartida.',
-         'Disponibles bebidas vegetales.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Disponibles bebidas vegetales.', TRUE, 'https://images.unsplash.com/photo-1583354608715-177553a4035e?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Tribunal Street Food', 'Local informal con platos internacionales.',
          '910000013', 'tribunal.street@demo.eatsok.local', '12:00', '00:00',
          'Cocina compartida para todos los platos.',
-         'Información de ingredientes disponible bajo petición.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Información de ingredientes disponible bajo petición.', TRUE, 'https://images.unsplash.com/photo-1538333581680-29dd4752ddf2?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Recoletos Fresh', 'Ensaladas, wraps y cocina ligera.',
          '910000014', 'recoletos.fresh@demo.eatsok.local', '10:00', '22:00',
          'Puede existir contacto cruzado durante el montaje.',
-         'Ingredientes personalizables.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Ingredientes personalizables.', TRUE, 'https://images.unsplash.com/photo-1600353565737-2427a1ba3d3a?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Cibeles Cocina', 'Cocina española contemporánea cerca de Cibeles.',
          '910000015', 'cibeles.cocina@demo.eatsok.local', '12:30', '23:30',
          'Plancha y freidora compartidas.',
-         'El personal dispone de una ficha de alérgenos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'El personal dispone de una ficha de alérgenos.', TRUE, 'https://images.unsplash.com/photo-1570560258879-af7f8e1447ac?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Embajadores Veggie', 'Cocina vegetal casual.',
          '910000016', 'embajadores.veggie@demo.eatsok.local', '12:00', '22:30',
          'No se utilizan productos cárnicos, aunque sí ingredientes con gluten y frutos secos.',
-         'Toda la carta es vegetariana y gran parte vegana.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Toda la carta es vegetariana y gran parte vegana.', TRUE, 'https://images.unsplash.com/photo-1588253137728-1e4dd0fe9a93?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Antón Martín Café', 'Café de especialidad, tostadas y platos sencillos.',
          '910000017', 'antonmartin.cafe@demo.eatsok.local', '08:00', '20:00',
          'Preparación compartida con productos de bollería.',
-         'Leches vegetales disponibles.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Leches vegetales disponibles.', TRUE, 'https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Huertas Mex', 'Cocina mexicana de tacos, bowls y entrantes.',
          '910000018', 'huertas.mex@demo.eatsok.local', '13:00', '23:30',
          'Uso frecuente de lácteos y posibles trazas de gluten.',
-         'Se pueden pedir algunos platos sin queso.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Se pueden pedir algunos platos sin queso.', TRUE, 'https://images.unsplash.com/photo-1545418314-7ce0b9b53901?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Plaza Mayor Tradición', 'Cocina tradicional española.',
          '910000019', 'plazamayor.tradicion@demo.eatsok.local', '12:00', '00:00',
          'Freidoras compartidas.',
-         'Consultar opciones adaptables.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Consultar opciones adaptables.', TRUE, 'https://images.unsplash.com/photo-1508424757105-b6d5ad9329d0?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Santo Domingo Asia', 'Cocina asiática informal.',
          '910000020', 'santodomingo.asia@demo.eatsok.local', '12:00', '23:30',
          'Uso frecuente de soja, sésamo, cacahuete y frutos secos.',
-         'Listado de ingredientes disponible.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Listado de ingredientes disponible.', TRUE, 'https://images.unsplash.com/photo-1565650834520-0b48a5c83f43?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Conde Duque Brunch', 'Brunch y café de especialidad.',
          '910000021', 'condeduque.brunch@demo.eatsok.local', '09:00', '21:00',
          'Manipulación habitual de gluten y huevos.',
-         'Opciones vegetarianas y bebidas vegetales.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Opciones vegetarianas y bebidas vegetales.', TRUE, 'https://images.unsplash.com/photo-1648462908676-8305f0eff8e0?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Argüelles Sana', 'Comida saludable y bowls personalizables.',
          '910000022', 'arguelles.sana@demo.eatsok.local', '11:00', '22:00',
          'Montaje en línea compartida.',
-         'Posibilidad de retirar ingredientes en la mayoría de platos.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Posibilidad de retirar ingredientes en la mayoría de platos.', TRUE, 'https://images.unsplash.com/photo-1538334421852-687c439c92f4?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Moncloa Mediterránea', 'Restaurante mediterráneo casual.',
          '910000023', 'moncloa.med@demo.eatsok.local', '12:00', '23:00',
          'Cocina general compartida.',
-         'Información de alérgenos disponible.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Información de alérgenos disponible.', TRUE, 'https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Delicias Verde', 'Cocina vegetal, ensaladas y platos del día.',
          '910000024', 'delicias.verde@demo.eatsok.local', '11:30', '22:30',
          'Se utilizan semillas y frutos secos en algunas preparaciones.',
-         'Amplia oferta vegana.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4'),
+         'Amplia oferta vegana.', TRUE, 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=1200&h=800&q=80'),
 
         (v_owner_id, 'Menéndez Pelayo Café', 'Cafetería y cocina ligera al este del Retiro.',
          '910000025', 'menendez.cafe@demo.eatsok.local', '08:00', '21:30',
          'Zona de cocina y repostería compartida.',
-         'Disponibles alternativas vegetales.', TRUE, 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4');
+         'Disponibles alternativas vegetales.', TRUE, 'https://images.unsplash.com/photo-1565650839149-2c48a094196c?auto=format&fit=crop&w=1200&h=800&q=80');
 
 	-- ----------------------------
 	-- LOCATIONS
@@ -372,9 +377,9 @@ BEGIN
 
 	INSERT INTO establishments_location
 		(establishment_id, address, city, region, country, postal_code, latitude, longitude)
-	SELECT id, 'Calle de Augusto Figueroa, 21', 'Madrid', 'Comunidad de Madrid', 'España', '28004', 40.42265, -3.69795
+	SELECT id, 'Cuesta de Moyano, 7', 'Madrid', 'Comunidad de Madrid', 'España', '28014', 40.40965, -3.69120
 	FROM establishments_establishment
-	WHERE email = 'chueca.verde@demo.eatsok.local';
+	WHERE email = 'casa.moyano@demo.eatsok.local';
 
 	INSERT INTO establishments_location
 		(establishment_id, address, city, region, country, postal_code, latitude, longitude)
@@ -509,7 +514,7 @@ BEGIN
             WHEN 'Verde Gran Vía' THEN ARRAY['Saludable','Vegetariana']
             WHEN 'La Mesa de Callao' THEN ARRAY['Española','Tapas']
             WHEN 'Brunch Malasaña' THEN ARRAY['Cafetería','Brunch']
-            WHEN 'Chueca Verde' THEN ARRAY['Vegana','Vegetariana','Internacional']
+            WHEN 'Casa Moyano' THEN ARRAY['Española','Tapas','Sin gluten']
             WHEN 'Lavapiés Fusión' THEN ARRAY['Asiática','Internacional']
             WHEN 'La Latina Tapas' THEN ARRAY['Española','Tapas']
             WHEN 'Letras Mediterráneo' THEN ARRAY['Mediterránea']
@@ -538,21 +543,15 @@ BEGIN
 
     -- ----------------------------
     -- DISHES
-    -- Five dishes per demo establishment.
-    --
-    -- The demo dataset is intentionally balanced for the profile used in
-    -- the presentation: Gluten + Lácteos + Vegetariano.
-    --
-    -- Target distribution with those three restrictions active:
-    --   12 establishments: HIGH compatibility (80-100%)
-    --    8 establishments: MEDIUM compatibility (40-60%)
-    --    5 establishments: LOW compatibility (0-20%)
+    -- Five dishes per demo establishment. Casa Moyano has a bespoke menu for
+    -- its detail screenshot; the remaining establishments keep a compact,
+    -- regular menu so the amount of content stays unchanged.
     -- ----------------------------
 
     INSERT INTO establishments_dish
         (establishment_id, name, description, price, available, image_url)
     SELECT e.id, d.name, d.description, d.price, TRUE,
-           'https://images.unsplash.com/photo-1547592180-85f173990554'
+           'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&h=650&q=80'
     FROM establishments_establishment e
     CROSS JOIN LATERAL (
         VALUES
@@ -581,35 +580,97 @@ BEGIN
                     WHEN e.name = 'Ópera Italiana' THEN 'Pizza margarita'
                     WHEN e.name = 'Huertas Mex' THEN 'Tacos vegetales'
                     WHEN e.name IN ('Lavapiés Fusión', 'Santo Domingo Asia') THEN 'Curry vegetal'
+                    WHEN e.name IN (
+                        'Naranja de Sol',
+                        'Brunch Malasaña',
+                        'Retiro Natural',
+                        'Palacio Café',
+                        'Plaza Mayor Tradición'
+                    ) THEN 'Churros con chocolate'
                     WHEN e.name IN ('Brunch Malasaña', 'Conde Duque Brunch') THEN 'Tostada de aguacate'
-                    WHEN e.name IN ('Chueca Verde', 'Embajadores Veggie', 'Delicias Verde') THEN 'Hamburguesa vegetal'
-                    WHEN e.name IN ('Atocha Bowl', 'Argüelles Sana', 'Retiro Natural') THEN 'Bowl especial'
+                    WHEN e.name IN ('Embajadores Veggie', 'Delicias Verde') THEN 'Hamburguesa vegetal'
+                    WHEN e.name IN ('Atocha Bowl', 'Argüelles Sana') THEN 'Bowl especial'
                     ELSE 'Especial de la casa'
                 END,
-                'Plato destacado del establecimiento.',
-                13.90::numeric
+                CASE
+                    WHEN e.name = 'Retiro Natural'
+                        THEN 'Churros sin gluten y sin lactosa con chocolate caliente vegetal.'
+                    WHEN e.name = 'Naranja de Sol'
+                        THEN 'Churros de masa tradicional con chocolate elaborado con bebida vegetal.'
+                    WHEN e.name IN ('Brunch Malasaña', 'Palacio Café', 'Plaza Mayor Tradición')
+                        THEN 'Churros de receta tradicional con chocolate caliente con leche.'
+                    ELSE 'Plato destacado del establecimiento.'
+                END,
+                CASE
+                    WHEN e.name IN (
+                        'Naranja de Sol',
+                        'Brunch Malasaña',
+                        'Retiro Natural',
+                        'Palacio Café',
+                        'Plaza Mayor Tradición'
+                    ) THEN 6.20::numeric
+                    ELSE 13.90::numeric
+                END
             )
     ) AS d(name, description, price)
-    WHERE e.email LIKE '%@demo.eatsok.local';
+    WHERE e.email LIKE '%@demo.eatsok.local'
+      AND e.email <> 'casa.moyano@demo.eatsok.local';
+
+
+    -- Bespoke Casa Moyano menu: varied dishes and matching photos make the
+    -- establishment detail page useful for the results chapter screenshots.
+    INSERT INTO establishments_dish
+        (establishment_id, name, description, price, available, image_url)
+    SELECT e.id, d.name, d.description, d.price, TRUE, d.image_url
+    FROM establishments_establishment e
+    CROSS JOIN (
+        VALUES
+            (
+                'Churros con chocolate',
+                'Churros sin gluten y sin lactosa con chocolate caliente vegetal.',
+                6.50::numeric,
+                'https://recipesmaria.com/wp-content/uploads/2025/06/Churros-with-Chocolate-Dipping-Sauce-3.webp'
+            ),
+            (
+                'Tortilla de patata trufada',
+                'Tortilla jugosa de patata y cebolla con un toque de trufa.',
+                12.90::numeric,
+                'https://academia.andaluza.net/wp-content/uploads/2017/02/receta-tortilla-patatas-academia-andaluza.webp'
+            ),
+            (
+                'Arroz meloso de setas',
+                'Arroz cremoso con setas de temporada y caldo de verduras.',
+                16.50::numeric,
+                'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=900&h=650&q=80'
+            ),
+            (
+                'Croquetas de cocido',
+                'Croquetas cremosas de cocido madrileño con rebozado crujiente.',
+                10.50::numeric,
+                'https://mir-s3-cdn-cf.behance.net/project_modules/1400/a02510147989423.62cd674930ba1.jpg'
+            ),
+            (
+                'Tarta de queso caramelizada',
+                'Tarta de queso al horno con centro cremoso y superficie caramelizada.',
+                7.50::numeric,
+                'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&h=650&q=80'
+            )
+    ) AS d(name, description, price, image_url)
+    WHERE e.email = 'casa.moyano@demo.eatsok.local';
 
 
     -- ----------------------------
     -- DISH RESTRICTIONS
     --
-    -- IMPORTANT FOR THE DEMO:
-    -- `get_compatible_dishes()` currently treats every DishRestriction whose
-    -- restriction is active as an incompatibility. The seed therefore also
-    -- uses the "Vegetariano" restriction as an incompatibility marker for
-    -- non-vegetarian demo dishes.
-    --
-    -- This makes Gluten, Lácteos and Vegetariano all influence the map
-    -- compatibility during the presentation.
+    -- The map screenshot uses Gluten + Lácteos. The base distribution gives
+    -- visibly different compatibility percentages; the showcase dishes below
+    -- then add exact, ingredient-based relations for Casa Moyano and churros.
     -- ----------------------------
 
     WITH compatibility_plan(email, incompatible_count, restriction_offset) AS (
         VALUES
             -- HIGH: 100% compatible (5/5)
-            ('chueca.verde@demo.eatsok.local', 0, 0),
+            ('casa.moyano@demo.eatsok.local', 0, 0),
             ('retiro.natural@demo.eatsok.local', 0, 1),
             ('atocha.bowl@demo.eatsok.local', 0, 2),
             ('embajadores.veggie@demo.eatsok.local', 0, 0),
@@ -664,11 +725,9 @@ BEGIN
             rd.dish_number,
             cp.restriction_offset,
             CASE
-                WHEN MOD(rd.dish_number - 1 + cp.restriction_offset, 3) = 0
+                WHEN MOD(rd.dish_number - 1 + cp.restriction_offset, 2) = 0
                     THEN 'Gluten'
-                WHEN MOD(rd.dish_number - 1 + cp.restriction_offset, 3) = 1
-                    THEN 'Lácteos'
-                ELSE 'Vegetariano'
+                ELSE 'Lácteos'
             END AS restriction_name
         FROM ranked_dishes rd
         JOIN compatibility_plan cp
@@ -681,7 +740,6 @@ BEGIN
         pi.dish_id,
         r.id,
         CASE
-            WHEN pi.restriction_name = 'Vegetariano' THEN 'contains'
             WHEN MOD(pi.dish_number, 3) = 0 THEN 'traces'
             WHEN MOD(pi.dish_number, 2) = 0 THEN 'may_contain'
             ELSE 'contains'
@@ -689,6 +747,63 @@ BEGIN
     FROM planned_incompatibilities pi
     JOIN food_profiles_restriction r
         ON r.name = pi.restriction_name
+    ON CONFLICT DO NOTHING;
+
+
+    -- Churros appear in several establishments so a Gluten + Lácteos search
+    -- shows both adapted and conventional versions of the same Madrid classic.
+    DELETE FROM establishments_dishrestriction dr
+    USING establishments_dish d, establishments_establishment e,
+          food_profiles_restriction r
+    WHERE dr.dish_id = d.id
+      AND d.establishment_id = e.id
+      AND dr.restriction_id = r.id
+      AND e.email LIKE '%@demo.eatsok.local'
+      AND d.name = 'Churros con chocolate'
+      AND r.name IN ('Gluten', 'Lácteos');
+
+    INSERT INTO establishments_dishrestriction
+        (dish_id, restriction_id, presence_type)
+    SELECT d.id, r.id, data.presence_type
+    FROM (
+        VALUES
+            ('naranja.sol@demo.eatsok.local', 'Gluten', 'contains'),
+            ('brunch.malasana@demo.eatsok.local', 'Gluten', 'contains'),
+            ('brunch.malasana@demo.eatsok.local', 'Lácteos', 'contains'),
+            ('palacio.cafe@demo.eatsok.local', 'Gluten', 'contains'),
+            ('palacio.cafe@demo.eatsok.local', 'Lácteos', 'contains'),
+            ('plazamayor.tradicion@demo.eatsok.local', 'Gluten', 'contains'),
+            ('plazamayor.tradicion@demo.eatsok.local', 'Lácteos', 'contains')
+    ) AS data(establishment_email, restriction_name, presence_type)
+    JOIN establishments_establishment e
+        ON e.email = data.establishment_email
+    JOIN establishments_dish d
+        ON d.establishment_id = e.id
+       AND d.name = 'Churros con chocolate'
+    JOIN food_profiles_restriction r
+        ON r.name = data.restriction_name
+    ON CONFLICT DO NOTHING;
+
+
+    -- Exact relations for the five Casa Moyano dishes shown in its detail.
+    INSERT INTO establishments_dishrestriction
+        (dish_id, restriction_id, presence_type)
+    SELECT d.id, r.id, data.presence_type
+    FROM (
+        VALUES
+            ('Tortilla de patata trufada', 'Huevos', 'contains'),
+            ('Croquetas de cocido', 'Gluten', 'contains'),
+            ('Croquetas de cocido', 'Lácteos', 'contains'),
+            ('Tarta de queso caramelizada', 'Gluten', 'traces'),
+            ('Tarta de queso caramelizada', 'Lácteos', 'contains')
+    ) AS data(dish_name, restriction_name, presence_type)
+    JOIN establishments_establishment e
+        ON e.email = 'casa.moyano@demo.eatsok.local'
+    JOIN establishments_dish d
+        ON d.establishment_id = e.id
+       AND d.name = data.dish_name
+    JOIN food_profiles_restriction r
+        ON r.name = data.restriction_name
     ON CONFLICT DO NOTHING;
 
 
@@ -734,181 +849,181 @@ BEGIN
          'Desayuno sencillo y rápido.',
          '1 plátano\n80 g de avena\n2 huevos\nCanela',
          'Triturar los ingredientes.\nCalentar una sartén.\nCocinar por ambos lados.',
-         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Crema de calabaza',
          'Crema vegetal suave.',
          'Calabaza\nPatata\nCebolla\nAceite de oliva\nSal',
          'Trocear.\nCocer hasta ablandar.\nTriturar y ajustar de sal.',
-         35, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         35, NOW(), TRUE, 'https://www.muydelish.com/wp-content/uploads/2023/12/crema-de-calabaza-500x500.jpg'),
 
         (v_owner_id, NULL, '[DEMO] Ensalada mediterránea',
          'Ensalada fresca para cualquier época del año.',
          'Tomate\nPepino\nAceitunas\nCebolla\nAceite de oliva',
          'Lavar y cortar.\nMezclar.\nAliñar antes de servir.',
-         10, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         10, NOW(), TRUE, 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Curry vegetal con arroz',
          'Curry suave de verduras.',
          'Arroz\nCalabacín\nZanahoria\nLeche de coco\nCurry',
          'Cocer el arroz.\nSaltear las verduras.\nAñadir leche de coco y curry.',
-         35, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         35, NOW(), TRUE, 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Pasta con tomate asado',
          'Pasta sencilla con salsa casera.',
          'Pasta\nTomate\nAjo\nAceite de oliva\nAlbahaca',
          'Asar los tomates.\nCocer la pasta.\nTriturar la salsa y mezclar.',
-         30, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         30, NOW(), TRUE, 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=900&h=650&q=80'),
 
-        (v_owner_id, NULL, '[DEMO] Hummus clásico',
+        (v_owner_id, NULL, '[DEMO] Crema de garbanzos',
          'Crema de garbanzos para aperitivo.',
          'Garbanzos\nTahini\nLimón\nAjo\nAceite de oliva',
          'Triturar todos los ingredientes hasta obtener una crema.',
-         10, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         10, NOW(), TRUE, 'https://a.storyblok.com/f/162842/1920x1307/512dcf93ce/hummus-in-weisser-schale-mit-kichererbsen-und-viel-oel-getoppt.jpg/m/3840x3840/filters%3Aquality%2880%29'),
 
         (v_owner_id, NULL, '[DEMO] Arroz con verduras',
          'Arroz casero con verduras variadas.',
          'Arroz\nPimiento\nCalabacín\nGuisantes\nCaldo vegetal',
          'Sofreír las verduras.\nAñadir el arroz.\nIncorporar caldo y cocinar.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Gazpacho',
          'Sopa fría de tomate.',
          'Tomate\nPepino\nPimiento\nAceite de oliva\nVinagre',
          'Triturar.\nColar si se desea.\nEnfriar antes de servir.',
-         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Patatas al horno',
          'Guarnición sencilla y crujiente.',
          'Patatas\nAceite de oliva\nRomero\nSal',
          'Cortar las patatas.\nAliñar.\nHornear hasta dorar.',
-         45, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         45, NOW(), TRUE, 'https://images.unsplash.com/photo-1518013431117-eb1465fa5752?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Tacos de verduras',
          'Tacos vegetales de preparación rápida.',
          'Tortillas de maíz\nPimiento\nCebolla\nAguacate\nLima',
          'Saltear las verduras.\nCalentar las tortillas.\nMontar los tacos.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Bowl de quinoa',
          'Bowl completo con quinoa y verduras.',
          'Quinoa\nTomate\nEspinacas\nPepino\nAguacate',
          'Cocer la quinoa.\nPreparar las verduras.\nMontar el bowl.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Sopa de lentejas',
          'Sopa nutritiva de legumbres.',
          'Lentejas\nZanahoria\nCebolla\nTomate\nCaldo',
          'Sofreír verduras.\nAñadir lentejas y caldo.\nCocer hasta que estén tiernas.',
-         50, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         50, NOW(), TRUE, 'https://mariesaba.com/wp-content/uploads/2020/09/Lentils-9999-scaled.jpg'),
 
         (v_owner_id, NULL, '[DEMO] Pisto de verduras',
          'Receta tradicional de verduras.',
          'Tomate\nCalabacín\nPimiento\nCebolla\nAceite',
          'Trocear.\nCocinar lentamente.\nRectificar de sal.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1572453800999-e8d2d1589b7c?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Mousse de chocolate',
          'Postre cremoso de chocolate.',
          'Chocolate\nHuevos\nAzúcar',
          'Fundir el chocolate.\nIncorporar huevos.\nEnfriar varias horas.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1777897424755-6481eadb48e4?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Tortilla de patata',
          'Versión clásica de tortilla.',
          'Patata\nHuevos\nCebolla\nAceite',
          'Pochar patata y cebolla.\nMezclar con huevo.\nCuajar por ambos lados.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         40, NOW(), TRUE, 'https://academia.andaluza.net/wp-content/uploads/2017/02/receta-tortilla-patatas-academia-andaluza.webp'),
 
         (v_owner_id, NULL, '[DEMO] Guacamole',
          'Acompañamiento fresco de aguacate.',
          'Aguacate\nTomate\nCebolla\nLima\nCilantro',
          'Machacar el aguacate.\nAñadir el resto.\nMezclar.',
-         10, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         10, NOW(), TRUE, 'https://images.unsplash.com/photo-1625938145744-e380515399bf?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Risotto de setas',
          'Arroz cremoso con setas.',
          'Arroz\nSetas\nCaldo\nCebolla\nQueso',
          'Sofreír cebolla y setas.\nAñadir arroz.\nIncorporar caldo poco a poco.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Ensalada de garbanzos',
          'Ensalada completa de legumbres.',
          'Garbanzos\nTomate\nPepino\nCebolla\nPerejil',
          'Escurrir los garbanzos.\nCortar verduras.\nMezclar y aliñar.',
-         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         15, NOW(), TRUE, 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Boniato asado',
          'Boniato especiado al horno.',
          'Boniato\nAceite\nPimentón\nSal',
          'Cortar.\nAliñar.\nHornear hasta que esté tierno.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Smoothie tropical',
          'Batido de frutas tropicales.',
          'Mango\nPiña\nPlátano\nBebida vegetal',
          'Triturar todos los ingredientes y servir frío.',
-         5, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         5, NOW(), TRUE, 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Berenjenas rellenas',
          'Berenjenas al horno con verduras.',
          'Berenjena\nTomate\nCebolla\nPimiento',
          'Asar la berenjena.\nPreparar el relleno.\nRellenar y gratinar.',
-         50, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         50, NOW(), TRUE, 'https://conteudo.imguol.com.br/c/entretenimento/1a/2021/02/09/berinjela-recheada-1612897850141_v2_1x1.jpg'),
 
         (v_owner_id, NULL, '[DEMO] Tabulé de quinoa',
          'Versión de tabulé elaborada con quinoa.',
          'Quinoa\nTomate\nPepino\nPerejil\nLimón',
          'Cocer quinoa.\nPicar verduras.\nMezclar y enfriar.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1572449043416-55f4685c9bb7?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Porridge de manzana',
          'Desayuno caliente de avena.',
          'Avena\nBebida vegetal\nManzana\nCanela',
          'Cocer avena y bebida vegetal.\nAñadir manzana y canela.',
-         12, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         12, NOW(), TRUE, 'https://nourishingalex.wordpress.com/wp-content/uploads/2019/12/34d68e02-f5d5-4c78-b3ad-4384de876fd5.jpg?w=760'),
 
         (v_owner_id, NULL, '[DEMO] Falafel al horno',
          'Falafel ligero preparado al horno.',
          'Garbanzos\nCebolla\nPerejil\nComino',
          'Triturar.\nFormar bolas.\nHornear hasta dorar.',
-         35, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         35, NOW(), TRUE, 'https://dabas.blob.core.windows.net/media/gg-handel/811falafelbiffmilj..jpg?v=20250410174644'),
 
         (v_owner_id, NULL, '[DEMO] Ensalada de arroz',
          'Ensalada fría de arroz y verduras.',
          'Arroz\nTomate\nMaíz\nPepino\nAceitunas',
          'Cocer arroz.\nEnfriar.\nMezclar con verduras.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1547496502-affa22d38842?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Salteado de tofu',
          'Tofu con verduras salteadas.',
          'Tofu\nPimiento\nBrócoli\nSalsa de soja',
          'Dorar tofu.\nAñadir verduras.\nTerminar con salsa.',
-         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         25, NOW(), TRUE, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&h=650&q=80'),
 
         (v_owner_id, NULL, '[DEMO] Croquetas vegetales',
          'Croquetas de verduras.',
          'Verduras\nHarina\nBebida vegetal\nPan rallado',
          'Preparar masa.\nEnfriar.\nFormar y cocinar.',
-         60, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         60, NOW(), TRUE, 'https://mir-s3-cdn-cf.behance.net/project_modules/1400/a02510147989423.62cd674930ba1.jpg'),
 
         (v_owner_id, NULL, '[DEMO] Bizcocho de limón',
          'Bizcocho casero aromático.',
          'Harina\nHuevos\nAzúcar\nLimón\nAceite',
          'Mezclar ingredientes.\nVerter en molde.\nHornear.',
-         50, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         50, NOW(), TRUE, 'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&w=900&h=650&q=80'),
 
-        (v_owner_id, NULL, '[DEMO] Sopa de tomate',
-         'Sopa sencilla de tomate y hierbas.',
+        (v_owner_id, NULL, '[DEMO] Crema de tomate asado',
+         'Crema suave de tomate asado y hierbas.',
          'Tomate\nCebolla\nAjo\nCaldo\nAlbahaca',
          'Sofreír.\nAñadir tomate y caldo.\nCocer y triturar.',
-         35, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836'),
+         35, NOW(), TRUE, 'https://www.bekiacocina.com/images/cocina/0000/815-h.jpg'),
 
-        (v_owner_id, NULL, '[DEMO] Paté de berenjena',
+        (v_owner_id, NULL, '[DEMO] Crema de berenjena asada',
          'Crema de berenjena asada.',
          'Berenjena\nLimón\nAjo\nTahini',
          'Asar berenjena.\nExtraer pulpa.\nTriturar con el resto.',
-         40, NOW(), TRUE, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836');
+         40, NOW(), TRUE, 'https://syedobno.ru/images/csv2/374.jpg');
 
 
     -- ----------------------------
@@ -950,6 +1065,21 @@ BEGIN
     WHERE r.id = a.recipe_id;
 
 
+    -- Keep the catalogue varied but older than the featured publications.
+    -- This guarantees that Pau's crema catalana leads the "crema" search.
+    WITH dated_recipes AS (
+        SELECT
+            id,
+            ROW_NUMBER() OVER (ORDER BY id) AS rn
+        FROM recipes_recipe
+        WHERE title LIKE '[DEMO]%'
+    )
+    UPDATE recipes_recipe r
+    SET publication_date = NOW() - ((10 + dr.rn) * INTERVAL '1 day')
+    FROM dated_recipes dr
+    WHERE r.id = dr.id;
+
+
     -- ----------------------------
     -- FEATURED RECIPES
     -- ----------------------------
@@ -976,7 +1106,7 @@ BEGIN
         data.preparation_time,
         NOW() - data.days_ago * INTERVAL '1 day',
         TRUE,
-        'https://images.unsplash.com/photo-1504674900247-0877df9cc836'
+        data.image_url
     FROM (
         VALUES
             (
@@ -986,7 +1116,8 @@ BEGIN
                 '500 ml de leche sin lactosa\n4 yemas de huevo\n80 g de azúcar\n20 g de maicena\nPiel de limón\nCanela',
                 'Infusionar la leche con limón y canela.\nMezclar yemas, azúcar y maicena.\nIncorporar la leche y cocinar hasta espesar.\nEnfriar y caramelizar azúcar antes de servir.',
                 35,
-                2
+                0,
+                'https://images.unsplash.com/photo-1671794077652-3547d3f6939b?auto=format&fit=crop&w=900&h=650&q=80'
             ),
             (
                 'ferran.torres@demo-user.eatsok.local',
@@ -995,7 +1126,8 @@ BEGIN
                 'Arroz\nPollo\nConejo\nJudía verde\nGarrofón\nTomate\nAzafrán\nCaldo',
                 'Dorar la carne.\nAñadir verduras y tomate.\nIncorporar caldo y azafrán.\nAñadir el arroz y cocinar sin remover hasta que esté en su punto.',
                 55,
-                4
+                4,
+                'https://images.unsplash.com/photo-1534080564583-6be75777b70a?auto=format&fit=crop&w=900&h=650&q=80'
             ),
             (
                 'zara.larsson@demo-user.eatsok.local',
@@ -1004,7 +1136,8 @@ BEGIN
                 'Harina\nBebida vegetal\nMargarina vegetal\nCanela\nAzúcar\nCardamomo',
                 'Preparar y dejar levar la masa.\nExtender y rellenar con canela.\nEnrollar, cortar y hornear hasta dorar.',
                 70,
-                6
+                6,
+                'https://images.unsplash.com/photo-1509365465985-25d11c17e812?auto=format&fit=crop&w=900&h=650&q=80'
             ),
             (
                 'soobin.choi@demo-user.eatsok.local',
@@ -1013,7 +1146,8 @@ BEGIN
                 'Tteok\nGochujang\nCebolleta\nZanahoria\nCaldo vegetal\nSésamo',
                 'Preparar la salsa.\nAñadir los pasteles de arroz y las verduras.\nCocinar hasta que la salsa espese.',
                 25,
-                8
+                8,
+                'https://images.unsplash.com/photo-1635363638580-c2809d049eee?auto=format&fit=crop&w=900&h=650&q=80'
             ),
             (
                 'kiriko.kamori@demo-user.eatsok.local',
@@ -1022,7 +1156,8 @@ BEGIN
                 'Arroz japonés\nZanahoria\nEspinacas\nAlga nori\nSésamo',
                 'Cocer el arroz.\nPreparar el relleno.\nFormar los onigiri y envolver parcialmente con nori.',
                 30,
-                10
+                10,
+                'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=900&h=650&q=80'
             ),
             (
                 'hana.song@demo-user.eatsok.local',
@@ -1031,7 +1166,8 @@ BEGIN
                 'Arroz\nEspinacas\nZanahoria\nCalabacín\nSetas\nGochujang',
                 'Cocer el arroz.\nSaltear cada verdura por separado.\nMontar el bol y servir con salsa.',
                 35,
-                12
+                12,
+                'https://images.unsplash.com/photo-1553163147-622ab57be1c7?auto=format&fit=crop&w=900&h=650&q=80'
             )
     ) AS data(
         author_email,
@@ -1040,7 +1176,8 @@ BEGIN
         ingredients,
         steps,
         preparation_time,
-        days_ago
+        days_ago,
+        image_url
     )
     JOIN users_user u
         ON u.email = data.author_email;
@@ -1064,7 +1201,7 @@ BEGIN
             AND e.email = 'brunch.malasana@demo.eatsok.local')
         OR
         (r.title = '[DEMO] Salteado de tofu'
-            AND e.email = 'chueca.verde@demo.eatsok.local');
+            AND e.email = 'embajadores.veggie@demo.eatsok.local');
 
     -- ----------------------------
     -- RECIPE RESTRICTIONS
@@ -1086,7 +1223,7 @@ BEGIN
             ('[DEMO] Tortitas de avena y plátano', 'Huevos'),
             ('[DEMO] Tortitas de avena y plátano', 'Vegano'),
             ('[DEMO] Pasta con tomate asado', 'Gluten'),
-            ('[DEMO] Hummus clásico', 'Semillas de sésamo'),
+            ('[DEMO] Crema de garbanzos', 'Semillas de sésamo'),
             ('[DEMO] Mousse de chocolate', 'Huevos'),
             ('[DEMO] Mousse de chocolate', 'Vegano'),
             ('[DEMO] Tortilla de patata', 'Huevos'),
@@ -1098,7 +1235,7 @@ BEGIN
             ('[DEMO] Bizcocho de limón', 'Gluten'),
             ('[DEMO] Bizcocho de limón', 'Huevos'),
             ('[DEMO] Bizcocho de limón', 'Vegano'),
-            ('[DEMO] Paté de berenjena', 'Semillas de sésamo'),
+            ('[DEMO] Crema de berenjena asada', 'Semillas de sésamo'),
             ('[DEMO] Crema catalana', 'Huevos'),
             ('[DEMO] Crema catalana', 'Vegano'),
             ('[DEMO] Paella valenciana', 'Vegetariano'),
@@ -1285,6 +1422,18 @@ BEGIN
         ON u.rn = rs.reviewer_rn;
 
 
+    -- The prefix is only an internal seed marker. Remove it after every demo
+    -- relation has been created so it never appears in the captured interface.
+    UPDATE recipes_recipe
+    SET title = SUBSTRING(title FROM 8)
+    WHERE title LIKE '[DEMO] %'
+      AND author_id IN (
+          SELECT id
+          FROM users_user
+          WHERE email LIKE '%@demo-user.eatsok.local'
+      );
+
+
 END $$;
 
 COMMIT;
@@ -1294,7 +1443,9 @@ COMMIT;
 -- SELECT COUNT(*) FROM establishments_dish d
 -- JOIN establishments_establishment e ON e.id = d.establishment_id
 -- WHERE e.email LIKE '%@demo.eatsok.local';
--- SELECT COUNT(*) FROM recipes_recipe WHERE title LIKE '[DEMO] %';
+-- SELECT COUNT(*) FROM recipes_recipe WHERE author_id IN (
+--     SELECT id FROM users_user WHERE email LIKE '%@demo-user.eatsok.local'
+-- );
 -- SELECT COUNT(*) FROM users_user WHERE email LIKE '%@demo-user.eatsok.local';
 -- SELECT COUNT(*) FROM reviews_review WHERE author_id IN (
 --     SELECT id FROM users_user WHERE email LIKE '%@demo-user.eatsok.local'
